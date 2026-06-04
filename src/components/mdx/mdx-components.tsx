@@ -9,11 +9,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Table,
   TableBody,
@@ -30,36 +26,40 @@ const alertConfig: Record<
   {
     icon: React.ComponentType<React.ComponentProps<"svg">>;
     title: string;
+    className: string;
   }
 > = {
   note: {
     icon: Info,
     title: "Note",
+    className: "text-blue-600 border-blue-200 bg-blue-50",
   },
   tip: {
     icon: Lightbulb,
     title: "Tip",
+    className: "text-green-600 border-green-200 bg-green-50",
   },
   important: {
     icon: MessageSquareWarning,
     title: "Important",
+    className: "text-violet-600 border-violet-200 bg-violet-50",
   },
   warning: {
     icon: TriangleAlert,
     title: "Warning",
+    className: "text-yellow-600 border-yellow-200 bg-yellow-50",
   },
   caution: {
     icon: OctagonAlert,
     title: "Caution",
+    className: "text-red-600 border-red-200 bg-red-50",
   },
 };
 
 function getAlertType(className = "") {
-  return (
-    Object.keys(alertConfig).find((type) =>
-      className.includes(`markdown-alert-${type}`),
-    ) ?? "note"
-  ) as GitHubAlertType;
+  return (Object.keys(alertConfig).find((type) =>
+    className.includes(`markdown-alert-${type}`),
+  ) ?? "note") as GitHubAlertType;
 }
 
 function MarkdownAlert({
@@ -68,7 +68,7 @@ function MarkdownAlert({
   ...props
 }: React.ComponentProps<"div">) {
   const type = getAlertType(className);
-  const { icon: Icon, title } = alertConfig[type];
+  const { icon: Icon, title, className: AlertClassName } = alertConfig[type];
   const content = React.Children.toArray(children).filter((child) => {
     if (!React.isValidElement<{ className?: string }>(child)) {
       return true;
@@ -78,7 +78,7 @@ function MarkdownAlert({
   });
 
   return (
-    <Alert className="my-6 rounded-lg border-l-4" {...props}>
+    <Alert className={AlertClassName} {...props}>
       <Icon aria-hidden="true" />
       <AlertTitle>{title}</AlertTitle>
       <AlertDescription>{content}</AlertDescription>
