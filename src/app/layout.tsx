@@ -3,9 +3,12 @@ import "./globals.css";
 import { Inter, Outfit } from "next/font/google";
 import { cn } from "@/lib/utils";
 
-const outfitHeading = Outfit({subsets:['latin'],variable:'--font-heading'});
+const outfitHeading = Outfit({
+  subsets: ["latin"],
+  variable: "--font-heading",
+});
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "AMDX",
@@ -20,7 +23,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("font-sans", inter.variable, outfitHeading.variable)}
+      className={cn(
+        "min-h-screen bg-background",
+        "font-sans",
+        inter.variable,
+        outfitHeading.variable,
+      )}
     >
       <body>{children}</body>
     </html>

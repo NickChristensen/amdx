@@ -68,12 +68,10 @@ export default async function Page({
   }
 
   return (
-    <main className="min-h-screen bg-background">
-      <div className="mx-auto w-full max-w-3xl px-6 py-8">
-        <article className="mdx-document">
-          <MdxRenderer source={source} />
-        </article>
-      </div>
+    <main className="mx-auto w-full max-w-3xl px-4 py-8">
+      <article className="mdx-document">
+        <MdxRenderer source={source} />
+      </article>
     </main>
   );
 }
