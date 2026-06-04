@@ -11,6 +11,8 @@ This project is AMDX: a local Next.js app that lazily renders agent-written
 - `npm run build` must pass after source changes.
 - Package installs generally require approval because network access is
   restricted. Ask directly before running `npm install ...`.
+- All `npx ...` commands require sandbox approval, even when the command looks
+  read-only or previously worked.
 
 ## Content Model
 
