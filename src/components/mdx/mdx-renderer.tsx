@@ -4,6 +4,7 @@ import type React from "react";
 import rehypePrettyCode from "rehype-pretty-code";
 import remarkFlexibleMarkers from "remark-flexible-markers";
 import remarkGfm from "remark-gfm";
+import { remarkAlert } from "remark-github-blockquote-alert";
 import { mdxComponents } from "@/components/mdx/mdx-components";
 
 type MdxModule = {
@@ -15,7 +16,7 @@ export async function MdxRenderer({ source }: { source: string }) {
     await compile(source, {
       outputFormat: "function-body",
       providerImportSource: undefined,
-      remarkPlugins: [remarkGfm, remarkFlexibleMarkers],
+      remarkPlugins: [remarkGfm, remarkAlert, remarkFlexibleMarkers],
       rehypePlugins: [
         [
           rehypePrettyCode,

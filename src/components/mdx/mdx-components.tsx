@@ -1,6 +1,19 @@
 import type { MDXComponents } from "mdx/types";
+import React from "react";
+import {
+  Info,
+  Lightbulb,
+  MessageSquareWarning,
+  OctagonAlert,
+  TriangleAlert,
+} from "lucide-react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/components/ui/alert";
 import {
   Table,
   TableBody,
@@ -9,6 +22,69 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
+type GitHubAlertType = "note" | "tip" | "important" | "warning" | "caution";
+
+const alertConfig: Record<
+  GitHubAlertType,
+  {
+    icon: React.ComponentType<React.ComponentProps<"svg">>;
+    title: string;
+  }
+> = {
+  note: {
+    icon: Info,
+    title: "Note",
+  },
+  tip: {
+    icon: Lightbulb,
+    title: "Tip",
+  },
+  important: {
+    icon: MessageSquareWarning,
+    title: "Important",
+  },
+  warning: {
+    icon: TriangleAlert,
+    title: "Warning",
+  },
+  caution: {
+    icon: OctagonAlert,
+    title: "Caution",
+  },
+};
+
+function getAlertType(className = "") {
+  return (
+    Object.keys(alertConfig).find((type) =>
+      className.includes(`markdown-alert-${type}`),
+    ) ?? "note"
+  ) as GitHubAlertType;
+}
+
+function MarkdownAlert({
+  className = "",
+  children,
+  ...props
+}: React.ComponentProps<"div">) {
+  const type = getAlertType(className);
+  const { icon: Icon, title } = alertConfig[type];
+  const content = React.Children.toArray(children).filter((child) => {
+    if (!React.isValidElement<{ className?: string }>(child)) {
+      return true;
+    }
+
+    return !child.props.className?.includes("markdown-alert-title");
+  });
+
+  return (
+    <Alert className="my-6 rounded-lg border-l-4" {...props}>
+      <Icon aria-hidden="true" />
+      <AlertTitle>{title}</AlertTitle>
+      <AlertDescription>{content}</AlertDescription>
+    </Alert>
+  );
+}
 
 export const mdxComponents: MDXComponents = {
   a: ({ href = "", children, ...props }) => {
@@ -29,6 +105,21 @@ export const mdxComponents: MDXComponents = {
     );
   },
   Card,
+  div: ({ className = "", children, ...props }) => {
+    if (className.includes("markdown-alert")) {
+      return (
+        <MarkdownAlert className={className} {...props}>
+          {children}
+        </MarkdownAlert>
+      );
+    }
+
+    return (
+      <div className={className} {...props}>
+        {children}
+      </div>
+    );
+  },
   table: Table,
   thead: TableHeader,
   tbody: TableBody,
