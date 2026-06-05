@@ -163,12 +163,12 @@ body {
   @apply text-sm p-0 bg-transparent;
 }
 
-.mdx-document [data-slot="card"] {
+.mdx-document > [data-slot="card"] {
   @apply md:-mx-6;
 }
 
-.mdx-document pre,
-.mdx-document [data-slot="alert"] {
+.mdx-document > pre,
+.mdx-document > [data-slot="alert"] {
   @apply md:-mx-4;
 }
 

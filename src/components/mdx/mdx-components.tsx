@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Stack } from "../ui/stack";
 
 type GitHubAlertType = "note" | "tip" | "important" | "warning" | "caution";
 
@@ -105,6 +106,7 @@ export const mdxComponents: MDXComponents = {
     );
   },
   Card,
+  Stack,
   div: ({ className = "", children, ...props }) => {
     if (className.includes("markdown-alert")) {
       return (
