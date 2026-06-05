@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { Inter, Outfit } from "next/font/google";
 import { cn } from "@/lib/utils";
@@ -15,6 +16,28 @@ export const metadata: Metadata = {
   description: "Lazy MDX rendering for agent-written reports.",
 };
 
+const themeScript = `
+(() => {
+  const root = document.documentElement;
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+
+  const applyTheme = (isDark) => {
+    root.classList.toggle("dark", isDark);
+    root.style.colorScheme = isDark ? "dark" : "light";
+  };
+
+  applyTheme(media.matches);
+
+  const handleChange = (event) => applyTheme(event.matches);
+
+  if (typeof media.addEventListener === "function") {
+    media.addEventListener("change", handleChange);
+  } else {
+    media.addListener(handleChange);
+  }
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,8 +52,14 @@ export default function RootLayout({
         inter.variable,
         outfitHeading.variable,
       )}
+      suppressHydrationWarning
     >
-      <body>{children}</body>
+      <body>
+        <Script id="theme-sync" strategy="beforeInteractive">
+          {themeScript}
+        </Script>
+        {children}
+      </body>
     </html>
   );
 }
