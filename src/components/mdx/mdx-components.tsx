@@ -26,6 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { StockQuoteCard } from "@/components/custom/stock-quote-card";
 import { Tweet } from "@/components/custom/tweet";
 
 type GitHubAlertType = "note" | "tip" | "important" | "warning" | "caution";
@@ -115,6 +116,7 @@ export const mdxComponents: MDXComponents = {
   Icon,
   Progress,
   Stack,
+  StockQuoteCard,
   Tweet,
   div: ({ className = "", children, ...props }) => {
     if (className.includes("markdown-alert")) {
