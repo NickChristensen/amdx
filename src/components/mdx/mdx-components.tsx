@@ -113,6 +113,7 @@ export const mdxComponents: MDXComponents = {
   },
   Badge,
   BarGraph,
+  Calendar,
   Card,
   Collapsible,
   CollapsibleContent,
