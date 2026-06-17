@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
-import { Inter, Outfit } from "next/font/google";
+import { Geist_Mono, Inter, Outfit } from "next/font/google";
 import { cn } from "@/lib/utils";
 
 const outfitHeading = Outfit({
@@ -10,6 +10,10 @@ const outfitHeading = Outfit({
 });
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+});
 
 export const metadata: Metadata = {
   title: "AMDX",
@@ -50,6 +54,7 @@ export default function RootLayout({
         "min-h-screen bg-background",
         "font-sans",
         inter.variable,
+        geistMono.variable,
         outfitHeading.variable,
       )}
       suppressHydrationWarning
