@@ -95,25 +95,53 @@ body {
   @apply mb-4;
 }
 
-.mdx-document h1,
-.mdx-document h2,
-.mdx-document h3 {
+.mdx-document h1:not(
+  [data-slot="card-header"] *,
+  [data-slot="card-footer"] *,
+  [data-slot="card-action"] *
+),
+.mdx-document h2:not(
+  [data-slot="card-header"] *,
+  [data-slot="card-footer"] *,
+  [data-slot="card-action"] *
+),
+.mdx-document h3:not(
+  [data-slot="card-header"] *,
+  [data-slot="card-footer"] *,
+  [data-slot="card-action"] *
+) {
   @apply font-heading tracking-tight text-balance scroll-m-20 mt-8 first:mt-0;
 }
 
-.mdx-document h1 {
+.mdx-document h1:not(
+  [data-slot="card-header"] *,
+  [data-slot="card-footer"] *,
+  [data-slot="card-action"] *
+) {
   @apply text-4xl font-extrabold;
 }
 
-.mdx-document h2 {
+.mdx-document h2:not(
+  [data-slot="card-header"] *,
+  [data-slot="card-footer"] *,
+  [data-slot="card-action"] *
+) {
   @apply text-xl font-semibold;
 }
 
-.mdx-document h3 {
+.mdx-document h3:not(
+  [data-slot="card-header"] *,
+  [data-slot="card-footer"] *,
+  [data-slot="card-action"] *
+) {
   @apply text-lg font-semibold;
 }
 
-.mdx-document a {
+.mdx-document a:not(
+  [data-slot="card-header"] *,
+  [data-slot="card-footer"] *,
+  [data-slot="card-action"] *
+) {
   color: var(--primary);
   text-decoration: underline;
   text-underline-offset: 0.2em;
