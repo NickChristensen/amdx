@@ -15,19 +15,22 @@ export const Stack = ({
   align = "start",
   justify = "start",
   direction = "horizontal",
+  flexItems = false,
   ...props
 }: React.ComponentProps<"div"> & {
   gap?: number;
   align?: "start" | "center" | "end" | "stretch";
   justify?: "start" | "center" | "end" | "between" | "around";
   direction?: "horizontal" | "vertical";
+  flexItems?: boolean;
 }) => {
   const isHorizontal = direction === "horizontal";
 
   return (
     <div
       className={cn(
-        "flex *:flex-1",
+        "flex",
+        flexItems && "*:flex-1",
         isHorizontal ? "flex-row flex-wrap" : "flex-col",
         `gap-${gap}`,
         `items-${align}`,
