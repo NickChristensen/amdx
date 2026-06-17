@@ -28,9 +28,11 @@ import {
 } from "@/components/ui/table";
 import { Stack } from "@/components/ui/stack";
 import { BarGraph, LineGraph } from "@/components/custom/charts";
+import { Calendar } from "@/components/custom/calendar";
 import { Chat } from "@/components/custom/chat";
 import { Metric } from "@/components/custom/metric";
 import { StockQuoteCard } from "@/components/custom/stock-quote-card";
+import { TodoList } from "@/components/custom/todo-list";
 import { Tweet } from "@/components/custom/tweet";
 
 type GitHubAlertType = "note" | "tip" | "important" | "warning" | "caution";
@@ -126,6 +128,7 @@ export const mdxComponents: MDXComponents = {
   Progress,
   Stack,
   StockQuoteCard,
+  TodoList,
   Tweet,
   div: ({ className = "", children, ...props }) => {
     if (className.includes("markdown-alert")) {
@@ -142,6 +145,16 @@ export const mdxComponents: MDXComponents = {
       </div>
     );
   },
+  img: ({ className = "", alt = "", ...props }) => (
+    // Markdown images do not carry dimensions, so Next Image is not a good fit here.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      alt={alt}
+      className={`max-w-full rounded-md border ${className}`.trim()}
+      loading="lazy"
+      {...props}
+    />
+  ),
   table: Table,
   thead: TableHeader,
   tbody: TableBody,
