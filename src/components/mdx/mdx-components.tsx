@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Icon } from "@/components/ui/icon";
+import { Progress } from "@/components/ui/progress";
 import {
   Table,
   TableBody,
@@ -104,6 +105,7 @@ export const mdxComponents: MDXComponents = {
   Badge,
   Card,
   Icon,
+  Progress,
   Stack,
   div: ({ className = "", children, ...props }) => {
     if (className.includes("markdown-alert")) {
