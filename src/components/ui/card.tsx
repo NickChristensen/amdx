@@ -25,7 +25,20 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-header"
       className={cn(
-        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-(--card-spacing) has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-(--card-spacing)",
+        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-(--card-spacing) -mx-(--card-spacing) has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] has-data-[slot=card-icon]:grid-cols-[auto_1fr] has-data-[slot=card-icon]:gap-x-2 has-data-[slot=card-icon]:has-data-[slot=card-action]:grid-cols-[auto_1fr_auto] [.border-b]:pb-(--card-spacing)",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+function CardIcon({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-icon"
+      className={cn(
+        "row-span-2 translate-y-px [&_svg:not([class*='size-'])]:size-4",
         className,
       )}
       {...props}
@@ -38,7 +51,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-title"
       className={cn(
-        "font-heading text-lg leading-normal font-medium group-data-[size=sm]/card:text-base",
+        "font-heading text-lg leading-none font-medium group-has-data-[slot=card-icon]/card-header:col-start-2 group-data-[size=sm]/card:text-base",
         className,
       )}
       {...props}
@@ -50,7 +63,10 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-description"
-      className={cn("text-sm text-muted-foreground", className)}
+      className={cn(
+        "text-sm text-muted-foreground group-has-data-[slot=card-icon]/card-header:col-start-2",
+        className,
+      )}
       {...props}
     />
   );
@@ -61,7 +77,7 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-action"
       className={cn(
-        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        "col-start-2 row-span-2 row-start-1 self-start justify-self-end group-has-data-[slot=card-icon]/card-header:col-start-3",
         className,
       )}
       {...props}
@@ -95,6 +111,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
 export {
   Card,
   CardHeader,
+  CardIcon,
   CardFooter,
   CardTitle,
   CardAction,
