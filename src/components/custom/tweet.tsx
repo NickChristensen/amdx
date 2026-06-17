@@ -6,6 +6,12 @@ import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+} from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { enrichTweet, type EnrichedTweet } from "@/lib/tweet-enrich";
 import { cn } from "@/lib/utils";
@@ -45,12 +51,25 @@ export const TweetSkeleton = ({
     )}
     {...props}
   >
-    <div className="flex flex-row gap-2">
-      <Skeleton className="size-10 shrink-0 rounded-full" />
-      <Skeleton className="h-10 w-full" />
-    </div>
+    <Skeleton className="h-5 w-full" />
+    <Skeleton className="h-5 w-3/4" />
     <Skeleton className="h-48 w-full" />
   </div>
+);
+
+export const TweetSkeletonHeader = () => (
+  <CardHeader>
+    <div className="flex items-center gap-3">
+      <Skeleton className="size-10 shrink-0 rounded-full" />
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-3 w-24" />
+      </div>
+    </div>
+    <CardAction>
+      <Skeleton className="size-4" />
+    </CardAction>
+  </CardHeader>
 );
 
 export const TweetNotFound = ({
@@ -61,14 +80,26 @@ export const TweetNotFound = ({
   [key: string]: unknown;
 }) => (
   <div
-    className={cn(
-      "flex size-full flex-col items-center justify-center gap-2",
-      className,
-    )}
+    className={cn("flex size-full flex-col gap-1", className)}
     {...props}
   >
-    <h3>Tweet not found</h3>
+    <p className="text-sm font-medium">Tweet not found</p>
+    <p className="text-sm text-muted-foreground">
+      The tweet could not be loaded.
+    </p>
   </div>
+);
+
+export const TweetErrorHeader = () => (
+  <CardHeader>
+    <div className="flex items-center gap-3">
+      <Avatar size="lg" />
+      <div className="flex min-w-0 flex-col">
+        <p className="font-medium text-foreground">Tweet unavailable</p>
+        <p className="text-sm text-muted-foreground">Unable to load tweet</p>
+      </div>
+    </div>
+  </CardHeader>
 );
 
 export const TweetHeader = ({
@@ -98,7 +129,7 @@ export const TweetHeader = ({
           href={getTweetUserUrl(tweet)}
           target="_blank"
           rel="noreferrer"
-          className="text-foreground flex items-center font-medium whitespace-nowrap transition-opacity hover:opacity-80"
+          className="flex items-center whitespace-nowrap font-medium text-foreground transition-opacity hover:opacity-80"
         >
           {truncate(tweet.user.name, 20)}
         </a>
@@ -107,7 +138,7 @@ export const TweetHeader = ({
             href={getTweetUserUrl(tweet)}
             target="_blank"
             rel="noreferrer"
-            className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             @{truncate(tweet.user.screen_name, 16)}
           </a>
@@ -123,8 +154,59 @@ export const TweetHeader = ({
   </div>
 );
 
+export const TweetCardHeader = ({ tweet }: { tweet: RenderableTweet }) => (
+  <CardHeader>
+    <div className="flex items-center gap-3 tracking-normal">
+      <a
+        href={getTweetUserUrl(tweet)}
+        target="_blank"
+        rel="noreferrer"
+        className="shrink-0"
+      >
+        <Avatar size="lg">
+          <AvatarImage
+            src={tweet.user.profile_image_url_https}
+            alt={tweet.user.screen_name}
+          />
+        </Avatar>
+      </a>
+      <div className="flex min-w-0 flex-col">
+        <a
+          href={getTweetUserUrl(tweet)}
+          target="_blank"
+          rel="noreferrer"
+          className="truncate font-medium text-foreground transition-opacity hover:opacity-80"
+        >
+          {truncate(tweet.user.name, 20)}
+        </a>
+        <a
+          href={getTweetUserUrl(tweet)}
+          target="_blank"
+          rel="noreferrer"
+          className="truncate text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          @{truncate(tweet.user.screen_name, 16)}
+        </a>
+      </div>
+    </div>
+    <CardAction>
+      <a
+        href={tweet.url}
+        target="_blank"
+        rel="noreferrer"
+      >
+        <span className="sr-only">Link to tweet</span>
+        <ExternalLink
+          aria-hidden="true"
+          className="size-4 text-muted-foreground transition-all ease-in-out hover:scale-105 hover:text-foreground"
+        />
+      </a>
+    </CardAction>
+  </CardHeader>
+);
+
 export const TweetBody = ({ tweet }: { tweet: RenderableTweet }) => (
-  <div className="wrap-break-word">
+  <div className="wrap-break-word text-sm">
     {tweet.entities.map((entity, idx) => {
       switch (entity.type) {
         case "url":
@@ -204,7 +286,7 @@ export const TweetMedia = ({ tweet }: { tweet: RenderableTweet }) => {
   );
 };
 
-export const MagicTweet = ({
+export const TweetCardContent = ({
   tweet,
   className,
   ...props
@@ -214,11 +296,10 @@ export const MagicTweet = ({
 }) => {
   const enrichedTweet = enrichTweet(tweet);
   return (
-    <div
-      className={cn("relative flex w-full flex-col gap-4 py-4", className)}
+    <CardContent
+      className={cn("relative flex w-full flex-col gap-4", className)}
       {...props}
     >
-      <TweetHeader tweet={enrichedTweet} />
       <TweetBody tweet={enrichedTweet} />
       <TweetMedia tweet={enrichedTweet} />
       {enrichedTweet.quoted_tweet && (
@@ -231,7 +312,7 @@ export const MagicTweet = ({
           <TweetMedia tweet={enrichedTweet.quoted_tweet} />
         </div>
       )}
-    </div>
+    </CardContent>
   );
 };
 
@@ -280,12 +361,31 @@ export function Tweet(props: TweetProps) {
   }, [props.id]);
 
   if (result.id !== props.id) {
-    return <TweetSkeleton />;
+    return (
+      <Card>
+        <TweetSkeletonHeader />
+        <CardContent>
+          <TweetSkeleton />
+        </CardContent>
+      </Card>
+    );
   }
 
   if (!result.tweet) {
-    return <TweetNotFound />;
+    return (
+      <Card>
+        <TweetErrorHeader />
+        <CardContent>
+          <TweetNotFound />
+        </CardContent>
+      </Card>
+    );
   }
 
-  return <MagicTweet tweet={result.tweet} />;
+  return (
+    <Card>
+      <TweetCardHeader tweet={enrichTweet(result.tweet)} />
+      <TweetCardContent tweet={result.tweet} />
+    </Card>
+  );
 }
