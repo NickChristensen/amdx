@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/table";
 import { Stack } from "@/components/ui/stack";
 import { BarGraph, LineGraph } from "@/components/custom/charts";
+import { Chat } from "@/components/custom/chat";
 import { Metric } from "@/components/custom/metric";
 import { StockQuoteCard } from "@/components/custom/stock-quote-card";
 import { Tweet } from "@/components/custom/tweet";
@@ -115,6 +116,7 @@ export const mdxComponents: MDXComponents = {
   BarGraph,
   Calendar,
   Card,
+  Chat,
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
