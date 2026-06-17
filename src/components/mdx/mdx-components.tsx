@@ -26,6 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Metric } from "@/components/custom/metric";
 import { StockQuoteCard } from "@/components/custom/stock-quote-card";
 import { Tweet } from "@/components/custom/tweet";
 
@@ -114,6 +115,7 @@ export const mdxComponents: MDXComponents = {
   CollapsibleContent,
   CollapsibleTrigger,
   Icon,
+  Metric,
   Progress,
   Stack,
   StockQuoteCard,
