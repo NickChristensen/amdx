@@ -163,12 +163,10 @@ body {
   @apply text-sm p-0 bg-transparent;
 }
 
+/* top-level container-escaping components */
+.mdx-document > figure > pre,
+.mdx-document > [data-slot="alert"],
 .mdx-document > [data-slot="card"] {
-  @apply md:-mx-6;
-}
-
-.mdx-document > pre,
-.mdx-document > [data-slot="alert"] {
   @apply md:-mx-4;
 }
 
