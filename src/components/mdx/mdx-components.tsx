@@ -26,6 +26,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Stack } from "@/components/ui/stack";
+import { BarGraph, LineGraph } from "@/components/custom/charts";
 import { Metric } from "@/components/custom/metric";
 import { StockQuoteCard } from "@/components/custom/stock-quote-card";
 import { Tweet } from "@/components/custom/tweet";
@@ -110,11 +112,13 @@ export const mdxComponents: MDXComponents = {
     );
   },
   Badge,
+  BarGraph,
   Card,
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
   Icon,
+  LineGraph,
   Metric,
   Progress,
   Stack,
