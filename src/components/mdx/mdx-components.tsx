@@ -11,6 +11,11 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Icon } from "@/components/ui/icon";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -104,6 +109,9 @@ export const mdxComponents: MDXComponents = {
   },
   Badge,
   Card,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
   Icon,
   Progress,
   Stack,
