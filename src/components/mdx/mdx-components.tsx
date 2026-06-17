@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Icon } from "@/components/ui/icon";
 import {
   Table,
@@ -100,6 +101,7 @@ export const mdxComponents: MDXComponents = {
       </a>
     );
   },
+  Badge,
   Card,
   Icon,
   Stack,
