@@ -56,8 +56,11 @@ function MessageCluster({
       {!lastMessage.is_from_me && lastMessage.sender_name !== threadName && (
         <p className={metaClasses}>{lastMessage.sender_name}</p>
       )}
-      {messages.map((message) => (
-        <MessageBubble key={message.created_at} message={message} />
+      {messages.map((message, index) => (
+        <MessageBubble
+          key={`${message.created_at}-${index}`}
+          message={message}
+        />
       ))}
       <p className={metaClasses}>
         {new Date(lastMessage.created_at).toLocaleTimeString([], {
