@@ -1,4 +1,5 @@
 import { Clock, MapPin } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   compareCalendarStarts,
   formatCalendarDayHeading,
@@ -189,13 +190,17 @@ export function Calendar(props: CalendarProps) {
   const showDayHeadings = dayGroups.length > 1;
 
   return (
-    <div className="flex flex-col gap-4">
-      {dayGroups.map(([day, events]) => (
-        <div key={day} className="flex flex-col gap-2">
-          {showDayHeadings ? <DateHeading date={events[0]?.start ?? day} /> : null}
-          <CalendarDay events={events} />
-        </div>
-      ))}
-    </div>
+    <Card>
+      <CardContent className="flex flex-col gap-4">
+        {dayGroups.map(([day, events]) => (
+          <div key={day} className="flex flex-col gap-2">
+            {showDayHeadings ? (
+              <DateHeading date={events[0]?.start ?? day} />
+            ) : null}
+            <CalendarDay events={events} />
+          </div>
+        ))}
+      </CardContent>
+    </Card>
   );
 }
