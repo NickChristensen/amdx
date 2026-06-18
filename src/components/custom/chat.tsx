@@ -1,3 +1,11 @@
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+} from "@/components/ui/card";
+import { MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type ChatMessage = {
@@ -108,17 +116,22 @@ export function Chat(props: ChatProps) {
     ).join(", ");
 
   return (
-    <div className="flex flex-col gap-3">
-      <h3 className="text-base font-semibold text-center">
-        {displayThreadName}
-      </h3>
-      {messagesGroupedByAdjacentSender.map((group) => (
-        <MessageCluster
-          key={group[0].created_at}
-          messages={group}
-          threadName={props.thread.name}
-        />
-      ))}
-    </div>
+    <Card>
+      <CardHeader>
+        <CardIcon>
+          <MessageCircle aria-hidden="true" />
+        </CardIcon>
+        <CardTitle>{displayThreadName}</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
+        {messagesGroupedByAdjacentSender.map((group) => (
+          <MessageCluster
+            key={group[0].created_at}
+            messages={group}
+            threadName={props.thread.name}
+          />
+        ))}
+      </CardContent>
+    </Card>
   );
 }
