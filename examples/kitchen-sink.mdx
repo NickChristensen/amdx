@@ -1,0 +1,233 @@
+# Kitchen sink
+
+This document exercises the full curated MDX catalog along with the Markdown elements that AMDX overrides. It includes **bold text**, *italic text*, ***bold italic text***, ~~strikethrough~~, ==highlighted text==, `inline code`, <kbd>Cmd</kbd> + <kbd>K</kbd>, and a [local route](/) beside an [external link](https://nextjs.org).
+
+Inline badges work in ordinary prose: <Badge>Default</Badge>, <Badge variant="secondary">Secondary</Badge>, <Badge variant="outline">Outline</Badge>, and <Badge variant="destructive">Attention</Badge>.
+
+> A blockquote can hold a short observation, a [link](https://github.com), and `code`.
+
+---
+
+## Typography and Markdown
+
+### Lists
+
+- A simple unordered item
+  - A nested item
+  - Another nested item
+- A second item with [an external reference](https://developer.mozilla.org)
+
+1. First ordered step
+2. Second ordered step
+3. Third ordered step
+
+- [x] Completed task
+- [ ] Pending task
+
+### Code
+
+```tsx
+function greet(name: string) {
+  return `Hello, ${name}.`;
+}
+```
+
+| Capability | Status | Detail |
+| --- | :---: | ---: |
+| Markdown | Ready | GFM, highlights, and syntax highlighting |
+| Components | Ready | Curated capitalized catalog |
+| Routes | Local | Extensionless MDX paths |
+
+![A blue and purple abstract gradient](https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1200&q=80)
+
+## GitHub alerts
+
+> [!NOTE]
+> This is a note alert rendered through the Markdown `div` override.
+
+> [!TIP]
+> Use normal MDX block spacing around Markdown inside JSX children.
+
+> [!IMPORTANT]
+> Keep reports self-contained: imports are unavailable in agent-authored documents.
+
+> [!WARNING]
+> The contents are trusted local MDX and execute at render time.
+
+> [!CAUTION]
+> Avoid placing secrets in reports that may be shared over a local network.
+
+## Building blocks
+
+<Stack direction="horizontal" gap={3} align="center" justify="between">
+  <div>
+    <Icon name="sparkles" color="primary" size={20} /> A row of flexible content
+  </div>
+  <Badge variant="secondary">Secondary badge</Badge>
+  <Badge variant="outline">Outline badge</Badge>
+  <Badge variant="destructive">Attention</Badge>
+</Stack>
+
+<Card size="sm">
+
+### Card content
+
+Cards accept ordinary Markdown children. This one has **emphasis**, ==a highlight==, and a [route link](/kitchen-sink).
+
+</Card>
+
+Release readiness: 72%
+
+<Progress value={72} aria-label="Release readiness: 72 percent" />
+
+<Collapsible defaultOpen>
+  <CollapsibleTrigger>Expandable details</CollapsibleTrigger>
+  <CollapsibleContent>
+    This content starts open. The trigger remains interactive after the document has rendered.
+  </CollapsibleContent>
+</Collapsible>
+
+## Custom components
+
+### Metrics
+
+<Stack direction="horizontal" gap={6} flexItems>
+  <Metric label="Monthly revenue" prefix="$" value="84,260" change="+12.4%" changeType="positive" />
+  <Metric label="Open issues" value="17" change="-5" changeType="negative" />
+  <Metric label="Uptime" value="99.98" suffix="%" change="steady" changeType="neutral" />
+</Stack>
+
+### Charts
+
+<BarGraph
+  title="Tickets closed"
+  data={[
+    { label: "Mon", value: 18 },
+    { label: "Tue", value: 24 },
+    { label: "Wed", value: 16 },
+    { label: "Thu", value: 31 },
+    { label: "Fri", value: 27 },
+  ]}
+  annotation={{ value: 25, label: "Target" }}
+/>
+
+<LineGraph
+  title="Daily active readers"
+  data={[
+    { label: "Mon", value: 142 },
+    { label: "Tue", value: 156 },
+    { label: "Wed", value: 151 },
+    { label: "Thu", value: 173 },
+    { label: "Fri", value: 188 },
+  ]}
+  annotation={{ value: 175, label: "Goal" }}
+/>
+
+### Calendar
+
+<Calendar
+  events={[
+    {
+      summary: "Team planning",
+      start: "2026-08-05T09:00:00-05:00",
+      end: "2026-08-05T10:00:00-05:00",
+      location: "Studio",
+      backgroundColor: "#6366f1",
+    },
+    {
+      summary: "Focus block",
+      start: "2026-08-05T11:30:00-05:00",
+      end: "2026-08-05T13:00:00-05:00",
+      backgroundColor: "#10b981",
+    },
+    {
+      summary: "Product review",
+      start: "2026-08-06T14:00:00-05:00",
+      end: "2026-08-06T15:00:00-05:00",
+      location: "Video call",
+      backgroundColor: "#f59e0b",
+    },
+  ]}
+/>
+
+### Chat
+
+<Chat
+  thread={{
+    chat_id: 42,
+    name: "Launch team",
+    identifier: "launch-team",
+    messages: [
+      {
+        text: "The kitchen-sink report is ready for review.",
+        created_at: "2026-08-05T09:12:00-05:00",
+        sender: "maya",
+        sender_name: "Maya",
+        is_from_me: false,
+      },
+      {
+        text: "I am checking the component coverage now.",
+        created_at: "2026-08-05T09:13:00-05:00",
+        sender: "louie",
+        sender_name: "Louie",
+        is_from_me: true,
+      },
+      {
+        text: "Charts, calendar, and tasks are all included.",
+        created_at: "2026-08-05T09:14:00-05:00",
+        sender: "louie",
+        sender_name: "Louie",
+        is_from_me: true,
+      },
+    ],
+  }}
+/>
+
+### Tasks
+
+<TodoList
+  items={[
+    {
+      uuid: "task-brief",
+      title: "Draft the launch brief",
+      project: "AMDX",
+      tags: ["writing", "today"],
+      hasNotes: true,
+      highlighted: true,
+    },
+    {
+      uuid: "task-review",
+      title: "Review the generated report",
+      area: "Operations",
+      tags: ["review"],
+      carriedOver: 1,
+    },
+    {
+      uuid: "task-share",
+      title: "Share the local link with the team",
+      project: "AMDX",
+    },
+  ]}
+/>
+
+### Stock quotes
+
+The local quote provider is unavailable, so this shows the component's empty state without making a failing request.
+
+<StockQuoteCard symbols={[]} />
+
+### Tweet
+
+<Tweet id="1920343354073846004" />
+
+## Closing sample
+
+<Card>
+
+### Report handoff
+
+Use this file as a visual reference for agent-authored reports. It combines paragraph text, links, images, alerts, tables, code, checklists, and every component available to MDX.
+
+<Badge variant="link">[Open the index](/)</Badge>
+
+</Card>

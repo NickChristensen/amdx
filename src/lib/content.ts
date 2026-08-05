@@ -63,11 +63,17 @@ export async function listMdxRoutes() {
           return;
         }
 
-        if (!entry.isFile() || !entry.name.endsWith(".mdx")) {
+        if (
+          (!entry.isFile() && !entry.isSymbolicLink()) ||
+          !entry.name.endsWith(".mdx")
+        ) {
           return;
         }
 
         const stats = await fs.stat(entryPath);
+        if (!stats.isFile()) {
+          return;
+        }
         const basename = entry.name.slice(0, -".mdx".length);
         const segments =
           basename === "index" && prefix.length > 0
