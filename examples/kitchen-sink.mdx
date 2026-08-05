@@ -1,8 +1,10 @@
 # Kitchen sink
 
-This document exercises the full curated MDX catalog along with the Markdown elements that AMDX overrides. It includes **bold text**, *italic text*, ***bold italic text***, ~~strikethrough~~, ==highlighted text==, `inline code`, <kbd>Cmd</kbd> + <kbd>K</kbd>, and a [local route](/) beside an [external link](https://nextjs.org).
+This document exercises the full curated MDX catalog along with the Markdown elements that AMDX overrides. It includes **bold text**, _italic text_, **_bold italic text_**, ~~strikethrough~~, ==highlighted text==, `inline code`, <kbd>Cmd</kbd> + <kbd>K</kbd>, and a [local route](/) beside an [external link](https://nextjs.org).
 
-Inline badges work in ordinary prose: <Badge>Default</Badge>, <Badge variant="secondary">Secondary</Badge>, <Badge variant="outline">Outline</Badge>, and <Badge variant="destructive">Attention</Badge>.
+Capital letters A<Badge>Default</Badge>B C<Badge variant="secondary">Secondary</Badge>D E<Badge variant="outline">Outline</Badge>F G<Badge variant="destructive">Attention</Badge>H
+
+Lowercase letters a<Badge>Default</Badge>b c<Badge variant="secondary">Secondary</Badge>d e<Badge variant="outline">Outline</Badge>f g<Badge variant="destructive">Attention</Badge>h
 
 > A blockquote can hold a short observation, a [link](https://github.com), and `code`.
 
@@ -24,6 +26,12 @@ Inline badges work in ordinary prose: <Badge>Default</Badge>, <Badge variant="se
 - [x] Completed task
 - [ ] Pending task
 
+- A regular bullet for comparison
+- Another regular bullet for comparison
+- [x] A completed task in the same list
+- Another regular bullet
+- [ ] An open task in the same list
+
 ### Code
 
 ```tsx
@@ -32,11 +40,11 @@ function greet(name: string) {
 }
 ```
 
-| Capability | Status | Detail |
-| --- | :---: | ---: |
-| Markdown | Ready | GFM, highlights, and syntax highlighting |
-| Components | Ready | Curated capitalized catalog |
-| Routes | Local | Extensionless MDX paths |
+| Capability | Status |                                   Detail |
+| ---------- | :----: | ---------------------------------------: |
+| Markdown   | Ready  | GFM, highlights, and syntax highlighting |
+| Components | Ready  |              Curated capitalized catalog |
+| Routes     | Local  |                  Extensionless MDX paths |
 
 ![A blue and purple abstract gradient](https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1200&q=80)
 
@@ -83,7 +91,8 @@ Release readiness: 72%
 <Collapsible defaultOpen>
   <CollapsibleTrigger>Expandable details</CollapsibleTrigger>
   <CollapsibleContent>
-    This content starts open. The trigger remains interactive after the document has rendered.
+    This content starts open. The trigger remains interactive after the document
+    has rendered.
   </CollapsibleContent>
 </Collapsible>
 
@@ -92,9 +101,21 @@ Release readiness: 72%
 ### Metrics
 
 <Stack direction="horizontal" gap={6} flexItems>
-  <Metric label="Monthly revenue" prefix="$" value="84,260" change="+12.4%" changeType="positive" />
+  <Metric
+    label="Monthly revenue"
+    prefix="$"
+    value="84,260"
+    change="+12.4%"
+    changeType="positive"
+  />
   <Metric label="Open issues" value="17" change="-5" changeType="negative" />
-  <Metric label="Uptime" value="99.98" suffix="%" change="steady" changeType="neutral" />
+  <Metric
+    label="Uptime"
+    value="99.98"
+    suffix="%"
+    change="steady"
+    changeType="neutral"
+  />
 </Stack>
 
 ### Charts
