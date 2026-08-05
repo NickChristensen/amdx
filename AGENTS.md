@@ -3,6 +3,18 @@
 This project is AMDX: a local Next.js app that lazily renders agent-written
 `.mdx` reports from `~/.openclaw/media/mdx`.
 
+## Purpose and Workflow
+
+AMDX is the visual handoff surface for OpenClaw agents. When an agent needs to
+communicate something richer than a Telegram message can carry, such as a
+visual explainer, plan, briefing, or review, it writes an `.mdx` file under
+`~/.openclaw/media/mdx`. This app renders that file as a local web page, served
+over Tailscale, so the agent can send the user a link to the rendered report.
+
+Optimize changes for this workflow: fast lazy rendering of trusted local MDX,
+clear route-to-file mapping, polished reading and visual presentation, and a
+small curated component catalog that agents can reliably write against.
+
 ## Commands
 
 - `npm run dev` starts the local dev server. Port `3000` may already be in use;
@@ -62,15 +74,9 @@ Capitalized entries are the curated agent catalog. Do not add arbitrary app
 components there casually. Lowercase element overrides do not make the
 underlying shadcn component names globally available to MDX.
 
-Current agent-facing component:
-
-- `Card`
-
-Current element overrides:
-
-- `a`: internal links use Next `Link`; external links open with
-  `target="_blank"` and `rel="noreferrer"`.
-- Table tags render through generated shadcn table primitives.
+For the current agent-facing component catalog and element overrides, read
+`src/components/mdx/mdx-components.tsx`. Treat that file as the source of truth
+instead of duplicating the list here.
 
 Markdown inside JSX children is supported when written with normal MDX block
 spacing, for example:
