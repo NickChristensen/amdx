@@ -69,7 +69,10 @@ export async function listMdxRoutes() {
 
         const stats = await fs.stat(entryPath);
         const basename = entry.name.slice(0, -".mdx".length);
-        const segments = basename === "index" ? prefix : [...prefix, basename];
+        const segments =
+          basename === "index" && prefix.length > 0
+            ? prefix
+            : [...prefix, basename];
         const href = "/" + segments.map(encodeURIComponent).join("/");
 
         routes.push({
