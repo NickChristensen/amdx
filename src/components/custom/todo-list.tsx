@@ -20,7 +20,7 @@ export type TodoListProps = {
   }>;
 };
 
-export function TodoList(props: TodoListProps) {
+export function TodoListCard(props: TodoListProps) {
   const dimmedIconClasses = "opacity-30 shrink-0";
 
   return (

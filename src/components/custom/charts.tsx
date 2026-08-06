@@ -173,7 +173,7 @@ function ChartValueTooltipContent(
   );
 }
 
-export function BarGraph(props: ChartProps) {
+export function BarGraphCard(props: ChartProps) {
   const data = props.data ?? [];
 
   return (
@@ -206,7 +206,7 @@ export function BarGraph(props: ChartProps) {
   );
 }
 
-export function LineGraph(props: ChartProps) {
+export function LineGraphCard(props: ChartProps) {
   const gradientId = useId().replace(/:/g, "");
   const data = props.data ?? [];
 

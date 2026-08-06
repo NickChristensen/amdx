@@ -170,7 +170,7 @@ function DateHeading({ date }: { date: string }) {
   );
 }
 
-export function Calendar(props: CalendarProps) {
+export function CalendarCard(props: CalendarProps) {
   const eventsByDay = new Map<string, CalendarDayEvent[]>();
 
   for (const event of props.events) {

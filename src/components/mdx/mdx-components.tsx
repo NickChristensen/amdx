@@ -27,13 +27,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Stack } from "@/components/ui/stack";
-import { BarGraph, LineGraph } from "@/components/custom/charts";
-import { Calendar } from "@/components/custom/calendar";
-import { Chat } from "@/components/custom/chat";
+import { BarGraphCard, LineGraphCard } from "@/components/custom/charts";
+import { CalendarCard } from "@/components/custom/calendar";
+import { ChatCard } from "@/components/custom/chat";
 import { Metric } from "@/components/custom/metric";
 import { StockQuoteCard } from "@/components/custom/stock-quote-card";
-import { TodoList } from "@/components/custom/todo-list";
-import { Tweet } from "@/components/custom/tweet";
+import { TodoListCard } from "@/components/custom/todo-list";
+import { TweetCard } from "@/components/custom/tweet";
 
 type GitHubAlertType = "note" | "tip" | "important" | "warning" | "caution";
 
@@ -115,21 +115,21 @@ export const mdxComponents: MDXComponents = {
     );
   },
   Badge,
-  BarGraph,
-  Calendar,
+  BarGraphCard,
+  CalendarCard,
   Card,
-  Chat,
+  ChatCard,
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
   Icon,
-  LineGraph,
+  LineGraphCard,
   Metric,
   Progress,
   Stack,
   StockQuoteCard,
-  TodoList,
-  Tweet,
+  TodoListCard,
+  TweetCard,
   div: ({ className = "", children, ...props }) => {
     if (className.includes("markdown-alert")) {
       return (

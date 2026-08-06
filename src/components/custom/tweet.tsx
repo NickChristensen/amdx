@@ -316,7 +316,7 @@ export const TweetCardContent = ({
   );
 };
 
-export function Tweet(props: TweetProps) {
+export function TweetCard(props: TweetProps) {
   const [result, setResult] = useState<{
     id: string | null;
     tweet: ReactTweet | null;

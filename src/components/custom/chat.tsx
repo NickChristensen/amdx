@@ -80,7 +80,7 @@ function MessageCluster({
   );
 }
 
-export function Chat(props: ChatProps) {
+export function ChatCard(props: ChatProps) {
   const messages = [...props.thread.messages].sort(
     (a, b) =>
       new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
