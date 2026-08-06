@@ -18,6 +18,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
+import { Card } from "@/components/ui/card";
 
 export type ChartProps = {
   title?: string;
@@ -176,7 +177,7 @@ export function BarGraph(props: ChartProps) {
   const data = props.data ?? [];
 
   return (
-    <div className="min-w-0 space-y-3">
+    <Card className="min-w-0 gap-3">
       <ChartTitle title={props.title} />
       <ChartContainer className="aspect-auto h-56 w-full" config={chartConfig}>
         <BarChart
@@ -201,7 +202,7 @@ export function BarGraph(props: ChartProps) {
           />
         </BarChart>
       </ChartContainer>
-    </div>
+    </Card>
   );
 }
 
@@ -210,7 +211,7 @@ export function LineGraph(props: ChartProps) {
   const data = props.data ?? [];
 
   return (
-    <div className="min-w-0 space-y-3">
+    <Card className="min-w-0 gap-3">
       <ChartTitle title={props.title} />
       <ChartContainer className="aspect-auto h-56 w-full" config={chartConfig}>
         <AreaChart
@@ -254,6 +255,6 @@ export function LineGraph(props: ChartProps) {
           />
         </AreaChart>
       </ChartContainer>
-    </div>
+    </Card>
   );
 }
