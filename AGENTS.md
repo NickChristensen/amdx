@@ -17,6 +17,7 @@ small curated component catalog that agents can reliably write against.
 
 ## Commands
 
+- The user accesses this machine over Tailscale. Present user-facing app links with the hostname `macmini.pony-rattlesnake.ts.net` instead of `localhost`, preserving the active protocol, port, and path, for example `http://macmini.pony-rattlesnake.ts.net:3000/kitchen-sink`.
 - `npm run dev` starts the local dev server. Port `3000` may already be in use;
   Next will choose another port, commonly `3002`.
 - `npm run lint` must pass after source changes.
