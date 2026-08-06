@@ -160,23 +160,35 @@ body {
 
 .mdx-document ul,
 .mdx-document ol {
-  @apply list-inside pl-4;
+  @apply list-outside pl-5;
 }
 
 .mdx-document ul {
   @apply list-disc;
 }
 
+.mdx-document ul ul {
+  @apply list-[circle];
+}
+
+.mdx-document ul ul ul {
+  @apply list-[square];
+}
+
 .mdx-document ol {
   @apply list-decimal;
 }
 
-.mdx-document blockquote {
-  @apply border-l-4 border-primary pl-3 text-muted-foreground;
+.mdx-document li.task-list-item {
+  @apply list-none;
 }
 
-.mdx-document input[type="checkbox"] {
-  @apply h-4 w-4;
+.mdx-document .task-list-item input[type="checkbox"] {
+  @apply align-middle -ml-5 mr-1;
+}
+
+.mdx-document blockquote {
+  @apply border-l-4 border-primary pl-3 text-muted-foreground;
 }
 
 .mdx-document code {
