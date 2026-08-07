@@ -1,32 +1,24 @@
 "use client";
 
 import * as React from "react";
-import WheelGesturesPlugin from "embla-carousel-wheel-gestures";
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  GalleryHorizontal,
-  Rows3,
-} from "lucide-react";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Area, AreaChart, ReferenceLine, XAxis, YAxis } from "recharts";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { CardFooter } from "@/components/ui/card";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   MARKET_CLOSE_MINUTE,
   MARKET_OPEN_MINUTE,
@@ -36,6 +28,12 @@ import { cn } from "@/lib/utils";
 
 type StockQuoteCardProps = {
   symbols: string[];
+};
+
+type StockQuoteListProps = {
+  loading?: boolean;
+  quotes: StockQuoteResults;
+  symbols?: string[];
 };
 
 const priceFormatter = new Intl.NumberFormat("en-US", {
@@ -221,6 +219,9 @@ function StockQuotePriceChart({
   showTooltip?: boolean;
 }) {
   const gradientId = React.useId().replace(/:/g, "");
+  const [isAreaAnimationActive, setIsAreaAnimationActive] = useState<
+    "auto" | false
+  >("auto");
   const containerClasses = cn("aspect-auto w-full", className);
 
   if (!quote) {
@@ -306,6 +307,8 @@ function StockQuotePriceChart({
           />
         )}
         <Area
+          isAnimationActive={isAreaAnimationActive}
+          onAnimationEnd={() => setIsAreaAnimationActive(false)}
           dataKey="price"
           fill={`url(#${gradientId})`}
           stroke="var(--color-price)"
@@ -335,7 +338,7 @@ function StockQuoteFooter({
   }
 
   return (
-    <CardFooter className="p-0">
+    <div>
       <div className="flex w-full border-t border-border/75 divide-x divide-border/75">
         {comparisonStats.map(([key, comparison]) => (
           <div
@@ -369,7 +372,7 @@ function StockQuoteFooter({
           </div>
         ))}
       </div>
-    </CardFooter>
+    </div>
   );
 }
 
@@ -427,71 +430,18 @@ function StockQuoteChangeBadge({
   );
 }
 
-function StockQuoteListCard({
-  loading = false,
-  quote,
-  className,
-  symbol,
-}: {
-  loading?: boolean;
-  quote?: StockQuoteData | null;
-  className?: string;
-  symbol?: string;
-}) {
-  if (!loading && quote === null) {
-    return (
-      <Card className={cn("gap-0 p-0", className)}>
-        <CardContent className="flex items-start justify-between gap-3 px-4 py-4">
-          <StockQuoteSymbol symbol={symbol ?? "..."} />
-          <p className="text-sm text-muted-foreground">Quote unavailable.</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const selectedComparison = quote
-    ? quote.comparisons[quote.series.range]
-    : null;
-  const isPositive = (selectedComparison?.change ?? 0) >= 0;
-  const hasChart = loading || hasStockQuoteChart(quote);
-
-  return (
-    <Card className={cn("gap-0 p-0", className)}>
-      {hasChart ? (
-        <CardContent className="relative p-0">
-          <StockQuotePriceChart quote={quote} className="h-44" />
-          <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between px-4 pt-4">
-            <StockQuoteSymbol symbol={quote?.symbol ?? symbol ?? "..."} />
-            <StockQuoteChangeBadge
-              changePercent={selectedComparison?.changePercent}
-              isPositive={isPositive}
-              loading={loading}
-            />
-          </div>
-        </CardContent>
-      ) : (
-        <CardContent className="flex items-start justify-between px-4 py-4">
-          <StockQuoteSymbol symbol={quote?.symbol ?? symbol ?? "..."} />
-          <StockQuoteChangeBadge
-            changePercent={selectedComparison?.changePercent}
-            isPositive={isPositive}
-            loading={loading}
-          />
-        </CardContent>
-      )}
-      <StockQuoteFooter loading={loading} quote={quote} />
-    </Card>
-  );
-}
-
-function StockQuoteCompactRow({
+function StockQuoteAccordionRow({
   loading = false,
   quote,
   symbol,
+  open,
+  onOpenChange,
 }: {
   loading?: boolean;
   quote?: StockQuoteData | null;
   symbol?: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }) {
   if (!loading && quote === null) {
     return (
@@ -509,117 +459,69 @@ function StockQuoteCompactRow({
   const hasChart = loading || hasStockQuoteChart(quote);
 
   return (
-    <div className="flex gap-3 p-3">
-      <div
-        className={cn(
-          "flex gap-2 justify-between",
-          hasChart ? "flex-col items-start" : "flex-row items-center grow",
-        )}
-      >
-        <StockQuoteSymbol symbol={quote?.symbol ?? symbol ?? "..."} />
-        <StockQuoteChangeBadge
-          changePercent={selectedComparison?.changePercent}
-          isPositive={isPositive}
-          loading={loading}
-          showIcon={false}
-        />
-      </div>
-
-      {loading ? (
-        <Skeleton className="grow" />
-      ) : (
-        hasChart && (
-          <StockQuotePriceChart quote={quote} showTooltip={false} />
-        )
-      )}
-    </div>
-  );
-}
-
-function StockQuoteCompactList({
-  loading = false,
-  quotes,
-  symbols = [],
-}: {
-  loading?: boolean;
-  quotes: StockQuoteResults;
-  symbols?: string[];
-}) {
-  const rows = symbols;
-
-  return (
-    <Card className="self-stretch overflow-hidden py-0">
-      <CardContent className="divide-y p-0">
-        {rows.map((symbol) => (
-          <StockQuoteCompactRow
-            key={symbol}
-            loading={loading}
-            quote={quotes[symbol] ?? null}
-            symbol={symbol}
-          />
-        ))}
-      </CardContent>
-    </Card>
+    <Collapsible open={open} onOpenChange={onOpenChange}>
+      <CollapsibleTrigger asChild>
+        <button
+          type="button"
+          className="grid w-full grid-cols-[auto_minmax(0,1fr)] items-start gap-x-3 px-3 py-3 text-left outline-none transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+        >
+          <div className="flex flex-col items-start gap-2">
+            <StockQuoteSymbol symbol={quote?.symbol ?? symbol ?? "..."} />
+            <StockQuoteChangeBadge
+              changePercent={selectedComparison?.changePercent}
+              isPositive={isPositive}
+              loading={loading}
+              showIcon={false}
+            />
+          </div>
+          {loading ? (
+            <Skeleton
+              className={cn(
+                "w-full transition-[height] duration-[var(--collapsible-duration)] ease-[var(--ease-out)] motion-reduce:transition-none",
+                open ? "h-44" : "h-14",
+              )}
+            />
+          ) : hasChart ? (
+            <StockQuotePriceChart
+              quote={quote}
+              className={cn(
+                "transition-[height] duration-[var(--collapsible-duration)] ease-[var(--ease-out)] motion-reduce:transition-none",
+                open ? "h-44" : "h-14",
+              )}
+              showTooltip={open}
+            />
+          ) : null}
+        </button>
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <StockQuoteFooter loading={loading} quote={quote} />
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
 
 function StockQuoteList({
   loading = false,
   quotes,
-  className,
   symbols = [],
-}: {
-  loading?: boolean;
-  quotes: StockQuoteResults;
-  className?: string;
-  symbols?: string[];
-}) {
-  const widthConstraints = "min-w-55 max-w-80";
-  const items = symbols;
-  const wheelGestures = React.useMemo(
-    () => [WheelGesturesPlugin({ forceWheelAxis: "x" })],
-    [],
-  );
-
-  if (items.length === 1) {
-    return (
-      <StockQuoteListCard
-        className={cn("self-stretch", widthConstraints, className)}
-        loading={loading}
-        quote={quotes[items[0]] ?? null}
-        symbol={items[0]}
-      />
-    );
-  }
+}: StockQuoteListProps) {
+  const [openSymbol, setOpenSymbol] = useState<string | null>(null);
 
   return (
-    <Carousel
-      opts={{
-        align: "center",
-        skipSnaps: true,
-        loop: true,
-        slidesToScroll: "auto",
-      }}
-      plugins={wheelGestures}
-      className={cn("relative self-stretch -mx-4", className)}
-    >
-      <CarouselContent className="ml-0 py-2">
-        {items.map((symbol) => (
-          <CarouselItem
+    <Card className="self-stretch overflow-hidden py-0">
+      <CardContent className="divide-y p-0">
+        {symbols.map((symbol) => (
+          <StockQuoteAccordionRow
             key={symbol}
-            className={cn("basis-65 px-2 grow", widthConstraints)}
-          >
-            <StockQuoteListCard
-              loading={loading}
-              quote={quotes[symbol] ?? null}
-              symbol={symbol}
-            />
-          </CarouselItem>
+            loading={loading}
+            quote={quotes[symbol] ?? null}
+            symbol={symbol}
+            open={openSymbol === symbol}
+            onOpenChange={(open) => setOpenSymbol(open ? symbol : null)}
+          />
         ))}
-      </CarouselContent>
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-4 bg-linear-to-r from-page-background to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-4 bg-linear-to-l from-page-background to-transparent" />
-    </Carousel>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -637,52 +539,10 @@ function StockQuoteUnavailable({
   );
 }
 
-function StockQuoteViewToggle({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-}) {
-  const itemClassName =
-    "bg-background data-[state=on]:bg-background hover:bg-background text-muted-foreground data-[state=on]:text-foreground";
-  return (
-    <div className="flex justify-end">
-      <ToggleGroup
-        type="single"
-        value={value}
-        onValueChange={(val) => !!val && onChange(val)}
-        variant="outline"
-        size="sm"
-        className="shadow-xs"
-        aria-label="Stock quote view"
-      >
-        <ToggleGroupItem
-          value="carousel"
-          aria-label="Carousel view"
-          className={itemClassName}
-        >
-          <GalleryHorizontal />
-        </ToggleGroupItem>
-        <ToggleGroupItem
-          value="compact"
-          aria-label="List view"
-          className={itemClassName}
-        >
-          <Rows3 />
-        </ToggleGroupItem>
-      </ToggleGroup>
-    </div>
-  );
-}
 
-export function StockQuoteCard(props: StockQuoteCardProps) {
-  const symbols = useMemo(
-    () => normalizeSymbols(props.symbols),
-    [props.symbols],
-  );
+function useStockQuotes(rawSymbols: string[]) {
+  const symbols = useMemo(() => normalizeSymbols(rawSymbols), [rawSymbols]);
   const symbolKey = symbols.join(",");
-  const [view, setView] = useState("carousel");
   const [result, setResult] = useState<{
     symbolKey: string | null;
     quotes: StockQuoteResults | null;
@@ -690,7 +550,6 @@ export function StockQuoteCard(props: StockQuoteCardProps) {
     symbolKey: null,
     quotes: null,
   });
-  const Component = view === "compact" ? StockQuoteCompactList : StockQuoteList;
 
   useEffect(() => {
     let isActive = true;
@@ -736,15 +595,20 @@ export function StockQuoteCard(props: StockQuoteCardProps) {
   const isLoading = !!symbolKey && result.symbolKey !== symbolKey;
   const noResults = result.quotes === null;
 
+  return { isLoading, noResults, quotes: result.quotes ?? {}, symbols };
+}
+
+export function StockQuoteCard({ symbols: rawSymbols }: StockQuoteCardProps) {
+  const { isLoading, noResults, quotes, symbols } = useStockQuotes(rawSymbols);
+
   return (
-    <div className="flex self-stretch flex-col gap-2">
-      <StockQuoteViewToggle value={view} onChange={setView} />
+    <div className="flex self-stretch flex-col">
       {!isLoading && noResults ? (
         <StockQuoteUnavailable />
       ) : (
-        <Component
+        <StockQuoteList
           loading={isLoading}
-          quotes={result.quotes ?? {}}
+          quotes={quotes}
           symbols={symbols}
         />
       )}
