@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { AnimationDurationTuner } from "@/components/dev/animation-duration-tuner";
+import { KnobsPanel } from "@/components/dev/knobs-panel";
 import { MdxRenderer } from "@/components/mdx/mdx-renderer";
 import { readMdxFile } from "@/lib/content";
 
@@ -30,7 +30,7 @@ export default async function Page({
         <MdxRenderer source={source} />
       </article>
       {slug.length === 1 && slug[0] === "kitchen-sink" ? (
-        <AnimationDurationTuner />
+        <KnobsPanel />
       ) : null}
     </main>
   );

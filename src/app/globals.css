@@ -109,6 +109,11 @@
   --foreground: oklch(0.141 0.005 285.823);
 }
 
+:root[data-debug-transitions="slow"] {
+  --default-transition-duration: 1500ms;
+  --collapsible-duration: 2s;
+}
+
 body {
   margin: 0;
 }
