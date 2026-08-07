@@ -2,6 +2,30 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+@keyframes amdx-collapsible-down {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+
+  to {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+}
+
+@keyframes amdx-collapsible-up {
+  from {
+    height: var(--radix-collapsible-content-height);
+    opacity: 1;
+  }
+
+  to {
+    height: 0;
+    opacity: 0;
+  }
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -49,6 +73,8 @@
 }
 
 :root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --collapsible-duration: 200ms;
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
