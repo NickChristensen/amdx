@@ -19,10 +19,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  MARKET_CLOSE_MINUTE,
-  MARKET_OPEN_MINUTE,
-} from "@/lib/datetime";
+import { MARKET_CLOSE_MINUTE, MARKET_OPEN_MINUTE } from "@/lib/datetime";
 import type { StockQuoteData, StockQuoteResults } from "@/lib/stock-quotes";
 import { cn } from "@/lib/utils";
 
@@ -339,17 +336,17 @@ function StockQuoteFooter({
 
   return (
     <div>
-      <div className="flex w-full border-t border-border/75 divide-x divide-border/75">
+      <div className="flex w-full border-t border-border/50 divide-x divide-border/50">
         {comparisonStats.map(([key, comparison]) => (
           <div
             key={key}
             className="flex min-w-0 flex-1 flex-col items-center gap-0.5 py-3"
           >
-            <p className="text-2xs font-medium text-muted-foreground uppercase">
+            <p className="text-xs font-medium text-muted-foreground uppercase">
               {key}
             </p>
             {loading ? (
-              <Skeleton className="h-4 w-16 rounded-sm" />
+              <Skeleton className="h-4 w-12 rounded-sm" />
             ) : !comparison ? (
               <span className="text-xs font-semibold text-muted-foreground">
                 —
@@ -378,11 +375,9 @@ function StockQuoteFooter({
 
 function StockQuoteSymbol({ symbol }: { symbol: string }) {
   return (
-    <div className="-mx-2 -my-1 rounded-sm bg-card/75 px-2 py-1">
-      <p className="font-heading text-xl leading-none font-semibold tracking-tight">
-        {symbol}
-      </p>
-    </div>
+    <p className="font-heading leading-none font-semibold tracking-tight">
+      {symbol}
+    </p>
   );
 }
 
@@ -408,7 +403,7 @@ function StockQuoteChangeBadge({
       : ArrowDownRight;
   if (!loading && changePercent === undefined) {
     return (
-      <Badge className="justify-center rounded-sm bg-muted px-1 text-sm font-semibold text-muted-foreground">
+      <Badge className="justify-center rounded-sm bg-muted px-1 text-xs font-semibold text-muted-foreground">
         —
       </Badge>
     );
@@ -416,7 +411,7 @@ function StockQuoteChangeBadge({
   return (
     <Badge
       className={cn(
-        "justify-center gap-0.5 rounded-sm px-1 text-sm font-semibold text-background",
+        "justify-center gap-1 rounded-sm px-1 text-xs font-semibold text-background",
         isPositive
           ? "bg-emerald-600 dark:bg-emerald-500"
           : "bg-red-600 dark:bg-red-500",
@@ -424,7 +419,9 @@ function StockQuoteChangeBadge({
           "bg-foreground/50 dark:bg-foreground/50 animate-pulse text-transparent",
       )}
     >
-      {showIcon && <TrendIcon className="size-[1.25em]!" />}
+      {showIcon && (
+        <TrendIcon strokeWidth={3} className="size-[1.25em]! -mx-0.5" />
+      )}
       {loading ? "0.00%" : formatUnsignedPercent(changePercent ?? 0)}
     </Badge>
   );
@@ -457,13 +454,17 @@ function StockQuoteAccordionRow({
     : null;
   const isPositive = (selectedComparison?.change ?? 0) >= 0;
   const hasChart = loading || hasStockQuoteChart(quote);
+  const chartClasses = cn(
+    "w-full transition-[height] duration-[var(--collapsible-duration)] ease-[var(--ease-out)] motion-reduce:transition-none",
+    open ? "h-44" : "h-12",
+  );
 
   return (
     <Collapsible open={open} onOpenChange={onOpenChange}>
       <CollapsibleTrigger asChild>
         <button
           type="button"
-          className="grid w-full grid-cols-[auto_minmax(0,1fr)] items-start gap-x-3 px-3 py-3 text-left outline-none transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+          className="flex w-full items-stretch gap-3 p-3 text-left outline-none transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
         >
           <div className="flex flex-col items-start gap-2">
             <StockQuoteSymbol symbol={quote?.symbol ?? symbol ?? "..."} />
@@ -471,23 +472,15 @@ function StockQuoteAccordionRow({
               changePercent={selectedComparison?.changePercent}
               isPositive={isPositive}
               loading={loading}
-              showIcon={false}
+              showIcon
             />
           </div>
           {loading ? (
-            <Skeleton
-              className={cn(
-                "w-full transition-[height] duration-[var(--collapsible-duration)] ease-[var(--ease-out)] motion-reduce:transition-none",
-                open ? "h-44" : "h-14",
-              )}
-            />
+            <Skeleton className={chartClasses} />
           ) : hasChart ? (
             <StockQuotePriceChart
               quote={quote}
-              className={cn(
-                "transition-[height] duration-[var(--collapsible-duration)] ease-[var(--ease-out)] motion-reduce:transition-none",
-                open ? "h-44" : "h-14",
-              )}
+              className={chartClasses}
               showTooltip={open}
             />
           ) : null}
@@ -508,7 +501,7 @@ function StockQuoteList({
   const [openSymbol, setOpenSymbol] = useState<string | null>(null);
 
   return (
-    <Card className="self-stretch overflow-hidden py-0">
+    <Card className="py-0">
       <CardContent className="divide-y p-0">
         {symbols.map((symbol) => (
           <StockQuoteAccordionRow
@@ -524,21 +517,6 @@ function StockQuoteList({
     </Card>
   );
 }
-
-function StockQuoteUnavailable({
-  className,
-  ...props
-}: {
-  className?: string;
-  [key: string]: unknown;
-}) {
-  return (
-    <Card className={cn("self-stretch p-4", className)} {...props}>
-      <p className="text-sm text-muted-foreground">Quotes unavailable.</p>
-    </Card>
-  );
-}
-
 
 function useStockQuotes(rawSymbols: string[]) {
   const symbols = useMemo(() => normalizeSymbols(rawSymbols), [rawSymbols]);
@@ -601,17 +579,11 @@ function useStockQuotes(rawSymbols: string[]) {
 export function StockQuoteCard({ symbols: rawSymbols }: StockQuoteCardProps) {
   const { isLoading, noResults, quotes, symbols } = useStockQuotes(rawSymbols);
 
-  return (
-    <div className="flex self-stretch flex-col">
-      {!isLoading && noResults ? (
-        <StockQuoteUnavailable />
-      ) : (
-        <StockQuoteList
-          loading={isLoading}
-          quotes={quotes}
-          symbols={symbols}
-        />
-      )}
-    </div>
+  return !isLoading && noResults ? (
+    <Card>
+      <p className="text-sm text-center">Quotes unavailable</p>
+    </Card>
+  ) : (
+    <StockQuoteList loading={isLoading} quotes={quotes} symbols={symbols} />
   );
 }
