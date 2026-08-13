@@ -96,7 +96,26 @@ function MarkdownAlert({
   );
 }
 
-export const mdxComponents: MDXComponents = {
+export const agentMdxComponents = {
+  Badge,
+  BarGraphCard,
+  CalendarCard,
+  Card,
+  ChatCard,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+  Icon,
+  LineGraphCard,
+  Metric,
+  Progress,
+  Stack,
+  StockQuoteCard,
+  TodoListCard,
+  TweetCard,
+} satisfies MDXComponents;
+
+const elementOverrides = {
   a: ({ href = "", children, ...props }) => {
     const isInternal = href.startsWith("/");
 
@@ -114,22 +133,6 @@ export const mdxComponents: MDXComponents = {
       </a>
     );
   },
-  Badge,
-  BarGraphCard,
-  CalendarCard,
-  Card,
-  ChatCard,
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-  Icon,
-  LineGraphCard,
-  Metric,
-  Progress,
-  Stack,
-  StockQuoteCard,
-  TodoListCard,
-  TweetCard,
   div: ({ className = "", children, ...props }) => {
     if (className.includes("markdown-alert")) {
       return (
@@ -161,4 +164,11 @@ export const mdxComponents: MDXComponents = {
   tr: TableRow,
   th: TableHead,
   td: TableCell,
-};
+} satisfies MDXComponents;
+
+export const mdxComponents = {
+  ...agentMdxComponents,
+  ...elementOverrides,
+} satisfies MDXComponents;
+
+export type MDXProvidedComponents = typeof agentMdxComponents;

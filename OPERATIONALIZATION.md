@@ -183,7 +183,9 @@ Strict diagnostics use `@mdx-js/language-server` through its LSP interface. Docu
 
 The language server publishes diagnostics instead of exposing a one-shot validation command. The proof of concept uses a small JSON-RPC client and waits for the published diagnostics. Its current dependency tree also needs separate `vscode-uri` versions for the MDX and Markdown language services; `package.json` records those targeted overrides.
 
-The benchmark command compares separate validator processes with repeated validations through one persistent Analyzer. In the initial three-iteration run, cold validation took 3.46 to 4.21 seconds. The persistent Analyzer took 3.37 seconds for startup and its first validation, then 256 to 261 milliseconds per validation.
+## Performance Findings
+
+The completed proof-of-concept benchmark compared separate validator processes with repeated validations through one persistent Analyzer. In the initial three-iteration run, cold validation took 3.46 to 4.21 seconds. The persistent Analyzer took 3.37 seconds for startup and its first validation, then 256 to 261 milliseconds per validation. The benchmark utility is not part of the planned workflow.
 
 The initial OpenClaw workflow uses a cold Analyzer start for every validation pass. Documents are created infrequently enough that the simpler process lifecycle is worth the repeated startup cost during repair. A temporary Analyzer session scoped to one repair loop remains a deferred enhancement in [GitHub issue #5](https://github.com/NickChristensen/amdx/issues/5). It must not become an always-running validation service.
 

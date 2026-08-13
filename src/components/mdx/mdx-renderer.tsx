@@ -1,11 +1,8 @@
 import * as runtime from "react/jsx-runtime";
 import { compile } from "@mdx-js/mdx";
 import type React from "react";
-import rehypePrettyCode from "rehype-pretty-code";
-import remarkFlexibleMarkers from "remark-flexible-markers";
-import remarkGfm from "remark-gfm";
-import { remarkAlert } from "remark-github-blockquote-alert";
 import { mdxComponents } from "@/components/mdx/mdx-components";
+import { mdxCompileOptions } from "@/lib/mdx-compile-options";
 
 type MdxModule = {
   default: React.ComponentType<{ components?: typeof mdxComponents }>;
@@ -13,22 +10,7 @@ type MdxModule = {
 
 export async function MdxRenderer({ source }: { source: string }) {
   const code = String(
-    await compile(source, {
-      outputFormat: "function-body",
-      providerImportSource: undefined,
-      remarkPlugins: [remarkGfm, remarkAlert, remarkFlexibleMarkers],
-      rehypePlugins: [
-        [
-          rehypePrettyCode,
-          {
-            theme: {
-              light: "github-light",
-              dark: "github-dark",
-            },
-          },
-        ],
-      ],
-    }),
+    await compile(source, mdxCompileOptions),
   );
   const run = new Function(String.raw`${code}; return { default: MDXContent };`);
   const { default: Content } = run({

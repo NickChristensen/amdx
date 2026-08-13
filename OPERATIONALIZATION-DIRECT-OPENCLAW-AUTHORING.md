@@ -159,7 +159,7 @@ The validation command retains these distinct checks:
 
 The removed remark catalog check is not part of the proof of concept. MDX Analyzer covers unavailable components and returns source ranges, so the extra traversal and component-map extraction would duplicate the authoritative type check.
 
-`npm run benchmark:mdx-validation -- <absolute-document-path> [iterations]` measures separate-process cold validation, persistent Analyzer startup plus its first validation, and steady-state validation through that persistent process.
+The completed proof-of-concept benchmark compared separate-process cold validation with repeated validations through one persistent Analyzer. The findings are recorded in [AMDX Operationalization](OPERATIONALIZATION.md#performance-findings). The benchmark utility is not part of the planned workflow.
 
 The selected initial workflow starts and stops MDX Analyzer during every validation command, including every repair pass. This keeps the validator stateless between agent tool calls. [GitHub issue #5](https://github.com/NickChristensen/amdx/issues/5) tracks a possible temporary Analyzer session that would remain alive only after a failed validation and shut down after a clean result, cancellation, or idle timeout.
 
