@@ -77,7 +77,7 @@ export async function resolveDocumentLocation(inputPath: string): Promise<Docume
   }
 
   if (!isContainedPath(AMDX_DOCUMENTS_DIR, absolutePath)) {
-    throw new Error("Document path must be contained under the AMDX documents directory.");
+    throw new Error("Document path must be contained under the documents directory.");
   }
 
   const [documentsDirectory, documentFile] = await Promise.all([
@@ -86,7 +86,7 @@ export async function resolveDocumentLocation(inputPath: string): Promise<Docume
   ]);
 
   if (!isContainedPath(documentsDirectory, documentFile)) {
-    throw new Error("Document path resolves outside the AMDX documents directory.");
+    throw new Error("Document path resolves outside the documents directory.");
   }
 
   return {

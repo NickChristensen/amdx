@@ -1,14 +1,14 @@
 # AGENTS.md
 
 This project is AMDX: a local Next.js app that lazily renders agent-written
-`.mdx` reports from `~/.openclaw/media/mdx`.
+`.mdx` reports from the repo-local, gitignored `documents/` directory.
 
 ## Purpose and Workflow
 
 AMDX is the visual handoff surface for OpenClaw agents. When an agent needs to
 communicate something richer than a Telegram message can carry, such as a
 visual explainer, plan, briefing, or review, it writes an `.mdx` file under
-`~/.openclaw/media/mdx`. This app renders that file as a local web page, served
+`documents/`. This app renders that file as a local web page, served
 over Tailscale, so the agent can send the user a link to the rendered report.
 
 Optimize changes for this workflow: fast lazy rendering of trusted local MDX,
@@ -29,11 +29,11 @@ small curated component catalog that agents can reliably write against.
 
 ## Content Model
 
-- Source files live outside the repo in `~/.openclaw/media/mdx`.
+- Runtime source files live in the repo-local, gitignored `documents/` directory.
 - Only lowercase `.mdx` is supported.
 - Routes are extensionless:
-  - `/demo` maps to `~/.openclaw/media/mdx/demo.mdx`
-  - `/reports/foo` maps to `~/.openclaw/media/mdx/reports/foo.mdx`
+  - `/demo` maps to `documents/demo.mdx`
+  - `/reports/foo` maps to `documents/reports/foo.mdx`
 - Path resolution is centralized in `src/lib/content.ts`; keep the path
   containment guard intact.
 - Rendering is lazy: the requested MDX file is read and compiled on request.
@@ -135,4 +135,4 @@ Important current facts:
 - `src/components/mdx/mdx-renderer.tsx`: MDX compile/render pipeline.
 - `src/components/mdx/mdx-components.tsx`: MDX component map.
 - `src/components/ui/*`: generated shadcn components.
-- `~/.openclaw/media/mdx/demo.mdx`: current demo document.
+- `documents/`: runtime MDX documents.

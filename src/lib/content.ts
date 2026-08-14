@@ -1,12 +1,12 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import {
+  AMDX_DOCUMENTS_DIR,
+  resolveDocumentLocation,
+  routeToDocumentPath,
+} from "@/lib/amdx-document-paths";
 
-export const MDX_MEDIA_DIR = path.join(
-  process.env.HOME ?? "",
-  ".openclaw",
-  "media",
-  "mdx",
-);
+export const MDX_MEDIA_DIR = AMDX_DOCUMENTS_DIR;
 
 export type ContentRoute = {
   href: string;
@@ -15,30 +15,19 @@ export type ContentRoute = {
 };
 
 export function slugToFilePath(slug: string[] = []) {
-  const normalizedSlug = slug.filter(Boolean);
-  const relativePath =
-    normalizedSlug.length === 0
-      ? "index.mdx"
-      : path.join(...normalizedSlug) + ".mdx";
-  const filePath = path.resolve(MDX_MEDIA_DIR, relativePath);
-  const contentRoot = path.resolve(MDX_MEDIA_DIR);
-
-  if (filePath !== contentRoot && !filePath.startsWith(contentRoot + path.sep)) {
-    throw new Error("Requested MDX path escapes the content directory.");
-  }
-
-  return filePath;
+  return routeToDocumentPath(slug);
 }
 
 export async function readMdxFile(slug: string[] = []) {
-  const filePath = slugToFilePath(slug);
+  const filePath = routeToDocumentPath(slug);
+  const location = await resolveDocumentLocation(filePath);
   const [source, stats] = await Promise.all([
-    fs.readFile(filePath, "utf8"),
-    fs.stat(filePath),
+    fs.readFile(location.path, "utf8"),
+    fs.stat(location.path),
   ]);
 
   return {
-    filePath,
+    filePath: location.path,
     source,
     modifiedAt: stats.mtimeMs,
   };
@@ -70,15 +59,19 @@ export async function listMdxRoutes() {
           return;
         }
 
-        const stats = await fs.stat(entryPath);
+        let location;
+        try {
+          location = await resolveDocumentLocation(entryPath);
+        } catch {
+          return;
+        }
+
+        const stats = await fs.stat(location.path);
         if (!stats.isFile()) {
           return;
         }
         const basename = entry.name.slice(0, -".mdx".length);
-        const segments =
-          basename === "index" && prefix.length > 0
-            ? prefix
-            : [...prefix, basename];
+        const segments = [...prefix, basename];
         const href = "/" + segments.map(encodeURIComponent).join("/");
 
         routes.push({
