@@ -76,7 +76,7 @@ test("validates a document with the real compiler pipeline and returns handoff d
   assert.deepEqual(result, {
     ok: true,
     path: filePath,
-    url: `http://macmini.pony-rattlesnake.ts.net:3000/2099-12-31/${agent}/valid`,
+    url: `https://amdx.pony-rattlesnake.ts.net/2099-12-31/${agent}/valid`,
   });
 });
 
@@ -210,10 +210,10 @@ test("rejects paths outside documents, uppercase extensions, and symlink escapes
   assert.match(escaped.diagnostics[0].message, /resolves outside/);
 });
 
-test("uses the Tailscale hostname with configurable protocol and port", () => {
+test("uses the fixed AMDX Tailscale URL", () => {
   assert.equal(
-    userFacingUrl("/2099-12-31/agent/report", { protocol: "https", port: "8443" }),
-    "https://macmini.pony-rattlesnake.ts.net:8443/2099-12-31/agent/report",
+    userFacingUrl("/2099-12-31/agent/report"),
+    "https://amdx.pony-rattlesnake.ts.net/2099-12-31/agent/report",
   );
 });
 
@@ -258,6 +258,6 @@ test("the command prints the path and URL after static validation", async () => 
   assert.deepEqual(result, {
     ok: true,
     path: filePath,
-    url: `http://macmini.pony-rattlesnake.ts.net:3000/2099-12-31/${agent}/command`,
+    url: `https://amdx.pony-rattlesnake.ts.net/2099-12-31/${agent}/command`,
   });
 });

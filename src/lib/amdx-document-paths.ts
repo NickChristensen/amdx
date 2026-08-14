@@ -8,7 +8,7 @@ const projectRoot = path.resolve(
 );
 
 export const AMDX_DOCUMENTS_DIR = path.join(projectRoot, "documents");
-export const AMDX_USER_HOST = "macmini.pony-rattlesnake.ts.net";
+export const AMDX_USER_ORIGIN = "https://amdx.pony-rattlesnake.ts.net";
 
 export type DocumentLocation = {
   path: string;
@@ -48,22 +48,8 @@ export function routeToDocumentPath(slug: string[] = []) {
   return filePath;
 }
 
-export function userFacingUrl(route: string, options: {
-  protocol?: string;
-  port?: string;
-} = {}) {
-  const protocol = options.protocol ?? process.env.AMDX_PROTOCOL ?? "http";
-  const port = options.port ?? process.env.AMDX_PORT ?? "3000";
-  const normalizedProtocol = protocol.endsWith(":")
-    ? protocol.slice(0, -1)
-    : protocol;
-  const origin = new URL(`${normalizedProtocol}://${AMDX_USER_HOST}`);
-
-  if (port) {
-    origin.port = port;
-  }
-
-  return new URL(route, origin).href;
+export function userFacingUrl(route: string) {
+  return new URL(route, AMDX_USER_ORIGIN).href;
 }
 
 export async function resolveDocumentLocation(inputPath: string): Promise<DocumentLocation> {

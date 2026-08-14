@@ -17,7 +17,8 @@ small curated component catalog that agents can reliably write against.
 
 ## Commands
 
-- The user accesses this machine over Tailscale. Present user-facing app links with the hostname `macmini.pony-rattlesnake.ts.net` instead of `localhost`, preserving the active protocol, port, and path, for example `http://macmini.pony-rattlesnake.ts.net:3000/kitchen-sink`.
+- Present every user-facing AMDX link as `https://amdx.pony-rattlesnake.ts.net/<route>`. Do not include a port.
+- Production runs on `127.0.0.1:3040` through the `com.nick.amdx` LaunchAgent. The canonical plist is `launchd/com.nick.amdx.plist`; its logs are in `~/Library/Logs/AMDX/`.
 - `npm run dev` starts the local dev server. Port `3000` may already be in use;
   Next will choose another port, commonly `3002`.
 - `npm run lint` must pass after source changes.

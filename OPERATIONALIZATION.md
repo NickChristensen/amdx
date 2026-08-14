@@ -158,7 +158,7 @@ The skill invokes the helper through its loaded skill path without changing the 
 
 The command derives the local date, slugifies the title, creates the namespaced directory, writes required front matter, and prints the absolute document path on standard output. The agent should use that absolute path for every later edit and validation call. The command must use exclusive file creation. When the target already exists, it appends the first available deterministic numeric suffix, such as `morning-briefing-2.mdx`.
 
-User-facing links use the Tailscale hostname `macmini.pony-rattlesnake.ts.net` with the active AMDX protocol and port.
+User-facing links use the fixed Tailscale URL `https://amdx.pony-rattlesnake.ts.net/<route>`. The production Next.js server listens only on `127.0.0.1:3040`. Tailscale Serve terminates HTTPS and forwards the `amdx` service to that local port.
 
 ## Rendering and Readiness
 
@@ -199,7 +199,7 @@ Publication is the deterministic handoff from a validated absolute document path
 - the route maps back to the same document so validator and renderer resolution cannot drift;
 - containment rejects paths outside `documents/`, traversal attempts, and symlink escapes;
 - unsupported extensions and malformed document paths are rejected;
-- URL construction uses the configured protocol and port with the required `macmini.pony-rattlesnake.ts.net` hostname;
+- URL construction always uses `https://amdx.pony-rattlesnake.ts.net` without a port;
 - a successful validator result contains the exact absolute path and derived URL in its machine-readable output;
 - validation failures never return a ready result or user-facing URL;
 - a known valid fixture renders through the running AMDX application with an expected content marker;
