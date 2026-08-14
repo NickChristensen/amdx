@@ -23,7 +23,7 @@ All document structure, validation standards, destination rules, rendering behav
 1. The OpenClaw domain agent decides that the response benefits from AMDX.
 2. It prepares a structured request containing the facts, intent, data, sources, attachments, and constraints.
 3. The OpenClaw skill invokes the AMDX authoring harness.
-4. The harness validates the request and creates a repo-local document with the shared `new-document` logic.
+4. The harness validates the request and creates a repo-local document with the shared `create-document` logic.
 5. The harness starts a fresh Pi session with the dedicated system prompt, assigned document path, and restricted tools.
 6. The Pi agent writes the document, calls pi-lsp diagnostics, and repairs the file until the required checks are clean or it needs more input.
 7. The Pi agent calls the shared validation and readiness gate.
@@ -72,7 +72,7 @@ The Pi agent is responsible for:
 
 ### Relationship to the AMDX authoring contract
 
-The Pi authoring agent uses a dedicated system prompt. It does not invoke or load the OpenClaw AMDX skill. The OpenClaw skill is responsible only for selection, request preparation, harness invocation, result relay, and user-facing failure handling in this approach.
+The Pi authoring agent uses a dedicated system prompt. It does not invoke or load the OpenClaw Agent MDX skill. The OpenClaw skill is responsible only for selection, request preparation, harness invocation, result relay, and user-facing failure handling in this approach.
 
 The dedicated Pi system prompt owns the authoring workflow, global syntax guidance, fresh-session lifecycle, request boundary, diagnostic calls, readiness-gate call, and structured result behavior. The harness should supply a compact component index and make the generated `references/<component>.md` files available on demand.
 
@@ -84,7 +84,7 @@ The deterministic harness is responsible for:
 
 - validating the request envelope;
 - deriving trusted caller metadata required by the shared contract;
-- invoking the shared `new-document` logic with the trusted OpenClaw caller workspace and requested title;
+- invoking the shared `create-document` logic with the trusted OpenClaw caller workspace and requested title;
 - assigning the returned document path to the Pi session;
 - starting a fresh Pi session;
 - loading the dedicated system prompt and Pi extensions;
@@ -136,7 +136,6 @@ type AmdxResult =
       status: "ready";
       title: string;
       path: string;
-      route: string;
       url: string;
       telegramSummary?: string;
       warnings: string[];

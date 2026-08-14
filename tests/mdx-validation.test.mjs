@@ -7,6 +7,7 @@ import test, { after, before } from "node:test";
 import { fileURLToPath } from "node:url";
 import {
   AMDX_DOCUMENTS_DIR,
+  documentRoute,
   routeToDocumentPath,
   userFacingUrl,
 } from "../src/lib/amdx-document-paths.ts";
@@ -64,7 +65,7 @@ after(async () => {
   await fs.rm(outsideDirectory, { recursive: true, force: true });
 });
 
-test("validates a document with the real compiler pipeline and returns publication data", async () => {
+test("validates a document with the real compiler pipeline and returns handoff data", async () => {
   const filePath = await writeDocument(
     "valid.mdx",
     '<Metric label="Revenue" value="$42" />',
@@ -75,13 +76,7 @@ test("validates a document with the real compiler pipeline and returns publicati
   assert.deepEqual(result, {
     ok: true,
     path: filePath,
-    route: `/2099-12-31/${agent}/valid`,
     url: `http://macmini.pony-rattlesnake.ts.net:3000/2099-12-31/${agent}/valid`,
-    metadata: {
-      title: "Validator test",
-      agent,
-      created: "2099-12-31T12:34:56-06:00",
-    },
   });
 });
 
@@ -135,7 +130,7 @@ test("reports compiler and front matter failures with one-based source locations
   assert.equal(frontMatter.diagnostics[0].column, 1);
 });
 
-test("parses YAML front matter scalars and quoting", async () => {
+test("accepts YAML front matter scalars and quoting", async () => {
   const filePath = path.join(documentDirectory, "yaml-scalars.mdx");
   await fs.writeFile(
     filePath,
@@ -155,11 +150,6 @@ priority: 3
   const result = await validateAmdx(filePath, { analyzer });
 
   assert.equal(result.ok, true);
-  assert.deepEqual(result.metadata, {
-    title: "Morning: Briefing",
-    agent,
-    created: "2099-12-31T12:34:56-06:00",
-  });
 });
 
 test("reports malformed YAML and missing required front matter fields", async () => {
@@ -235,10 +225,10 @@ test("derives a route that maps back to the same document path", async () => {
   const result = await validateAmdx(filePath, { analyzer });
 
   assert.equal(result.ok, true);
-  assert.equal(routeToDocumentPath(result.route.slice(1).split("/")), filePath);
+  assert.equal(routeToDocumentPath(documentRoute(filePath).slice(1).split("/")), filePath);
 });
 
-test("the command prints a machine-readable success result without route access", async () => {
+test("the command prints the path and URL after static validation", async () => {
   const filePath = await writeDocument(
     "command.mdx",
     '<Metric label="Revenue" value="$42" />',
@@ -265,8 +255,9 @@ test("the command prints a machine-readable success result without route access"
 
   assert.equal(exitCode, 0, stderr);
   const result = JSON.parse(stdout);
-  assert.equal(result.ok, true);
-  assert.equal(result.path, filePath);
-  assert.equal(result.route, `/2099-12-31/${agent}/command`);
-  assert.equal(result.url, `http://macmini.pony-rattlesnake.ts.net:3000/2099-12-31/${agent}/command`);
+  assert.deepEqual(result, {
+    ok: true,
+    path: filePath,
+    url: `http://macmini.pony-rattlesnake.ts.net:3000/2099-12-31/${agent}/command`,
+  });
 });

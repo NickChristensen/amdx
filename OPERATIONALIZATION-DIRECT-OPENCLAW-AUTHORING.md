@@ -26,19 +26,19 @@ Its distinguishing choices are:
 
 1. The OpenClaw agent decides that the response benefits from AMDX.
 2. The agent reads `SKILL.md`, which contains the workflow, global Markdown and MDX syntax, and a compact generated component index.
-3. The agent selects components and reads the generated reference file for each selected component.
-4. The agent calls `node {skillDir}/scripts/new-document.mjs "<title>"` from its OpenClaw workspace and receives the absolute document path and route.
+3. The agent selects components and reads each generated reference file when it is present, or that component's validated kitchen-sink example when the reference is unavailable.
+4. The agent calls `{skillDir}/scripts/create-document.mjs "<title>"` from its OpenClaw workspace and receives the absolute document path.
 5. The agent writes the complete document at that path under `documents/`.
-6. The agent runs the AMDX validation command.
-7. The agent repairs reported errors and repeats validation when necessary.
+6. The agent runs the initial AMDX validation command.
+7. The agent makes at most two repair-and-validation rounds, stopping earlier when the complete diagnostic set is unchanged or a directly addressed diagnostic remains at the same source location.
 8. The successful final validation derives and returns the user-facing URL.
 9. The agent sends the URL and a short message to the user through Telegram.
 
 ```mermaid
 flowchart LR
     U[User request] --> O[OpenClaw domain agent]
-    O --> S[AMDX skill package]
-    S --> N[new-document]
+    O --> S[Agent MDX skill package]
+    S --> N[create-document]
     N --> D[MDX document]
     D --> V[AMDX validation]
     V -->|Errors| O
@@ -57,38 +57,42 @@ The calling OpenClaw agent is responsible for:
 - choosing the Markdown structure, layout, and agent-facing components;
 - reading `SKILL.md` and the references for selected components;
 - choosing the document title;
-- invoking `new-document` and editing the returned document path;
-- running validation and repairing errors;
+- invoking `create-document` and editing the returned document path;
+- running the initial validation and bounded repair loop;
 - relaying the successful URL to the user;
 - handling validation failures and later user questions.
 
-### OpenClaw AMDX skill
+### OpenClaw Agent MDX skill
 
 One skill package should define the complete direct-authoring workflow:
 
 - when to use AMDX;
 - the global Markdown and MDX syntax accepted by AMDX;
 - how to select components from the compact index;
-- how to read the generated reference for every selected component;
-- how to invoke `new-document` from the current OpenClaw workspace;
-- how to compose an AMDX document at the returned path;
+- how to read each generated reference that is present for a selected component;
+- how to invoke `create-document` from the current OpenClaw workspace;
+- how to compose an MDX document at the returned path;
 - how to run validation and interpret diagnostics;
 - how to repair common authoring errors;
 - how to send the Telegram message.
 
-`SKILL.md` should contain the handwritten workflow and global syntax guidance. It should also contain a bounded generated component index with each component's name, purpose, inline or block layout, and direct link to its reference file. The index should remain concise enough to load for every AMDX task.
+`SKILL.md` should contain the handwritten workflow and global syntax guidance. It should also contain a bounded generated component index with each component's name, purpose, inline or block layout, and direct link to its reference file. The index should remain concise enough to load for every AMDX task. When a selected component reference is absent, the agent should use Markdown instead of guessing props.
 
 Detailed component contracts should live in generated `references/<component>.md` files and load only when the agent selects those components. The skill package should avoid handwritten copies of component contracts.
 
-### `new-document` command
+Until a selected component has a generated reference, the agent may read only that component's validated example in `examples/kitchen-sink.mdx`. It should use Markdown when neither source documents the needed use and must not guess component props.
+
+The canonical package lives at `skills/agent-mdx` in the AMDX repository. The global OpenClaw configuration adds the repository's `skills` directory to `skills.load.extraDirs`, which makes the same package available to every agent directly from its canonical location. OpenClaw gives extra skill directories its lowest skill precedence, so the `agent-mdx` name must remain unique across higher-precedence skill sources.
+
+### `create-document` command
 
 The skill should invoke the command with the title as its first positional argument:
 
 ```text
-node {skillDir}/scripts/new-document.mjs "Morning briefing"
+{skillDir}/scripts/create-document.mjs "Morning briefing"
 ```
 
-Using `{skillDir}` resolves the installed script without changing the caller's current working directory. The command should:
+Using `{skillDir}` resolves the loaded skill script without changing the caller's current working directory. The command should:
 
 - read and resolve the caller's current working directory;
 - accept `~/.openclaw/workspace` as agent `main`;
@@ -98,13 +102,13 @@ Using `{skillDir}` resolves the installed script without changing the caller's c
 - derive the local date and URL-safe slug from the title;
 - create `documents/<yyyy-mm-dd>/<agent>/<slug>.mdx` with required front matter;
 - use exclusive file creation and append `-2`, `-3`, and later numeric suffixes when needed;
-- return the absolute document path and route in a machine-readable result.
+- print the absolute document path on standard output.
 
 The agent identity is derived from the workspace path. It is not accepted as an argument.
 
 ### Validation and readiness command
 
-The validation command accepts the absolute path returned by `new-document`. It is responsible for:
+The validation command accepts the absolute path returned by `create-document`. It is responsible for:
 
 - resolving the input and confirming that it is a lowercase `.mdx` file contained under the AMDX `documents/` root;
 - compiling it with AMDX's real compiler options;
@@ -114,7 +118,9 @@ The validation command accepts the absolute path returned by `new-document`. It 
 - using a machine-readable exit status that the agent can act on;
 - deriving the route and user-facing URL from the validated path after all static checks pass.
 
-The validator should not repeat the creator's workspace-to-agent mapping, date and slug derivation, collision handling, or metadata-to-path consistency checks. `new-document` owns those invariants. Containment and the lowercase extension remain validator input-boundary checks because the validation command accepts a filesystem path. Front matter parsing remains a content check because the agent can replace the file bytes while editing.
+On success, the command prints a JSON object with only `ok`, `path`, and `url`.
+
+The validator should not repeat the creator's workspace-to-agent mapping, date and slug derivation, collision handling, or metadata-to-path consistency checks. `create-document` owns those invariants. Containment and the lowercase extension remain validator input-boundary checks because the validation command accepts a filesystem path. Front matter parsing remains a content check because the agent can replace the file bytes while editing.
 
 In this Direct OpenClaw approach, the agent calls only the validation command. The command owns the MDX language-server integration and diagnostic formatting. A future Pi authoring agent can use `pi-lsp` directly during its authoring loop and still calls this shared validator for the final readiness result.
 
@@ -127,7 +133,7 @@ The OpenClaw agent needs concise global guidance in `SKILL.md`. The always-loade
 - GitHub-style alerts;
 - fenced code blocks and syntax highlighting;
 - Markdown blocks inside JSX component children;
-- supported expressions and restrictions.
+- literal component prop expressions only, with no imports, exports, scripts, or executable expressions.
 
 `SKILL.md` should then present the compact generated component index. After the agent selects components, it should load one generated Markdown reference per selected component. Each component reference should include its purpose, layout, authoring-facing TypeScript declaration, typed public defaults, semantic guidance, and a validated MDX example.
 
@@ -137,16 +143,16 @@ The component index and per-component references should be generated from `agent
 
 The skill should direct the agent to create the document under the repo-local, gitignored `documents/` root and edit that same file through the complete repair loop. The file stays at one path throughout creation, validation, and use.
 
-The loop is:
+The loop is bounded:
 
-1. write or update the document;
-2. run the validation command;
-3. inspect every diagnostic;
-4. edit the document;
-5. repeat until validation succeeds;
-6. receive the derived URL from the successful final validation.
+1. write the initial document and run validation;
+2. inspect every diagnostic on failure;
+3. make one repair and run validation again;
+4. make one final repair and run validation again only when the previous diagnostics changed;
+5. stop early when a diagnostic repeats;
+6. receive the derived URL only from a successful final validation.
 
-The skill should define a bounded failure path. When repeated repairs fail, the agent should return a concise Telegram response or explain that it could not prepare the richer document. A failed AMDX attempt should not prevent the user from receiving the underlying answer.
+Every edit requires another validation. When the loop stops without a successful result, the agent should return a concise Telegram response or explain that it could not prepare the richer document. A failed AMDX attempt should not prevent the user from receiving the underlying answer.
 
 ## Validator Proof of Concept
 
@@ -163,7 +169,7 @@ The completed proof-of-concept benchmark compared separate-process cold validati
 
 The selected initial workflow starts and stops MDX Analyzer during every validation command, including every repair pass. This keeps the validator stateless between agent tool calls. [GitHub issue #5](https://github.com/NickChristensen/amdx/issues/5) tracks a possible temporary Analyzer session that would remain alive only after a failed validation and shut down after a clean result, cancellation, or idle timeout.
 
-Publication begins when the validator returns its successful structured result. It derives the route and URL through the shared AMDX path functions and does not request the document route. The shared publication contract tests in [AMDX Operationalization](OPERATIONALIZATION.md#publication-contract-tests) cover route and URL behavior. A known-document application smoke test covers the running renderer separately.
+Publication begins when the validator returns its successful structured result. It derives the route internally and returns the path and URL through the shared AMDX path functions without requesting the document route. The shared publication contract tests in [AMDX Operationalization](OPERATIONALIZATION.md#publication-contract-tests) cover route and URL behavior. A known-document application smoke test covers the running renderer separately.
 
 ## Tool and Filesystem Boundaries
 
@@ -171,11 +177,11 @@ The OpenClaw agent needs permission to:
 
 - read `SKILL.md` and generated references for selected components;
 - read relevant input data and attachments from its own workspace;
-- invoke `new-document` from its OpenClaw workspace;
-- write the exact MDX file returned by `new-document`;
+- invoke `create-document` from its OpenClaw workspace;
+- write the exact MDX file returned by `create-document`;
 - invoke the validation command.
 
-The agent needs write access only to the document path returned by `new-document`. The command enforces workspace identity, path shape, and exclusive creation. The repo-local `documents/` root keeps the document, MDX Analyzer, validator, and renderer in the same TypeScript-project context.
+The agent needs write access only to the document path returned by `create-document`. The command enforces workspace identity, path shape, and exclusive creation. The repo-local `documents/` root keeps the document, MDX Analyzer, validator, and renderer in the same TypeScript-project context.
 
 ## Benefits to Evaluate
 
@@ -194,7 +200,7 @@ The agent needs write access only to the document path returned by `new-document
 - Renderer syntax changes can require updates to the handwritten syntax section.
 - Component changes require regenerated index and reference files.
 - Agents may vary in their use of diagnostics and repair behavior.
-- Broad workspace tools may allow writes outside the path returned by `new-document`.
+- Broad workspace tools may allow writes outside the path returned by `create-document`.
 
 ## Proposed Evaluation
 
@@ -221,7 +227,5 @@ Record:
 
 ## Open Questions
 
-- What exact output format should the validation command return?
-- How many repair attempts should the skill permit before falling back to Telegram?
 - What exact read, write, and command permissions should the skill receive?
 - How should the approach be tested across agents with different prompts, tools, and models?

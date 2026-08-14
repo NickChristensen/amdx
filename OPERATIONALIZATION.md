@@ -6,13 +6,15 @@ This document records the current decisions for making AMDX available to OpenCla
 
 OpenClaw agents primarily communicate through Telegram, which supports limited text formatting. AMDX gives those agents a richer local presentation surface for reports, explanations, plans, briefings, calendars, charts, and other structured content.
 
-AMDX has one document format. Reports, briefings, dashboards, and similar terms describe content patterns rather than separate AMDX document types.
+AMDX renders one MDX document format. Reports, briefings, dashboards, and similar terms describe content patterns rather than separate document types.
 
 ## Selected Operating Approach
 
-Direct OpenClaw authoring is the selected operating approach. The OpenClaw domain agent reads the AMDX skill package, creates and repairs the document, completes the validation and readiness gate, and sends the resulting URL. See [Direct OpenClaw Authoring Approach](OPERATIONALIZATION-DIRECT-OPENCLAW-AUTHORING.md) for the detailed workflow.
+Direct OpenClaw authoring is the selected operating approach. The OpenClaw domain agent reads the Agent MDX skill package, creates and repairs the document, completes the validation and readiness gate, and sends the resulting URL. See [Direct OpenClaw Authoring Approach](OPERATIONALIZATION-DIRECT-OPENCLAW-AUTHORING.md) for the detailed workflow.
 
-This selection keeps the source conversation, domain facts, user intent, and document composition in one agent context. It also keeps the normal user-handoff path small. The AMDX skill package keeps the complete workflow, global Markdown and MDX syntax, and a compact component index in `SKILL.md`. The agent loads detailed generated references only for the components it selects.
+This selection keeps the source conversation, domain facts, user intent, and document composition in one agent context. It also keeps the normal user-handoff path small. The Agent MDX skill package keeps the complete workflow, global Markdown and MDX syntax, and a compact component index in `SKILL.md`. The agent loads detailed generated references only for the components it selects.
+
+The canonical Agent MDX skill package lives in this repository at `skills/agent-mdx`. The global OpenClaw configuration includes this repository's `skills` directory in `skills.load.extraDirs`, which makes the package available to every agent directly from its canonical location. This keeps the scripts, workflow guidance, and generated component references versioned with the renderer and validator. Extra skill directories have OpenClaw's lowest skill precedence, so the `agent-mdx` skill name must remain unique across higher-precedence skill sources.
 
 The [Dedicated Pi Authoring Agent Approach](OPERATIONALIZATION-PI-AUTHORING-AGENT.md) remains in the repository as a possible future experiment. It is outside the selected operating path.
 
@@ -38,7 +40,7 @@ The sections that follow define this shared contract. A future Pi experiment sho
 The selected workflow assigns these responsibilities:
 
 - **Authorship:** The OpenClaw domain agent writes the MDX document from its existing domain and conversation context.
-- **Validation workflow:** The same agent requests diagnostics, interprets them, and repairs the document until the readiness gate succeeds.
+- **Validation workflow:** The same agent runs one initial validation and at most two repair-and-validation rounds. It stops earlier when the complete diagnostic set is unchanged or a directly addressed diagnostic remains at the same source location.
 - **Readiness workflow:** The same agent exits the repair loop only after the deterministic gate validates the document and returns the derived user-facing URL.
 
 Deterministic tooling remains responsible for initial document creation, trusted metadata, path derivation, collision handling, validation, and URL derivation.
@@ -93,13 +95,13 @@ Prop descriptions should live in JSDoc near the component prop types so the gene
 - GitHub-style alerts;
 - fenced code blocks and syntax highlighting;
 - Markdown blocks inside JSX component children;
-- expressions and any restrictions AMDX adopts later.
+- literal component prop expressions only; no imports, exports, scripts, or executable expressions.
 
 This syntax section is part of the always-loaded skill guidance because it applies to every document. Its examples should compile through AMDX's real renderer pipeline as contract tests.
 
 ## Front Matter
 
-AMDX documents will use YAML front matter. The initial required metadata is:
+MDX documents will use YAML front matter. The initial required metadata is:
 
 ```yaml
 ---
@@ -109,7 +111,7 @@ created: 2026-08-07T07:30:00-05:00
 ---
 ```
 
-The `new-document` command should add `agent` and `created` automatically:
+The `create-document` command should add `agent` and `created` automatically:
 
 - `agent` comes from the OpenClaw workspace identity or its working directory;
 - `created` is a full ISO 8601 timestamp with the local UTC offset.
@@ -146,15 +148,15 @@ The corresponding AMDX route is:
 
 The documents root belongs to AMDX. Keeping it inside the repository gives the renderer, validator, and document tools one filesystem and TypeScript-project context. Git ignores the directory because documents are runtime data. This order matches the visible breadcrumb, groups documents by date, and prevents daily briefings from colliding across dates or agents.
 
-The skill invokes the helper through its installed path without changing the caller's working directory:
+The skill invokes the helper through its loaded skill path without changing the caller's working directory:
 
 ```text
-node {skillDir}/scripts/new-document.mjs "Morning briefing"
+{skillDir}/scripts/create-document.mjs "Morning briefing"
 ```
 
-`new-document` accepts the title as its first positional argument. It reads the caller's current working directory, resolves symlinks, and walks upward to find a direct child of `~/.openclaw` whose name matches `workspace` or `workspace-<agent>`. The plain `~/.openclaw/workspace` maps to agent `main`. A `workspace-<agent>` directory maps to the suffix after `workspace-`. The command must reject every working directory that does not resolve inside one of these workspace roots.
+`create-document` accepts the title as its first positional argument. It reads the caller's current working directory, resolves symlinks, and walks upward to find a direct child of `~/.openclaw` whose name matches `workspace` or `workspace-<agent>`. The plain `~/.openclaw/workspace` maps to agent `main`. A `workspace-<agent>` directory maps to the suffix after `workspace-`. The command must reject every working directory that does not resolve inside one of these workspace roots.
 
-The command derives the local date, slugifies the title, creates the namespaced directory, writes required front matter, and returns the absolute document path and route in a machine-readable result. The agent should use that absolute path for every later edit and validation call. The command must use exclusive file creation. When the target already exists, it appends the first available deterministic numeric suffix, such as `morning-briefing-2.mdx`.
+The command derives the local date, slugifies the title, creates the namespaced directory, writes required front matter, and prints the absolute document path on standard output. The agent should use that absolute path for every later edit and validation call. The command must use exclusive file creation. When the target already exists, it appends the first available deterministic numeric suffix, such as `morning-briefing-2.mdx`.
 
 User-facing links use the Tailscale hostname `macmini.pony-rattlesnake.ts.net` with the active AMDX protocol and port.
 
@@ -162,7 +164,7 @@ User-facing links use the Tailscale hostname `macmini.pony-rattlesnake.ts.net` w
 
 AMDX reads and compiles a document from `documents/` only when its route is requested. Creating or editing a file does not trigger rendering. A document remains in the same path through creation, repair, validation, and later use.
 
-Successful static validation marks a document ready for handoff. The validation command should derive the route and user-facing URL from the validated absolute path and return them without requesting the route. Per-document publication does not include an HTTP request.
+Successful static validation marks a document ready for handoff. The validation command should derive the route internally and return the user-facing URL with the validated absolute path without requesting the route. Its successful machine-readable result contains only `ok`, `path`, and `url`. Per-document publication does not include an HTTP request.
 
 Document-root resolution, path containment, route derivation, and user-facing URL construction should live in shared deterministic functions used by the validator and renderer. Their behavior should be verified in the test suite. Runtime availability should be checked separately with a known-document application smoke test during application testing, startup, or deployment.
 
@@ -175,7 +177,7 @@ Before a link is sent, AMDX should catch:
 - missing required component props;
 - component props with incompatible types.
 
-The validator proof of concept implements the planned agent-facing command. It accepts one absolute lowercase `.mdx` path under `documents/`, parses required front matter, compiles with AMDX's exact plugin pipeline, and uses MDX Analyzer with `MDXProvidedComponents` for component and React prop diagnostics. It returns one-based source locations on failure and a machine-readable path, route, and URL on success. It does not request the rendered route.
+The validator proof of concept implements the planned agent-facing command. It accepts one absolute lowercase `.mdx` path under `documents/`, parses required front matter, compiles with AMDX's exact plugin pipeline, and uses MDX Analyzer with `MDXProvidedComponents` for component and React prop diagnostics. It returns one-based source locations on failure and a machine-readable path and URL on success. It does not request the rendered route.
 
 The proof of concept omits the earlier remark-stage catalog check. MDX Analyzer already catches unavailable components against the authoritative TypeScript contract.
 
@@ -198,7 +200,7 @@ Publication is the deterministic handoff from a validated absolute document path
 - containment rejects paths outside `documents/`, traversal attempts, and symlink escapes;
 - unsupported extensions and malformed document paths are rejected;
 - URL construction uses the configured protocol and port with the required `macmini.pony-rattlesnake.ts.net` hostname;
-- a successful validator result contains the exact absolute path, derived route, and derived URL in its machine-readable output;
+- a successful validator result contains the exact absolute path and derived URL in its machine-readable output;
 - validation failures never return a ready result or user-facing URL;
 - a known valid fixture renders through the running AMDX application with an expected content marker;
 - a missing document route returns the application's expected not-found response.

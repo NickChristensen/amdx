@@ -16,12 +16,6 @@ export type AmdxDiagnostic = {
   source: "frontmatter" | "compiler" | "analyzer" | "path" | "filesystem";
 };
 
-export type AmdxMetadata = {
-  title: string;
-  agent: string;
-  created: string;
-};
-
 export type AmdxValidationFailure = {
   ok: false;
   path: string;
@@ -31,9 +25,7 @@ export type AmdxValidationFailure = {
 export type AmdxValidationSuccess = {
   ok: true;
   path: string;
-  route: string;
   url: string;
-  metadata: AmdxMetadata;
 };
 
 export type AmdxValidationResult = AmdxValidationFailure | AmdxValidationSuccess;
@@ -99,14 +91,7 @@ function parseRequiredFrontMatter(source: string, filePath: string) {
     return { diagnostics };
   }
 
-  return {
-    metadata: {
-      title: metadata.title as string,
-      agent: metadata.agent as string,
-      created: metadata.created as string,
-    } satisfies AmdxMetadata,
-    diagnostics: [],
-  };
+  return { diagnostics: [] };
 }
 
 function compilerDiagnostic(error: unknown) {
@@ -219,9 +204,7 @@ export async function validateAmdx(
   return {
     ok: true,
     path: location.path,
-    route: location.route,
     url: userFacingUrl(location.route),
-    metadata: frontMatter.metadata!,
   };
 }
 

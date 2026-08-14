@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent MDX"
+  short_description: "Create and publish clear MDX documents"
+  default_prompt: "Use $agent-mdx to create, validate, and publish a clear MDX document for this response."
