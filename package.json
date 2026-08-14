@@ -9,6 +9,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test:component-docs": "node --test tests/component-docs.test.mjs",
     "test:create-document": "node --test tests/create-document.test.mjs",
     "test:mdx-rendering": "node --test tests/mdx-rendering.test.mjs",
     "test:mdx-validation": "node --test tests/mdx-validation.test.mjs",
@@ -49,6 +50,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
     "tailwindcss": "^4",
+    "ts-morph": "^28.0.0",
     "typescript": "^5",
     "vscode-jsonrpc": "^8.2.1"
   },
