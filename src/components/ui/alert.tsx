@@ -1,7 +1,17 @@
 import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
+import { cva } from "class-variance-authority";
 
+import type { AgentMdxComponentDocs } from "@/lib/agent-mdx-component-docs";
 import { cn } from "@/lib/utils";
+
+export type AlertVariant =
+  | "default"
+  | "note"
+  | "tip"
+  | "important"
+  | "warning"
+  | "caution"
+  | "danger";
 
 const alertVariants = cva(
   "group/alert relative grid gap-0.5 rounded-lg border px-4 py-3 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4",
@@ -27,11 +37,116 @@ const alertVariants = cva(
   },
 );
 
+/** Props for the alert container and its semantic visual variant. */
+export type AlertProps = React.ComponentProps<"div"> & {
+  /** Visual treatment applied to the alert. */
+  variant?: AlertVariant;
+};
+
+/** Props for the heading shown at the start of an alert. */
+export type AlertTitleProps = React.ComponentProps<"div">;
+
+/** Props for the supporting content shown in an alert. */
+export type AlertDescriptionProps = React.ComponentProps<"div">;
+
+/** Props for the action area positioned in an alert. */
+export type AlertActionProps = React.ComponentProps<"div">;
+
+export const alertMdxDocs = {
+  description:
+    "Displays a semantic message with optional title, description, and action content.",
+  flow: "block",
+  defaults: {
+    variant: "default",
+  },
+  guidance: [
+    "Use Alert as the root and place AlertTitle, AlertDescription, or AlertAction inside it as needed.",
+    "Choose note, tip, important, warning, caution, or danger to match the message context.",
+  ],
+  examples: [
+    {
+      title: "Warning with action",
+      mdx: `<Alert variant="warning">
+  <AlertTitle>Review needed</AlertTitle>
+  <AlertDescription>
+    Check the latest report before sharing it.
+  </AlertDescription>
+  <AlertAction>Open report</AlertAction>
+</Alert>`,
+    },
+    {
+      title: "Simple note",
+      mdx: `<Alert variant="note">
+  <AlertDescription>
+    The report uses the latest synced data.
+  </AlertDescription>
+</Alert>`,
+    },
+  ],
+} as const satisfies AgentMdxComponentDocs<AlertProps>;
+
+export const alertTitleMdxDocs = {
+  description: "Renders the concise heading for an Alert.",
+  flow: "block",
+  defaults: {},
+  guidance: [
+    "Place AlertTitle directly inside an Alert when the message needs a clear heading.",
+    "Keep the title short so the alert remains easy to scan.",
+  ],
+  examples: [
+    {
+      title: "Alert title",
+      mdx: `<Alert>
+  <AlertTitle>Review needed</AlertTitle>
+</Alert>`,
+    },
+  ],
+} as const satisfies AgentMdxComponentDocs<AlertTitleProps>;
+
+export const alertDescriptionMdxDocs = {
+  description: "Renders supporting content for an Alert.",
+  flow: "block",
+  defaults: {},
+  guidance: [
+    "Place AlertDescription directly inside an Alert after its AlertTitle when both are present.",
+    "Use the description for the context or next step that supports the alert heading.",
+  ],
+  examples: [
+    {
+      title: "Alert description",
+      mdx: `<Alert>
+  <AlertDescription>
+    Check the latest report before sharing it.
+  </AlertDescription>
+</Alert>`,
+    },
+  ],
+} as const satisfies AgentMdxComponentDocs<AlertDescriptionProps>;
+
+export const alertActionMdxDocs = {
+  description: "Positions action content in the upper-right area of an Alert.",
+  flow: "block",
+  defaults: {},
+  guidance: [
+    "Place AlertAction inside an Alert when the message has a compact action or status control.",
+    "Keep action content short so it fits beside the alert message.",
+  ],
+  examples: [
+    {
+      title: "Alert action",
+      mdx: `<Alert>
+  <AlertDescription>New report data is available.</AlertDescription>
+  <AlertAction>View</AlertAction>
+</Alert>`,
+    },
+  ],
+} as const satisfies AgentMdxComponentDocs<AlertActionProps>;
+
 function Alert({
   className,
-  variant,
+  variant = alertMdxDocs.defaults.variant,
   ...props
-}: React.ComponentProps<"div"> & VariantProps<typeof alertVariants>) {
+}: AlertProps) {
   return (
     <div
       data-slot="alert"
@@ -42,7 +157,7 @@ function Alert({
   );
 }
 
-function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
+function AlertTitle({ className, ...props }: AlertTitleProps) {
   return (
     <div
       data-slot="alert-title"
@@ -58,7 +173,7 @@ function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
 function AlertDescription({
   className,
   ...props
-}: React.ComponentProps<"div">) {
+}: AlertDescriptionProps) {
   return (
     <div
       data-slot="alert-description"
@@ -71,7 +186,7 @@ function AlertDescription({
   );
 }
 
-function AlertAction({ className, ...props }: React.ComponentProps<"div">) {
+function AlertAction({ className, ...props }: AlertActionProps) {
   return (
     <div
       data-slot="alert-action"

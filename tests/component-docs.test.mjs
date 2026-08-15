@@ -50,6 +50,10 @@ test("extracts and renders the production agent MDX catalog", () => {
   const records = extractProductionCatalog();
 
   assert.deepEqual(records.map((record) => record.name), [
+    "Alert",
+    "AlertAction",
+    "AlertDescription",
+    "AlertTitle",
     "Badge",
     "BarGraphCard",
     "CalendarCard",

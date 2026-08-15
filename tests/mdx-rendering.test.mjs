@@ -24,3 +24,13 @@ rendered-body-paragraph
   assert.doesNotMatch(compiled, /frontmatter-only-title|frontmatter-only-agent/);
   assert.match(compiled, /rendered-body-heading|rendered-body-paragraph/);
 });
+
+test("renders alert marker syntax as an ordinary blockquote", async () => {
+  const source = "> [!NOTE]\n> This remains a plain blockquote.\n";
+  const compiled = String(await compile(source, mdxCompileOptions));
+
+  assert.match(compiled, /_components\.blockquote/);
+  assert.match(compiled, /\[!NOTE\]/);
+  assert.match(compiled, /This remains a plain blockquote\./);
+  assert.doesNotMatch(compiled, /markdown-alert/);
+});

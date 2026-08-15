@@ -77,6 +77,27 @@ test("validates a document with the real compiler pipeline and returns handoff d
   });
 });
 
+test("validates the compound Alert family and its semantic variant", async () => {
+  const filePath = await writeDocument(
+    "compound-alert.mdx",
+    `<Alert variant="warning">
+  <AlertTitle>Review needed</AlertTitle>
+  <AlertDescription>
+    Check the latest report before sharing it.
+  </AlertDescription>
+  <AlertAction>Open report</AlertAction>
+</Alert>`,
+  );
+
+  const result = await validateAmdx(filePath, { analyzer });
+
+  assert.deepEqual(result, {
+    ok: true,
+    path: filePath,
+    url: `https://amdx.pony-rattlesnake.ts.net/2099-12-31/${agent}/compound-alert`,
+  });
+});
+
 test("uses the MDX Analyzer for component availability and prop diagnostics", async () => {
   const cases = [
     ["unknown-component.mdx", "<QuoteCard />", /QuoteCard/],

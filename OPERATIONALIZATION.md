@@ -44,7 +44,7 @@ Components ending in `Card` own their outer surface. `inline` components, includ
 
 ## Authoring and Validation
 
-The skill documents CommonMark, GitHub Flavored Markdown, `==highlight==`, GitHub-style alerts, fenced code blocks, Markdown inside JSX children, and literal-only component prop expressions. It prohibits imports, exports, scripts, raw HTML, event props, and executable expressions.
+The skill documents CommonMark, GitHub Flavored Markdown, `==highlight==`, fenced code blocks, Markdown inside JSX children, and literal-only component prop expressions. It prohibits imports, exports, scripts, raw HTML, event props, and executable expressions.
 
 The author writes the complete document, then calls `skills/agent-mdx/scripts/validate-document.mjs` with the returned absolute path. The validator checks path containment and lowercase extension, required front matter, compilation through the renderer pipeline, component availability, required props, and prop types. It returns one-based diagnostics on failure or JSON containing `ok`, `path`, and `url` on success.
 

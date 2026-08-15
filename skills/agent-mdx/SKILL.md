@@ -47,14 +47,7 @@ Do not request the rendered route during this loop. Static validation is the per
 
 ## Markdown and MDX syntax
 
-Use CommonMark Markdown. The local renderer also supports GitHub Flavored Markdown tables, task lists, strikethrough, autolinks, `==highlight==`, GitHub-style alerts, and fenced code blocks with a language name.
-
-Use alerts for material notes, warnings, or constraints:
-
-```md
-> [!WARNING]
-> This data is delayed by 15 minutes.
-```
+Use CommonMark Markdown. The local renderer also supports GitHub Flavored Markdown tables, task lists, strikethrough, autolinks, `==highlight==`, and fenced code blocks with a language name.
 
 Put blank lines around Markdown blocks inside a JSX component:
 
@@ -80,9 +73,12 @@ These are mandatory authoring rules. Static validation does not yet enforce ever
 Read `references/<component>.md` for every component you select when that file is present. It defines the supported props, defaults, semantic guidance, and a validated example.
 
 <!-- BEGIN GENERATED COMPONENT INDEX -->
-
 ## Components
 
+- [Alert](references/Alert.md): Block. Displays a semantic message with optional title, description, and action content.
+- [AlertAction](references/AlertAction.md): Block. Positions action content in the upper-right area of an Alert.
+- [AlertDescription](references/AlertDescription.md): Block. Renders supporting content for an Alert.
+- [AlertTitle](references/AlertTitle.md): Block. Renders the concise heading for an Alert.
 - [Badge](references/Badge.md): Inline. Displays a short inline status, category, or label.
 - [BarGraphCard](references/BarGraphCard.md): Block. Displays categorical values as vertical bars in a card.
 - [CalendarCard](references/CalendarCard.md): Block. Displays calendar agenda events grouped by local day with time, duration, location, and source-calendar color context.
