@@ -48,6 +48,8 @@ The skill documents CommonMark, GitHub Flavored Markdown, `==highlight==`, GitHu
 
 The author writes the complete document, then calls `skills/agent-mdx/scripts/validate-document.mjs` with the returned absolute path. The validator checks path containment and lowercase extension, required front matter, compilation through the renderer pipeline, component availability, required props, and prop types. It returns one-based diagnostics on failure or JSON containing `ok`, `path`, and `url` on success.
 
+Each completed command appends one gitignored JSONL event record at `logs/validation/YYYY-MM.jsonl`. Every record has only `schemaVersion`, UTC `timestamp`, repo-relative `document` path or `"unknown"`, `ok`, and unchanged `diagnostics`. The validator keeps its JSON standard-output contract when telemetry storage has an error.
+
 The v1 validator uses the MDX language server through its JSON-RPC/LSP client and the project's `MDXProvidedComponents` type. This is the current production implementation. Validation starts a cold Analyzer process for each command, and no route request is part of the per-document gate.
 
 Static validation makes a document ready for handoff. Application availability remains a separate concern. A live known-document HTTP smoke test remains an application-level test to add for startup or deployment validation.

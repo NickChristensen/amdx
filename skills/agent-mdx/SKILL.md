@@ -41,6 +41,8 @@ The first validation follows the initial document. You may make at most two repa
 
 Each validation command starts a cold validator process. Validation succeeds only when it exits with status 0 and standard output parses as JSON with exactly `ok: true`, the stored `path`, and a non-empty `url`. A nonzero exit, missing or invalid JSON, or a different path is failure. Send only the URL from the latest successful validation.
 
+Each validation command automatically appends one local JSONL telemetry record.
+
 Do not request the rendered route during this loop. Static validation is the per-document readiness gate. Service health is tested separately.
 
 ## Markdown and MDX syntax

@@ -14,7 +14,7 @@
     "test:component-docs": "node --test tests/component-docs.test.mjs tests/component-docs-examples.test.mjs tests/component-docs-drift.test.mjs tests/component-docs-generation.test.mjs",
     "test:create-document": "node --test tests/create-document.test.mjs",
     "test:mdx-rendering": "node --test tests/mdx-rendering.test.mjs",
-    "test:mdx-validation": "node --test tests/mdx-validation.test.mjs",
+    "test:mdx-validation": "node --test tests/mdx-validation.test.mjs tests/validation-telemetry.test.mjs",
     "validate:mdx": "node scripts/validate-amdx.mjs"
   },
   "dependencies": {

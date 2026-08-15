@@ -1,10 +1,8 @@
 import assert from "node:assert/strict";
-import { spawn } from "node:child_process";
 import { promises as fs } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test, { after, before } from "node:test";
-import { fileURLToPath } from "node:url";
 import {
   AMDX_DOCUMENTS_DIR,
   documentRoute,
@@ -17,7 +15,6 @@ import {
   validateAmdx,
 } from "../src/lib/validate-amdx.ts";
 
-const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const agent = `validator-test-${process.pid}`;
 const documentDirectory = path.join(AMDX_DOCUMENTS_DIR, "2099-12-31", agent);
 const outsideDirectory = await fs.mkdtemp(path.join(os.tmpdir(), "amdx-validator-"));
@@ -226,38 +223,4 @@ test("derives a route that maps back to the same document path", async () => {
 
   assert.equal(result.ok, true);
   assert.equal(routeToDocumentPath(documentRoute(filePath).slice(1).split("/")), filePath);
-});
-
-test("the command prints the path and URL after static validation", async () => {
-  const filePath = await writeDocument(
-    "command.mdx",
-    '<Metric label="Revenue" value="$42" />',
-  );
-  const child = spawn(process.execPath, ["scripts/validate-amdx.mjs", filePath], {
-    cwd: projectRoot,
-    stdio: ["ignore", "pipe", "pipe"],
-  });
-  let stdout = "";
-  let stderr = "";
-  child.stdout.setEncoding("utf8");
-  child.stderr.setEncoding("utf8");
-  child.stdout.on("data", (chunk) => {
-    stdout += chunk;
-  });
-  child.stderr.on("data", (chunk) => {
-    stderr += chunk;
-  });
-
-  const exitCode = await new Promise((resolve, reject) => {
-    child.once("error", reject);
-    child.once("exit", resolve);
-  });
-
-  assert.equal(exitCode, 0, stderr);
-  const result = JSON.parse(stdout);
-  assert.deepEqual(result, {
-    ok: true,
-    path: filePath,
-    url: `https://amdx.pony-rattlesnake.ts.net/2099-12-31/${agent}/command`,
-  });
 });
