@@ -23,6 +23,8 @@ small curated component catalog that agents can reliably write against.
   Next will choose another port, commonly `3002`.
 - `npm run lint` must pass after source changes.
 - `npm run build` must pass after source changes.
+- `npm install` runs the `prepare` script to install Husky hooks.
+- The Husky pre-push hook runs the read-only `npm run test:component-docs` gate and blocks pushes when generated component documentation drifts. `npm run generate:component-docs` remains explicit.
 - `npm run generate:component-docs` regenerates the bounded Agent MDX component index and the generated `skills/agent-mdx/references/` directory.
 - `npm run test:component-docs` runs source extraction, combined component example validation, generator behavior, and read-only generated-document drift checks.
 - Package installs generally require approval because network access is

@@ -18,3 +18,7 @@ Documents are lazy-rendered by extensionless route. For example, `documents/2026
 Each agent-facing component keeps its exported props, JSDoc, and typed metadata next to its implementation. `npm run generate:component-docs` updates the bounded skill index and exact-name generated component references. `npm run test:component-docs` validates the source contract, examples, generator behavior, and generated-file drift.
 
 Run `npm run lint` and `npm run build` after source changes.
+
+## Git hooks
+
+`npm install` runs the `prepare` script to install Husky hooks. The Husky pre-push hook runs the read-only `npm run test:component-docs` gate and blocks pushes when generated component documentation drifts. `npm run generate:component-docs` remains an explicit command.
