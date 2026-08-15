@@ -61,9 +61,10 @@ Put blank lines around Markdown blocks inside a JSX component:
 ```mdx
 <Card>
 
-## Section heading
-
 Markdown content goes here.
+
+- a list
+- another list item
 
 </Card>
 ```
@@ -79,6 +80,7 @@ These are mandatory authoring rules. Static validation does not yet enforce ever
 Read `references/<component>.md` for every component you select when that file is present. It defines the supported props, defaults, semantic guidance, and a validated example.
 
 <!-- BEGIN GENERATED COMPONENT INDEX -->
+
 ## Components
 
 - [Badge](references/Badge.md): Inline. Displays a short inline status, category, or label.
