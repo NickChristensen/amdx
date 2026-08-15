@@ -87,6 +87,8 @@ instead of duplicating the list here.
 
 Each agent-facing component keeps an exported authoring-facing props declaration, prop JSDoc, and typed `<camelCaseComponentName>MdxDocs` metadata constant next to its implementation. The metadata provides the description, `inline` or `block` flow, public defaults, guidance, and one or two validated examples.
 
+For an agent-facing component built with CVA, declare each public variant axis as an exported string union and store its classes in a named map checked with `satisfies Record<VariantType, string>`. Pass that map directly to CVA. This keeps generated prop references standalone while TypeScript enforces exact agreement between the public values and implementation keys. Internal-only CVA components may continue to use `VariantProps<typeof variants>`.
+
 `agentMdxComponents` is the TypeScript machine-readable catalog. `npm run generate:component-docs` owns the bounded generated component index in `skills/agent-mdx/SKILL.md` and the exact-case references in `skills/agent-mdx/references/`. Do not hand-edit those generated sections or files. Run the generator after changing a component contract, then run `npm run test:component-docs` to validate source extraction, examples, generator behavior, and generated-file drift.
 
 Markdown inside JSX children is supported when written with normal MDX block
