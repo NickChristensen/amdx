@@ -202,7 +202,7 @@ function readMetadata(componentFile, componentName, propsDeclaration) {
     throw new Error(`${componentName}: ${metadataName} must be a static object literal.`);
   }
 
-  assertStaticObject(object, metadataName);
+  assertStaticObject(object, metadataName, new Set(["family"]));
   const description = readStaticString(propertyInitializer(object, "description", metadataName), `${metadataName}.description`);
   const flow = readStaticString(propertyInitializer(object, "flow", metadataName), `${metadataName}.flow`);
   const defaults = propertyInitializer(object, "defaults", metadataName);
@@ -219,6 +219,9 @@ function readMetadata(componentFile, componentName, propsDeclaration) {
     description: requireText(description, `${metadataName}.description`),
     flow,
     defaultsInitializer: defaults.getText(),
+    ...(object.getProperty("family")
+      ? { family: readStaticFamily(propertyInitializer(object, "family", metadataName), `${metadataName}.family`) }
+      : {}),
     guidance: object.getProperty("guidance")
       ? readStaticStringArray(propertyInitializer(object, "guidance", metadataName), `${metadataName}.guidance`)
       : [],
@@ -226,10 +229,14 @@ function readMetadata(componentFile, componentName, propsDeclaration) {
   };
 }
 
-function assertStaticObject(object, label) {
+function assertStaticObject(object, label, skippedProperties = new Set()) {
   for (const property of object.getProperties()) {
     if (!Node.isPropertyAssignment(property) || Node.isComputedPropertyName(property.getNameNode())) {
       throw new Error(`${label} must use static property assignments.`);
+    }
+
+    if (skippedProperties.has(property.getName())) {
+      continue;
     }
 
     if (!isStaticValue(property.getInitializerOrThrow())) {
@@ -266,6 +273,79 @@ function readStaticStringArray(expression, label) {
   }
 
   return value.getElements().map((element) => requireText(readStaticString(element, label), label));
+}
+
+function readStaticFamily(expression, label) {
+  const value = unwrapExpression(expression);
+
+  if (!Node.isArrayLiteralExpression(value)) {
+    throw new Error(`${label} must be a non-empty array of member objects.`);
+  }
+
+  if (value.getElements().length === 0) {
+    throw new Error(`${label} must contain at least one member.`);
+  }
+
+  return value.getElements().map((element, index) => {
+    const memberLabel = `${label}[${index}]`;
+    const member = unwrapExpression(element);
+
+    if (!Node.isObjectLiteralExpression(member)) {
+      throw new Error(`${memberLabel} must be an object literal with name and required fields.`);
+    }
+
+    const properties = member.getProperties();
+
+    for (const property of properties) {
+      if (!Node.isPropertyAssignment(property) || Node.isComputedPropertyName(property.getNameNode())) {
+        throw new Error(`${memberLabel} must use exactly static name and required property assignments.`);
+      }
+    }
+
+    const propertyNames = properties.map((property) => property.getName());
+    const duplicate = propertyNames.find((name, propertyIndex) => propertyNames.indexOf(name) !== propertyIndex);
+
+    if (duplicate) {
+      throw new Error(`${memberLabel} must define name and required exactly once; duplicate ${duplicate}.`);
+    }
+
+    const missing = ["name", "required"].filter((name) => !propertyNames.includes(name));
+
+    if (missing.length > 0) {
+      throw new Error(`${memberLabel} is missing required field(s): ${missing.join(", ")}.`);
+    }
+
+    const extra = propertyNames.filter((name) => !["name", "required"].includes(name));
+
+    if (extra.length > 0) {
+      throw new Error(`${memberLabel} has unsupported field(s): ${extra.join(", ")}. Expected only name and required.`);
+    }
+
+    const name = requireText(
+      readStaticString(propertyInitializer(member, "name", memberLabel), `${memberLabel}.name`),
+      `${memberLabel}.name`,
+    );
+    const required = readStaticBoolean(
+      propertyInitializer(member, "required", memberLabel),
+      `${memberLabel}.required`,
+    );
+
+    return { name, required };
+  });
+}
+
+function readStaticBoolean(expression, label) {
+  const value = unwrapExpression(expression);
+
+  if (value.getKind() === SyntaxKind.TrueKeyword) {
+    return true;
+  }
+
+  if (value.getKind() === SyntaxKind.FalseKeyword) {
+    return false;
+  }
+
+  throw new Error(`${label} must be a boolean literal.`);
 }
 
 function readExamples(expression, metadataName) {

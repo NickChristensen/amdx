@@ -22,20 +22,101 @@ export function buildComponentDocs({ repoRoot = defaultRepoRoot } = {}) {
   const records = extract({
     catalogPath: path.join(resolvedRepoRoot, "src/components/mdx/mdx-components.tsx"),
   });
+  const entries = resolveComponentFamilies(records);
 
   return {
     records,
-    componentIndex: renderComponentIndex(records),
-    references: new Map(records.map((record) => [`${record.name}.md`, renderComponentReference(record)])),
+    componentIndex: renderComponentIndex(entries),
+    references: new Map(entries.map(({ root, members }) => [
+      `${root.name}.md`,
+      renderComponentReference(root, members),
+    ])),
   };
 }
 
-export function renderComponentIndex(records) {
+/**
+ * Resolves root-owned family metadata into the generated documentation entries.
+ * The returned entries own the public index and reference files. `records`
+ * remains the complete catalog so the example compiler can validate members.
+ */
+export function resolveComponentFamilies(records) {
+  const recordsByName = new Map(records.map((record) => [record.name, record]));
+  const familyMembership = new Map();
+  const familiesByRoot = new Map();
+
+  for (const root of records) {
+    if (!root.family) {
+      continue;
+    }
+
+    if (root.family.length === 0) {
+      throw new Error(`${root.name}.family must contain at least one member.`);
+    }
+
+    if (!root.guidance || root.guidance.length === 0) {
+      throw new Error(`${root.name}.family requires root guidance describing its hierarchy.`);
+    }
+
+    const memberRecords = [];
+    const seenMembers = new Set();
+
+    for (const familyMember of root.family) {
+      const memberName = familyMember.name;
+
+      if (seenMembers.has(memberName)) {
+        throw new Error(`${root.name}.family members must be unique: ${memberName}.`);
+      }
+
+      seenMembers.add(memberName);
+      const member = recordsByName.get(memberName);
+
+      if (!member) {
+        throw new Error(`${root.name}.family references unknown component ${memberName}.`);
+      }
+
+      if (memberName === root.name) {
+        throw new Error(`${root.name}.family cannot include its root component.`);
+      }
+
+      if (member.family) {
+        throw new Error(`${root.name}.family member ${memberName} cannot declare its own family.`);
+      }
+
+      const previousRoot = familyMembership.get(memberName);
+
+      if (previousRoot) {
+        throw new Error(`${memberName} belongs to multiple families: ${previousRoot} and ${root.name}.`);
+      }
+
+      familyMembership.set(memberName, root.name);
+      memberRecords.push(member);
+    }
+
+    assertCompleteFamilyExample(root, root.family.map(({ name }) => name));
+    familiesByRoot.set(root.name, memberRecords);
+  }
+
+  return records
+    .filter((record) => !familyMembership.has(record.name) || familiesByRoot.has(record.name))
+    .map((root) => ({ root, members: familiesByRoot.get(root.name) ?? [] }));
+}
+
+export function renderComponentIndex(entries) {
   return [
     "## Components",
     "",
-    ...records.map((record) => `- [${record.name}](references/${record.name}.md): ${capitalize(record.flow)}. ${record.description}`),
+    ...entries.map(({ root }) => `- [${root.name}](references/${root.name}.md): ${capitalize(root.flow)}. ${root.description}`),
   ].join("\n");
+}
+
+function assertCompleteFamilyExample(root, members) {
+  const example = root.examples[0];
+  const tags = new Set([...example.mdx.matchAll(/<\/?([A-Z][A-Za-z0-9]*)\b/g)].map((match) => match[1]));
+  const missing = [root.name, ...members].filter((name) => !tags.has(name));
+
+  if (missing.length > 0) {
+    throw new Error(`${root.name}.examples[0] must contain the root and every family member. Missing: ${missing.join(", ")}.`);
+  }
 }
 
 export function replaceGeneratedComponentIndex(skillSource, componentIndex) {

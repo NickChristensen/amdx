@@ -56,19 +56,27 @@ export type AlertActionProps = React.ComponentProps<"div">;
 
 export const alertMdxDocs = {
   description:
-    "Displays a semantic message with optional title, description, and action content.",
+    "Displays a semantic message with a required description and optional title and action content.",
   flow: "block",
   defaults: {
     variant: "default",
   },
+  family: [
+    { name: "AlertTitle", required: false },
+    { name: "AlertDescription", required: true },
+    { name: "AlertAction", required: false },
+  ],
   guidance: [
-    "Use Alert as the root and place AlertTitle, AlertDescription, or AlertAction inside it as needed.",
+    "Use Alert as the root and include one AlertDescription in every alert.",
+    "Add AlertTitle when the message needs a clear heading, and add AlertAction only when the alert has a compact action or status control.",
+    "A generic Icon is optional. Add it before AlertTitle when possible to give the alert stronger visual hierarchy.",
     "Choose note, tip, important, warning, caution, or danger to match the message context.",
   ],
   examples: [
     {
       title: "Warning with action",
       mdx: `<Alert variant="warning">
+  <Icon name="triangle-alert" aria-hidden="true" />
   <AlertTitle>Review needed</AlertTitle>
   <AlertDescription>
     Check the latest report before sharing it.
@@ -100,6 +108,9 @@ export const alertTitleMdxDocs = {
       title: "Alert title",
       mdx: `<Alert>
   <AlertTitle>Review needed</AlertTitle>
+  <AlertDescription>
+    Check the latest report before sharing it.
+  </AlertDescription>
 </Alert>`,
     },
   ],

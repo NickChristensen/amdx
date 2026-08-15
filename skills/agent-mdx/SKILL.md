@@ -75,18 +75,13 @@ Read `references/<component>.md` for every component you select when that file i
 <!-- BEGIN GENERATED COMPONENT INDEX -->
 ## Components
 
-- [Alert](references/Alert.md): Block. Displays a semantic message with optional title, description, and action content.
-- [AlertAction](references/AlertAction.md): Block. Positions action content in the upper-right area of an Alert.
-- [AlertDescription](references/AlertDescription.md): Block. Renders supporting content for an Alert.
-- [AlertTitle](references/AlertTitle.md): Block. Renders the concise heading for an Alert.
+- [Alert](references/Alert.md): Block. Displays a semantic message with a required description and optional title and action content.
 - [Badge](references/Badge.md): Inline. Displays a short inline status, category, or label.
 - [BarGraphCard](references/BarGraphCard.md): Block. Displays categorical values as vertical bars in a card.
 - [CalendarCard](references/CalendarCard.md): Block. Displays calendar agenda events grouped by local day with time, duration, location, and source-calendar color context.
 - [Card](references/Card.md): Block. Provides a block surface for grouping related content.
 - [ChatCard](references/ChatCard.md): Block. Displays an iMessage-style conversation thread with chronologically sorted, direction-aware message bubbles and sender/time context.
 - [Collapsible](references/Collapsible.md): Block. Groups content behind a toggle that can start open or closed.
-- [CollapsibleContent](references/CollapsibleContent.md): Block. Renders the content region controlled by a CollapsibleTrigger.
-- [CollapsibleTrigger](references/CollapsibleTrigger.md): Block. Renders the interactive control that opens or closes a Collapsible.
 - [Icon](references/Icon.md): Inline. Displays a named Lucide icon with an optional semantic color.
 - [LineGraphCard](references/LineGraphCard.md): Block. Displays a changing series as a filled line chart in a card.
 - [Metric](references/Metric.md): Block. Displays one important value with a label and optional change context.

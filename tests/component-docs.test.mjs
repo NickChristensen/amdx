@@ -5,6 +5,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { createComponentDocsExtractor } from "../scripts/component-docs/extract.mjs";
 import { renderComponentReference } from "../scripts/component-docs/render.mjs";
+import { resolveComponentFamilies } from "../scripts/component-docs/build.mjs";
 
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
 const fixtureRoot = fileURLToPath(new URL("./fixtures/component-docs", import.meta.url));
@@ -75,6 +76,16 @@ test("extracts and renders the production agent MDX catalog", () => {
   for (const record of records) {
     assert.doesNotThrow(() => renderComponentReference(record), record.name);
   }
+
+  assert.deepEqual(records.find((record) => record.name === "Alert").family, [
+    { name: "AlertTitle", required: false },
+    { name: "AlertDescription", required: true },
+    { name: "AlertAction", required: false },
+  ]);
+  assert.deepEqual(records.find((record) => record.name === "Collapsible").family, [
+    { name: "CollapsibleTrigger", required: true },
+    { name: "CollapsibleContent", required: true },
+  ]);
 });
 
 test("preserves root and referenced type source, raw defaults source, and propsTypeName", () => {
@@ -185,4 +196,89 @@ test("validates flow and example count and titles", () => {
   assert.throws(() => extractCase("catalogNoExamples"), /noExamplesMdxDocs.examples must contain one or two examples\./);
   assert.throws(() => extractCase("catalogManyExamples"), /manyExamplesMdxDocs.examples must contain one or two examples\./);
   assert.throws(() => extractCase("catalogDuplicateExamples"), /duplicateExamplesMdxDocs.examples titles must be unique: Repeated\./);
+});
+
+test("extracts and renders a root-owned family", () => {
+  const records = extractCase("catalogFamily");
+  const [root, member] = records;
+
+  assert.deepEqual(root.family, [{ name: "FamilyPart", required: true }]);
+  assert.deepEqual(resolveComponentFamilies(records), [{ root, members: [member] }]);
+  const rendered = renderComponentReference(root, [member]);
+  assert.match(rendered, /FamilyPart \(Required\)/);
+  assert.match(rendered, /### FamilyPart/);
+  assert.match(rendered, /A family member fixture\./);
+  assert.equal(rendered.match(/Place FamilyPart directly inside FamilyRoot\./g)?.length, 1);
+});
+
+test("validates family relationships and complete root examples", () => {
+  const record = (name, family, mdx = `<${name} />`, guidance = ["Use the root with its family members."]) => ({
+    name,
+    family: family?.map((member) => (typeof member === "string" ? { name: member, required: true } : member)),
+    description: `${name} description`,
+    flow: "block",
+    defaultsInitializer: "{}",
+    propsTypeName: `${name}Props`,
+    typeDeclarations: [`export type ${name}Props = {};`],
+    guidance,
+    examples: [{ title: "Example", mdx }],
+  });
+
+  assert.throws(
+    () => resolveComponentFamilies([record("Root", ["Missing"], "<Root />")]),
+    /Root\.family references unknown component Missing\./,
+  );
+  assert.throws(
+    () => resolveComponentFamilies([
+      record("Root", ["Part", "Part"], "<Root><Part /></Root>"),
+      record("Part"),
+    ]),
+    /Root\.family members must be unique: Part\./,
+  );
+  assert.throws(
+    () => resolveComponentFamilies([
+      record("Root", ["Part"], "<Root><Part /></Root>"),
+      record("OtherRoot", ["Part"], "<OtherRoot><Part /></OtherRoot>"),
+      record("Part"),
+    ]),
+    /Part belongs to multiple families: Root and OtherRoot\./,
+  );
+  assert.throws(
+    () => resolveComponentFamilies([
+      record("Root", ["Part"], "<Root><Part /></Root>"),
+      record("Part", ["Nested"], "<Part><Nested /></Part>"),
+      record("Nested"),
+    ]),
+    /Root\.family member Part cannot declare its own family\./,
+  );
+  assert.throws(
+    () => resolveComponentFamilies([
+      record("Root", ["Part"], "<Root />"),
+      record("Part"),
+    ]),
+    /Root\.examples\[0\] must contain the root and every family member\. Missing: Part\./,
+  );
+  assert.throws(
+    () => resolveComponentFamilies([
+      record("Root", ["Part"], "<Root><Part /></Root>", []),
+      record("Part"),
+    ]),
+    /Root\.family requires root guidance describing its hierarchy\./,
+  );
+});
+
+test("rejects malformed static family member metadata", () => {
+  const invalidCases = [
+    ["catalogFamilyMissingRequired", /familyMissingRequiredMdxDocs\.family\[0\] is missing required field\(s\): required\./],
+    ["catalogFamilyExtraField", /familyExtraFieldMdxDocs\.family\[0\] has unsupported field\(s\): extra\./],
+    ["catalogFamilyComputedField", /familyComputedFieldMdxDocs\.family\[0\] must use exactly static name and required property assignments\./],
+    ["catalogFamilySpread", /familySpreadMdxDocs\.family\[0\] must use exactly static name and required property assignments\./],
+    ["catalogFamilyNonliteralName", /familyNonliteralNameMdxDocs\.family\[0\]\.name must be a string literal\./],
+    ["catalogFamilyNonliteralRequired", /familyNonliteralRequiredMdxDocs\.family\[0\]\.required must be a boolean literal\./],
+    ["catalogFamilyNonliteralArray", /familyNonliteralArrayMdxDocs\.family must be a non-empty array of member objects\./],
+  ];
+
+  for (const [catalogName, error] of invalidCases) {
+    assert.throws(() => extractCase(catalogName), error, catalogName);
+  }
 });

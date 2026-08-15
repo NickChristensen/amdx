@@ -24,6 +24,10 @@ export const collapsibleMdxDocs = {
   defaults: {
     defaultOpen: false,
   },
+  family: [
+    { name: "CollapsibleTrigger", required: true },
+    { name: "CollapsibleContent", required: true },
+  ],
   guidance: [
     "Use one CollapsibleTrigger and one CollapsibleContent inside each Collapsible.",
     "Set defaultOpen when the report should show the content on first render.",

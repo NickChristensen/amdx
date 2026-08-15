@@ -369,6 +369,147 @@ export const typeQueryMdxDocs = {
   examples: [{ title: "Type query", mdx: "<TypeQuery />" }],
 } as const satisfies AgentMdxComponentDocs<TypeQueryProps>;
 
+export type FamilyRootProps = {
+  /** Optional label for the family root. */
+  label?: string;
+};
+
+export type FamilyPartProps = {
+  /** Optional text for the family part. */
+  text?: string;
+};
+
+export function FamilyRoot(_props: FamilyRootProps) {
+  void _props;
+  return null;
+}
+
+export function FamilyPart(_props: FamilyPartProps) {
+  void _props;
+  return null;
+}
+
+export const familyRootMdxDocs = {
+  description: "A family root fixture.",
+  flow: "block",
+  defaults: {},
+  family: [{ name: "FamilyPart", required: true }],
+  guidance: ["Place FamilyPart directly inside FamilyRoot."],
+  examples: [{ title: "Complete family", mdx: "<FamilyRoot><FamilyPart /></FamilyRoot>" }],
+} as const satisfies AgentMdxComponentDocs<FamilyRootProps>;
+
+export const familyPartMdxDocs = {
+  description: "A family member fixture.",
+  flow: "block",
+  defaults: {},
+  examples: [{ title: "Family part", mdx: "<FamilyRoot><FamilyPart /></FamilyRoot>" }],
+} as const satisfies AgentMdxComponentDocs<FamilyPartProps>;
+
+const familyMemberName = "FamilyPart";
+const familyMemberRequired = true;
+const familyMemberBase = { name: "FamilyPart", required: true };
+const familyMembers = [familyMemberBase] as const;
+
+export function FamilyMissingRequired(_props: SharedProps) {
+  void _props;
+  return null;
+}
+
+export const familyMissingRequiredMdxDocs = {
+  description: "A family fixture with missing required metadata.",
+  flow: "block",
+  defaults: {},
+  // @ts-expect-error This fixture omits the required field.
+  family: [{ name: "FamilyPart" }],
+  guidance: ["Use the root with its family members."],
+  examples: [{ title: "Missing required", mdx: "<FamilyMissingRequired><FamilyPart /></FamilyMissingRequired>" }],
+} as const satisfies AgentMdxComponentDocs<SharedProps>;
+
+export function FamilyExtraField(_props: SharedProps) {
+  void _props;
+  return null;
+}
+
+export const familyExtraFieldMdxDocs = {
+  description: "A family fixture with an extra metadata field.",
+  flow: "block",
+  defaults: {},
+  // @ts-expect-error This fixture adds an unsupported field.
+  family: [{ name: "FamilyPart", required: true, extra: "unsupported" }],
+  guidance: ["Use the root with its family members."],
+  examples: [{ title: "Extra field", mdx: "<FamilyExtraField><FamilyPart /></FamilyExtraField>" }],
+} as const satisfies AgentMdxComponentDocs<SharedProps>;
+
+export function FamilyComputedField(_props: SharedProps) {
+  void _props;
+  return null;
+}
+
+export const familyComputedFieldMdxDocs = {
+  description: "A family fixture with a computed metadata field.",
+  flow: "block",
+  defaults: {},
+  family: [{ name: "FamilyPart", ["required"]: true }],
+  guidance: ["Use the root with its family members."],
+  examples: [{ title: "Computed field", mdx: "<FamilyComputedField><FamilyPart /></FamilyComputedField>" }],
+} as const satisfies AgentMdxComponentDocs<SharedProps>;
+
+export function FamilySpread(_props: SharedProps) {
+  void _props;
+  return null;
+}
+
+export const familySpreadMdxDocs = {
+  description: "A family fixture with a spread metadata field.",
+  flow: "block",
+  defaults: {},
+  family: [{ ...familyMemberBase }],
+  guidance: ["Use the root with its family members."],
+  examples: [{ title: "Spread field", mdx: "<FamilySpread><FamilyPart /></FamilySpread>" }],
+} as const satisfies AgentMdxComponentDocs<SharedProps>;
+
+export function FamilyNonliteralName(_props: SharedProps) {
+  void _props;
+  return null;
+}
+
+export const familyNonliteralNameMdxDocs = {
+  description: "A family fixture with a nonliteral name.",
+  flow: "block",
+  defaults: {},
+  family: [{ name: familyMemberName, required: true }],
+  guidance: ["Use the root with its family members."],
+  examples: [{ title: "Nonliteral name", mdx: "<FamilyNonliteralName><FamilyPart /></FamilyNonliteralName>" }],
+} as const satisfies AgentMdxComponentDocs<SharedProps>;
+
+export function FamilyNonliteralRequired(_props: SharedProps) {
+  void _props;
+  return null;
+}
+
+export const familyNonliteralRequiredMdxDocs = {
+  description: "A family fixture with a nonliteral required value.",
+  flow: "block",
+  defaults: {},
+  family: [{ name: "FamilyPart", required: familyMemberRequired }],
+  guidance: ["Use the root with its family members."],
+  examples: [{ title: "Nonliteral required", mdx: "<FamilyNonliteralRequired><FamilyPart /></FamilyNonliteralRequired>" }],
+} as const satisfies AgentMdxComponentDocs<SharedProps>;
+
+export function FamilyNonliteralArray(_props: SharedProps) {
+  void _props;
+  return null;
+}
+
+export const familyNonliteralArrayMdxDocs = {
+  description: "A family fixture with a nonliteral family array.",
+  flow: "block",
+  defaults: {},
+  family: familyMembers,
+  guidance: ["Use the root with its family members."],
+  examples: [{ title: "Nonliteral array", mdx: "<FamilyNonliteralArray><FamilyPart /></FamilyNonliteralArray>" }],
+} as const satisfies AgentMdxComponentDocs<SharedProps>;
+
 export function MissingMetadata(_props: SharedProps) {
   void _props;
   return null;
@@ -397,5 +538,13 @@ export const catalogUntypedMetadata = { UntypedMetadata };
 export const catalogWrongContract = { WrongContract };
 export const catalogWrongProps = { WrongProps };
 export const catalogTypeQuery = { TypeQuery };
+export const catalogFamily = { FamilyRoot, FamilyPart };
+export const catalogFamilyMissingRequired = { FamilyMissingRequired };
+export const catalogFamilyExtraField = { FamilyExtraField };
+export const catalogFamilyComputedField = { FamilyComputedField };
+export const catalogFamilySpread = { FamilySpread };
+export const catalogFamilyNonliteralName = { FamilyNonliteralName };
+export const catalogFamilyNonliteralRequired = { FamilyNonliteralRequired };
+export const catalogFamilyNonliteralArray = { FamilyNonliteralArray };
 export const catalogMissingMetadata = { MissingMetadata };
 export const catalogUnsafeName = { "../Reference": MissingMetadata };
