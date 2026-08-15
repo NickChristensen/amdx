@@ -39,16 +39,16 @@ export function renderComponentIndex(records) {
 }
 
 export function replaceGeneratedComponentIndex(skillSource, componentIndex) {
-  const begin = findSingleMarker(skillSource, componentIndexBeginMarker);
-  const end = findSingleMarker(skillSource, componentIndexEndMarker);
-
-  if (begin > end) {
-    throw new Error(`Generated component index markers are reversed in SKILL.md: ${componentIndexEndMarker} appears before ${componentIndexBeginMarker}.`);
-  }
+  const { begin, end } = generatedComponentIndexBounds(skillSource);
 
   const before = skillSource.slice(0, begin + componentIndexBeginMarker.length);
   const after = skillSource.slice(end);
   return `${before}\n${componentIndex}\n${after}`;
+}
+
+export function extractGeneratedComponentIndex(skillSource) {
+  const { begin, end } = generatedComponentIndexBounds(skillSource);
+  return skillSource.slice(begin + componentIndexBeginMarker.length, end).trim();
 }
 
 export function buildCombinedExampleMdx(records) {
@@ -109,6 +109,17 @@ function findSingleMarker(source, marker) {
   }
 
   return first;
+}
+
+function generatedComponentIndexBounds(skillSource) {
+  const begin = findSingleMarker(skillSource, componentIndexBeginMarker);
+  const end = findSingleMarker(skillSource, componentIndexEndMarker);
+
+  if (begin > end) {
+    throw new Error(`Generated component index markers are reversed in SKILL.md: ${componentIndexEndMarker} appears before ${componentIndexBeginMarker}.`);
+  }
+
+  return { begin, end };
 }
 
 function capitalize(value) {

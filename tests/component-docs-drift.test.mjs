@@ -3,7 +3,13 @@ import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { buildComponentDocs, replaceGeneratedComponentIndex } from "../scripts/component-docs/build.mjs";
+import {
+  buildComponentDocs,
+  componentIndexBeginMarker,
+  componentIndexEndMarker,
+  extractGeneratedComponentIndex,
+  replaceGeneratedComponentIndex,
+} from "../scripts/component-docs/build.mjs";
 
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
 const skillPath = path.join(repoRoot, "skills/agent-mdx/SKILL.md");
@@ -13,9 +19,9 @@ const repair = "Run npm run generate:component-docs to update generated componen
 test("generated Agent MDX component documentation has no drift", async () => {
   const output = buildComponentDocs({ repoRoot });
   const skillSource = await readFile(skillPath, "utf8");
-  const expectedSkillSource = replaceGeneratedComponentIndex(skillSource, output.componentIndex);
+  const actualComponentIndex = extractGeneratedComponentIndex(skillSource);
 
-  assert.equal(skillSource, expectedSkillSource, `skills/agent-mdx/SKILL.md has generated component index drift. ${repair}`);
+  assert.equal(actualComponentIndex, output.componentIndex, `skills/agent-mdx/SKILL.md has generated component index drift. ${repair}`);
 
   const entries = await referenceMarkdownFiles();
   const expectedNames = [...output.references.keys()].sort();
@@ -28,6 +34,16 @@ test("generated Agent MDX component documentation has no drift", async () => {
     const actual = await readFile(path.join(referencesDirectory, name), "utf8");
     assert.equal(actual, expected, `skills/agent-mdx/references/${name} has drift. ${repair}`);
   }
+});
+
+test("checks only the generated component index when validating SKILL.md drift", async () => {
+  const output = buildComponentDocs({ repoRoot });
+  const skillSource = `handwritten before\n${componentIndexBeginMarker}\n\n${output.componentIndex}\n\n${componentIndexEndMarker}\nhandwritten after`;
+  const proseOnlyChange = skillSource.replace("handwritten before", "updated handwritten prose");
+  const componentIndexChange = replaceGeneratedComponentIndex(skillSource, `${output.componentIndex}\n- [Unexpected](references/Unexpected.md): Block. Drift.`);
+
+  assert.equal(extractGeneratedComponentIndex(proseOnlyChange), output.componentIndex);
+  assert.notEqual(extractGeneratedComponentIndex(componentIndexChange), output.componentIndex);
 });
 
 async function referenceMarkdownFiles() {
