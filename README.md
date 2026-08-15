@@ -1,51 +1,20 @@
 # AMDX
 
-AMDX gives agents a richer way to communicate complex ideas.
+AMDX is a local Next.js reading surface for trusted MDX documents written by OpenClaw agents. An agent creates a document in the gitignored `documents/` directory, validates it with the bundled Agent MDX skill, and sends its rendered Tailscale URL to the user.
 
-Instead of squeezing every report, plan, analysis, or handoff into plain chat,
-an agent can write MDX: Markdown for structure, code blocks, tables, task lists,
-and links, plus a curated set of custom components for richer presentation.
+The app uses Markdown, GitHub Flavored Markdown, Shiki code highlighting, `==highlight==`, and a small curated catalog of React components. Agents can write only the capitalized components exposed by `agentMdxComponents`; the app owns standard Markdown and HTML element overrides.
 
-The goal is a local reading surface for agent-authored work:
+## Agent workflow
 
-- long-form reports that are easier to scan than chat transcripts
-- technical explanations with highlighted code and tables
-- project handoffs with status, caveats, and next steps
-- rich messages that can use trusted UI components without opening up the whole
-  app surface area
+1. Load `skills/agent-mdx` when the response needs a richer presentation than Telegram.
+2. Run its `create-document` helper from the OpenClaw workspace.
+3. Write the returned `.mdx` file and validate it with the skill's `validate-document` helper.
+4. Send the URL from the latest successful validation result.
 
-## Why MDX?
+Documents are lazy-rendered by extensionless route. For example, `documents/2026-08-14/finances/market-review.mdx` is available at `https://amdx.pony-rattlesnake.ts.net/2026-08-14/finances/market-review`.
 
-Markdown is easy for agents to write and easy for humans to read. MDX keeps that
-strength while allowing selected components when plain Markdown is not enough.
+## Component documentation
 
-For example:
+Each agent-facing component keeps its exported props, JSDoc, and typed metadata next to its implementation. `npm run generate:component-docs` updates the bounded skill index and exact-name generated component references. `npm run test:component-docs` validates the source contract, examples, generator behavior, and generated-file drift.
 
-```mdx
-# Investigation Summary
-
-The issue appears to be isolated to ==mobile Safari table overflow==.
-
-<Card>
-
-## Current Read
-
-- **Confirmed:** desktop rendering is stable
-- **Open:** real-device Safari behavior
-- **Next:** inspect layout on device
-
-</Card>
-```
-
-AMDX intentionally separates the component catalog from normal Markdown
-rendering. Agents can use explicitly exposed components like `Card`, while
-standard Markdown elements such as tables and links can still be rendered
-through app-controlled components behind the scenes.
-
-## Current Shape
-
-AMDX is a Next.js app with Tailwind, shadcn components, GitHub Flavored
-Markdown, Shiki syntax highlighting, and semantic `==highlight==` support.
-
-It is early and local-first. The trust policy and component catalog are still
-being designed.
+Run `npm run lint` and `npm run build` after source changes.

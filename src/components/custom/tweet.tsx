@@ -13,12 +13,31 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { AgentMdxComponentDocs } from "@/lib/agent-mdx-component-docs";
 import { enrichTweet, type EnrichedTweet } from "@/lib/tweet-enrich";
 import { cn } from "@/lib/utils";
 
-type TweetProps = {
+export type TweetCardProps = {
+  /** Numeric X/Twitter post ID as a string; use the value from the post URL's `/status/<id>` segment. */
   id: string;
 };
+
+export const tweetCardMdxDocs = {
+  description:
+    "Fetches and displays an X/Twitter post with its author, text, links, and available media in a card.",
+  flow: "block",
+  defaults: {},
+  guidance: [
+    "Pass only the numeric post ID as a string, not the full URL or an @handle; the card fetches the post at runtime.",
+    "The card handles loading, unavailable, quoted-post, link, photo, and video states from the fetched post data.",
+  ],
+  examples: [
+    {
+      title: "Basic tweet card",
+      mdx: '<TweetCard id="1920343354073846004" />',
+    },
+  ],
+} as const satisfies AgentMdxComponentDocs<TweetCardProps>;
 
 const getTweetMediaProxyUrl = (url: string) =>
   `/api/tweet-media?url=${encodeURIComponent(url)}`;
@@ -316,7 +335,7 @@ export const TweetCardContent = ({
   );
 };
 
-export function TweetCard(props: TweetProps) {
+export function TweetCard(props: TweetCardProps) {
   const [result, setResult] = useState<{
     id: string | null;
     tweet: ReactTweet | null;

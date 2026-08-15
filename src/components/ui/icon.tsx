@@ -4,9 +4,10 @@ import type * as React from "react";
 import { DynamicIcon } from "lucide-react/dynamic";
 import dynamicIconImports from "lucide-react/dynamicIconImports";
 
+import type { AgentMdxComponentDocs } from "@/lib/agent-mdx-component-docs";
 import { cn } from "@/lib/utils";
 
-const iconColorClasses = {
+const iconColorClasses: Record<IconColor, string> = {
   default: "",
   muted: "text-muted-foreground",
   primary: "text-primary",
@@ -15,17 +16,47 @@ const iconColorClasses = {
   danger: "text-red-600 dark:text-red-400",
 } as const;
 
-type DynamicIconProps = React.ComponentProps<typeof DynamicIcon>;
-
-export type IconColor = keyof typeof iconColorClasses;
+export type IconColor =
+  | "default"
+  | "muted"
+  | "primary"
+  | "success"
+  | "warning"
+  | "danger";
 
 export type IconProps = Omit<
-  DynamicIconProps,
+  React.ComponentProps<typeof DynamicIcon>,
   "color" | "fallback" | "name"
 > & {
+  /** Semantic color used for the icon. */
   color?: IconColor;
+
+  /** Lucide icon name to render. Unknown names render nothing. */
   name: string;
 };
+
+export const iconMdxDocs = {
+  description: "Displays a named Lucide icon with an optional semantic color.",
+  flow: "inline",
+  defaults: {
+    color: "default",
+    size: "1em",
+  },
+  guidance: [
+    "Use the kebab-case Lucide icon name, such as check, arrow-right, or circle-alert.",
+    "Use a semantic color only when it communicates status or emphasis.",
+  ],
+  examples: [
+    {
+      title: "Basic icon",
+      mdx: '<Icon name="check" aria-label="Complete" />',
+    },
+    {
+      title: "Colored icon",
+      mdx: '<Icon name="circle-alert" color="warning" size={20} aria-label="Warning" />',
+    },
+  ],
+} as const satisfies AgentMdxComponentDocs<IconProps>;
 
 function resolveIconColorClass(color: IconProps["color"]) {
   if (!color) return "";
@@ -35,9 +66,9 @@ function resolveIconColorClass(color: IconProps["color"]) {
 
 export function Icon({
   className,
-  color,
+  color = iconMdxDocs.defaults.color,
   name,
-  size = "1em",
+  size = iconMdxDocs.defaults.size,
   ...props
 }: IconProps) {
   const iconName = name;

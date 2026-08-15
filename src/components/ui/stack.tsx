@@ -1,4 +1,5 @@
 import * as React from "react";
+import type { AgentMdxComponentDocs } from "@/lib/agent-mdx-component-docs";
 import { cn } from "@/lib/utils";
 
 /* smh tailwind
@@ -9,21 +10,64 @@ import { cn } from "@/lib/utils";
 
 */
 
+export type StackProps = React.ComponentProps<"div"> & {
+  /** Spacing between child elements, using the project's Tailwind gap scale. */
+  gap?: number;
+
+  /** Cross-axis alignment for child elements. */
+  align?: "start" | "center" | "end" | "stretch";
+
+  /** Main-axis distribution for child elements. */
+  justify?: "start" | "center" | "end" | "between" | "around";
+
+  /** Direction in which child elements are laid out. */
+  direction?: "horizontal" | "vertical";
+
+  /** Give each direct child an equal flex share. */
+  flexItems?: boolean;
+};
+
+export const stackMdxDocs = {
+  description: "Lays out content in a horizontal or vertical flex stack.",
+  flow: "block",
+  defaults: {
+    gap: 2,
+    align: "start",
+    justify: "start",
+    direction: "horizontal",
+    flexItems: false,
+  },
+  guidance: [
+    "Use vertical direction for a readable group of blocks and horizontal direction for a compact row.",
+    "Use flexItems when direct children should share the available space equally.",
+  ],
+  examples: [
+    {
+      title: "Basic stack",
+      mdx: `<Stack>
+  <Badge>First item</Badge>
+  <Badge>Second item</Badge>
+</Stack>`,
+    },
+    {
+      title: "Vertical equal-width stack",
+      mdx: `<Stack direction="vertical" gap={4} flexItems>
+  <Card>Primary content</Card>
+  <Card>Secondary content</Card>
+</Stack>`,
+    },
+  ],
+} as const satisfies AgentMdxComponentDocs<StackProps>;
+
 export const Stack = ({
   className,
-  gap = 2,
-  align = "start",
-  justify = "start",
-  direction = "horizontal",
-  flexItems = false,
+  gap = stackMdxDocs.defaults.gap,
+  align = stackMdxDocs.defaults.align,
+  justify = stackMdxDocs.defaults.justify,
+  direction = stackMdxDocs.defaults.direction,
+  flexItems = stackMdxDocs.defaults.flexItems,
   ...props
-}: React.ComponentProps<"div"> & {
-  gap?: number;
-  align?: "start" | "center" | "end" | "stretch";
-  justify?: "start" | "center" | "end" | "between" | "around";
-  direction?: "horizontal" | "vertical";
-  flexItems?: boolean;
-}) => {
+}: StackProps) => {
   const isHorizontal = direction === "horizontal";
 
   return (

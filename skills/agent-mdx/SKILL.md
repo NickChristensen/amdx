@@ -76,22 +76,26 @@ These are mandatory authoring rules. Static validation does not yet enforce ever
 
 Read `references/<component>.md` for every component you select when that file is present. It defines the supported props, defaults, semantic guidance, and a validated example.
 
-When a selected component has no reference file, read only its relevant example in `{skillDir}/../../examples/kitchen-sink.mdx`. Follow that validated prop shape with new literal data. Use Markdown when neither source documents the needed use. Never guess props.
+<!-- BEGIN GENERATED COMPONENT INDEX -->
+## Components
 
-- `Badge`: Short status, category, or label. Keep it brief and inline.
-- `BarGraphCard`: Bar comparison. Use for a small set of comparable values.
-- `CalendarCard`: Calendar information. Use when dates and schedule context matter.
-- `Card`: One grouped content surface. Use for ordinary Markdown content.
-- `ChatCard`: Conversation or message sequence. Use only for actual dialogue.
-- `Collapsible`, `CollapsibleTrigger`, `CollapsibleContent`: Optional supporting detail.
-- `Icon`: Small supported icon. Pair it with a clear label where meaning matters.
-- `LineGraphCard`: Trend over an ordered time sequence.
-- `Metric`: One key value with its label and optional change context.
-- `Progress`: Completion or progress toward a known total.
-- `Stack`: Directional layout and spacing for child content.
-- `StockQuoteCard`: Market quote with a clear timestamp or freshness note.
-- `TodoListCard`: Actionable task list with clear owners or next steps where known.
-- `TweetCard`: A post from X. Use only when the original post adds necessary context.
+- [Badge](references/Badge.md): Inline. Displays a short inline status, category, or label.
+- [BarGraphCard](references/BarGraphCard.md): Block. Displays categorical values as vertical bars in a card.
+- [CalendarCard](references/CalendarCard.md): Block. Displays calendar agenda events grouped by local day with time, duration, location, and source-calendar color context.
+- [Card](references/Card.md): Block. Provides a block surface for grouping related content.
+- [ChatCard](references/ChatCard.md): Block. Displays an iMessage-style conversation thread with chronologically sorted, direction-aware message bubbles and sender/time context.
+- [Collapsible](references/Collapsible.md): Block. Groups content behind a toggle that can start open or closed.
+- [CollapsibleContent](references/CollapsibleContent.md): Block. Renders the content region controlled by a CollapsibleTrigger.
+- [CollapsibleTrigger](references/CollapsibleTrigger.md): Block. Renders the interactive control that opens or closes a Collapsible.
+- [Icon](references/Icon.md): Inline. Displays a named Lucide icon with an optional semantic color.
+- [LineGraphCard](references/LineGraphCard.md): Block. Displays a changing series as a filled line chart in a card.
+- [Metric](references/Metric.md): Block. Displays one important value with a label and optional change context.
+- [Progress](references/Progress.md): Block. Displays completion progress as a horizontal bar.
+- [Stack](references/Stack.md): Block. Lays out content in a horizontal or vertical flex stack.
+- [StockQuoteCard](references/StockQuoteCard.md): Block. Fetches and displays quote data for ticker symbols, including current price, period changes, and an expandable one-day price chart.
+- [TodoListCard](references/TodoListCard.md): Block. Displays Things todos as compact rows with their tags, project-or-area context, note presence, and optional agent highlighting.
+- [TweetCard](references/TweetCard.md): Block. Fetches and displays an X/Twitter post with its author, text, links, and available media in a card.
+<!-- END GENERATED COMPONENT INDEX -->
 
 Components whose names end in `Card` provide their own surface. Do not place a `Card` inside another `Card`, or place a `*Card` component inside `Card`. Use `Stack` or Markdown headings to arrange card-level content.
 

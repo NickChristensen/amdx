@@ -398,3 +398,4 @@ export const catalogWrongContract = { WrongContract };
 export const catalogWrongProps = { WrongProps };
 export const catalogTypeQuery = { TypeQuery };
 export const catalogMissingMetadata = { MissingMetadata };
+export const catalogUnsafeName = { "../Reference": MissingMetadata };

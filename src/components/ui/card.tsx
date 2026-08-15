@@ -1,12 +1,50 @@
 import * as React from "react";
 
+import type { AgentMdxComponentDocs } from "@/lib/agent-mdx-component-docs";
 import { cn } from "@/lib/utils";
+
+export type CardProps = React.ComponentProps<"div"> & {
+  /** Controls the card's outer spacing. */
+  size?: "default" | "sm";
+};
+
+export const cardMdxDocs = {
+  description: "Provides a block surface for grouping related content.",
+  flow: "block",
+  defaults: {
+    size: "default",
+  },
+  guidance: [
+    "Use Card as the outer surface for one complete report block.",
+    "Use size=\"sm\" when the block needs tighter outer spacing.",
+  ],
+  examples: [
+    {
+      title: "Basic card",
+      mdx: `<Card>
+
+## Revenue
+
+**$42,000** this month.
+
+</Card>`,
+    },
+    {
+      title: "Compact card",
+      mdx: `<Card size="sm">
+
+A compact block with reduced outer spacing.
+
+</Card>`,
+    },
+  ],
+} as const satisfies AgentMdxComponentDocs<CardProps>;
 
 function Card({
   className,
-  size = "default",
+  size = cardMdxDocs.defaults.size,
   ...props
-}: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
+}: CardProps) {
   return (
     <div
       data-slot="card"

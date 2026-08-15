@@ -76,7 +76,7 @@ The Pi authoring agent uses a dedicated system prompt. It does not invoke or loa
 
 The dedicated Pi system prompt owns the authoring workflow, global syntax guidance, fresh-session lifecycle, request boundary, diagnostic calls, readiness-gate call, and structured result behavior. The harness should supply a compact component index and make the generated `references/<component>.md` files available on demand.
 
-The Pi experiment should use the same runtime syntax and component contract as Direct OpenClaw authoring. Component details should come from the shared generated per-component references and machine-readable catalog. Renderer syntax examples should use the shared contract tests. A future experiment must decide how to compose the Pi system prompt from the shared authoring contract without making the Pi agent depend on the OpenClaw skill.
+The Pi experiment should use the same runtime syntax and component contract as the selected OpenClaw workflow. `agentMdxComponents` is the machine-readable TypeScript catalog, and the generated exact-name per-component references provide the authoring details. Renderer syntax examples should use the shared contract tests. A future experiment must decide how to compose the Pi system prompt from the shared authoring contract without making the Pi agent depend on the OpenClaw skill.
 
 ### Authoring harness
 
@@ -193,7 +193,7 @@ The Pi agent should not receive general write access to the AMDX application sou
 
 - OpenClaw skills carry only selection, request, and relay guidance.
 - The dedicated prompt can focus on visual communication and valid MDX.
-- Global syntax and component guidance remain aligned with Direct OpenClaw authoring.
+- Global syntax and component guidance remain aligned with the selected OpenClaw workflow.
 - A fresh session gives each document a predictable authoring context.
 - Explicit LSP calls provide targeted feedback during composition.
 - A smaller dedicated model may provide sufficient authoring quality.
@@ -237,7 +237,7 @@ Shared validator coverage, path behavior, renderer behavior, URL derivation, and
 - Which Pi model and thinking level provide the required authoring quality at acceptable cost?
 - Should the harness use the Pi SDK or a process-isolated RPC session?
 - What exact read, write, and command permissions should the Pi session receive?
-- How should the harness compose the Pi system prompt from the shared syntax contract and generated component catalog without creating a second drifting source of truth?
+- How should the harness compose the Pi system prompt from the shared syntax contract, `agentMdxComponents`, and generated exact-name references without creating a second drifting source of truth?
 - How should OpenClaw invoke the harness and pass attachment paths?
 - How should the authoring agent request more information from OpenClaw?
 - Should `telegramSummary` be authored by the Pi agent or composed entirely by OpenClaw?

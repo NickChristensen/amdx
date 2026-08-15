@@ -1,8 +1,48 @@
-import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+import type * as React from "react"
+import { cva } from "class-variance-authority"
 import { Slot } from "radix-ui"
 
+import type { AgentMdxComponentDocs } from "@/lib/agent-mdx-component-docs"
 import { cn } from "@/lib/utils"
+
+export type BadgeVariant =
+  | "default"
+  | "secondary"
+  | "destructive"
+  | "outline"
+  | "ghost"
+  | "link"
+
+export type BadgeProps = React.ComponentPropsWithoutRef<"span"> & {
+  /** Visual treatment applied to the badge. */
+  variant?: BadgeVariant
+
+  /** Render the badge through its single child element. */
+  asChild?: boolean
+}
+
+export const badgeMdxDocs = {
+  description: "Displays a short inline status, category, or label.",
+  flow: "inline",
+  defaults: {
+    variant: "default",
+    asChild: false,
+  },
+  guidance: [
+    "Choose a variant that matches the status emphasis: use secondary or outline for quieter labels and destructive for errors or blocked states.",
+    "Use asChild when the badge should adopt the semantics and behavior of its single child element.",
+  ],
+  examples: [
+    {
+      title: "Default status",
+      mdx: "<Badge>Draft</Badge>",
+    },
+    {
+      title: "Destructive status",
+      mdx: '<Badge variant="destructive">Blocked</Badge>',
+    },
+  ],
+} as const satisfies AgentMdxComponentDocs<BadgeProps>
 
 const badgeVariants = cva(
   "group/badge inline-flex align-text-bottom h-5 w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-4xl border border-transparent px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-all focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3!",
@@ -22,18 +62,17 @@ const badgeVariants = cva(
       },
     },
     defaultVariants: {
-      variant: "default",
+      variant: badgeMdxDocs.defaults.variant,
     },
   }
 )
 
 function Badge({
   className,
-  variant = "default",
-  asChild = false,
+  variant = badgeMdxDocs.defaults.variant,
+  asChild = badgeMdxDocs.defaults.asChild,
   ...props
-}: React.ComponentProps<"span"> &
-  VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
+}: BadgeProps) {
   const Comp = asChild ? Slot.Root : "span"
 
   return (

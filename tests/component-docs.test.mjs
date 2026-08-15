@@ -25,6 +25,16 @@ function extractCase(catalogName) {
 }
 
 const extractedRecords = extractFixture();
+const extractProduction = createComponentDocsExtractor({
+  tsConfigFilePath: path.join(repoRoot, "tsconfig.json"),
+  projectSourceRoot: path.join(repoRoot, "src"),
+});
+
+function extractProductionCatalog() {
+  return extractProduction({
+    catalogPath: path.join(repoRoot, "src/components/mdx/mdx-components.tsx"),
+  });
+}
 
 test("extracts deterministic source-backed records and renders the final references", async () => {
   assert.deepEqual(extractedRecords, extractFixture());
@@ -33,6 +43,33 @@ test("extracts deterministic source-backed records and renders the final referen
   for (const record of extractedRecords) {
     const expected = await readFile(path.join(fixtureRoot, "expected", `${record.name}.md`), "utf8");
     assert.equal(renderComponentReference(record), expected, record.name);
+  }
+});
+
+test("extracts and renders the production agent MDX catalog", () => {
+  const records = extractProductionCatalog();
+
+  assert.deepEqual(records.map((record) => record.name), [
+    "Badge",
+    "BarGraphCard",
+    "CalendarCard",
+    "Card",
+    "ChatCard",
+    "Collapsible",
+    "CollapsibleContent",
+    "CollapsibleTrigger",
+    "Icon",
+    "LineGraphCard",
+    "Metric",
+    "Progress",
+    "Stack",
+    "StockQuoteCard",
+    "TodoListCard",
+    "TweetCard",
+  ]);
+
+  for (const record of records) {
+    assert.doesNotThrow(() => renderComponentReference(record), record.name);
   }
 });
 
@@ -63,6 +100,13 @@ test("requires a direct exported props declaration and one callable signature", 
   assert.throws(() => extractCase("catalogInlineProps"), /InlineProps must use an exported direct props alias or interface\./);
   assert.throws(() => extractCase("catalogPrivateRoot"), /PrivateRoot must use an exported direct props alias or interface\./);
   assert.throws(() => extractCase("catalogOverloaded"), /Overloaded must resolve to exactly one callable signature\./);
+});
+
+test("rejects unsafe catalog component names before documentation paths are built", () => {
+  assert.throws(
+    () => extractCase("catalogUnsafeName"),
+    /Agent MDX component name "\.\.\/Reference" must match/,
+  );
 });
 
 test("requires exported referenced types and JSDoc", () => {

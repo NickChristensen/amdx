@@ -23,6 +23,8 @@ small curated component catalog that agents can reliably write against.
   Next will choose another port, commonly `3002`.
 - `npm run lint` must pass after source changes.
 - `npm run build` must pass after source changes.
+- `npm run generate:component-docs` regenerates the bounded Agent MDX component index and the generated `skills/agent-mdx/references/` directory.
+- `npm run test:component-docs` runs source extraction, combined component example validation, generator behavior, and read-only generated-document drift checks.
 - Package installs generally require approval because network access is
   restricted. Ask directly before running `npm install ...`.
 - All `npx ...` commands require sandbox approval, even when the command looks
@@ -38,7 +40,7 @@ small curated component catalog that agents can reliably write against.
 - Path resolution is centralized in `src/lib/content.ts`; keep the path
   containment guard intact.
 - Rendering is lazy: the requested MDX file is read and compiled on request.
-- Do not add static generation over the whole media directory. The directory is
+- Do not add static generation over the whole documents directory. The directory is
   expected to grow.
 - The root index currently recursively lists `.mdx` files. If this becomes too
   expensive, replace it with pagination, a manifest, or an index database rather
@@ -80,6 +82,10 @@ For the current agent-facing component catalog and element overrides, read
 `src/components/mdx/mdx-components.tsx`. Treat that file as the source of truth
 instead of duplicating the list here.
 
+Each agent-facing component keeps an exported authoring-facing props declaration, prop JSDoc, and typed `<camelCaseComponentName>MdxDocs` metadata constant next to its implementation. The metadata provides the description, `inline` or `block` flow, public defaults, guidance, and one or two validated examples.
+
+`agentMdxComponents` is the TypeScript machine-readable catalog. `npm run generate:component-docs` owns the bounded generated component index in `skills/agent-mdx/SKILL.md` and the exact-case references in `skills/agent-mdx/references/`. Do not hand-edit those generated sections or files. Run the generator after changing a component contract, then run `npm run test:component-docs` to validate source extraction, examples, generator behavior, and generated-file drift.
+
 Markdown inside JSX children is supported when written with normal MDX block
 spacing, for example:
 
@@ -107,14 +113,7 @@ spacing, for example:
 
 ## Known Issues
 
-See `TODO.md`.
-
-Current known issue:
-
-- On a real phone, Markdown tables may cause page-level horizontal scroll
-  instead of confining scroll to the generated shadcn table container. Agent
-  Browser/Chromium mobile emulation did not reproduce the issue. Prefer real
-  mobile Safari inspection before adding broad overflow guards.
+- On a real phone, Markdown tables may cause page-level horizontal scroll instead of confining scroll to the generated shadcn table container. Agent Browser and Chromium mobile emulation did not reproduce the issue. Prefer real mobile Safari inspection before adding broad overflow guards.
 
 ## Trust Policy Notes
 
@@ -132,7 +131,7 @@ Important current facts:
 ## Related Paths
 
 - `src/app/[[...slug]]/page.tsx`: dynamic route and index page.
-- `src/lib/content.ts`: media directory, route listing, path safety.
+- `src/lib/content.ts`: documents directory, route listing, path safety.
 - `src/components/mdx/mdx-renderer.tsx`: MDX compile/render pipeline.
 - `src/components/mdx/mdx-components.tsx`: MDX component map.
 - `src/components/ui/*`: generated shadcn components.

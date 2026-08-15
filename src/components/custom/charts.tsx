@@ -19,17 +19,29 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import { Card } from "@/components/ui/card";
+import type { AgentMdxComponentDocs } from "@/lib/agent-mdx-component-docs";
+
+export type ChartDataPoint = {
+  /** Category label shown on the horizontal axis. */
+  label: string;
+  /** Numeric value plotted for the category. */
+  value: number;
+};
+
+export type ChartAnnotation = {
+  /** Numeric reference value shown as a horizontal line. */
+  value: number;
+  /** Optional label shown beside the reference line. */
+  label?: string;
+};
 
 export type ChartProps = {
+  /** Optional heading shown above the chart. */
   title?: string;
-  data: Array<{
-    label: string;
-    value: number;
-  }>;
-  annotation?: {
-    value: number;
-    label?: string;
-  };
+  /** Data points rendered in the chart. */
+  data: ChartDataPoint[];
+  /** Optional reference line drawn across the chart. */
+  annotation?: ChartAnnotation;
 };
 
 const chartConfig = {
@@ -206,6 +218,40 @@ export function BarGraphCard(props: ChartProps) {
   );
 }
 
+export const barGraphCardMdxDocs = {
+  description: "Displays categorical values as vertical bars in a card.",
+  flow: "block",
+  defaults: {},
+  guidance: [
+    "Use annotation to show a target or threshold in the same units as the data.",
+  ],
+  examples: [
+    {
+      title: "Basic bar graph",
+      mdx: `<BarGraphCard
+  title="Weekly signups"
+  data={[
+    { label: "Mon", value: 18 },
+    { label: "Tue", value: 24 },
+    { label: "Wed", value: 21 },
+  ]}
+/>`,
+    },
+    {
+      title: "Bar graph with target",
+      mdx: `<BarGraphCard
+  title="Weekly signups"
+  data={[
+    { label: "Mon", value: 18 },
+    { label: "Tue", value: 24 },
+    { label: "Wed", value: 21 },
+  ]}
+  annotation={{ value: 20, label: "Target" }}
+/>`,
+    },
+  ],
+} as const satisfies AgentMdxComponentDocs<ChartProps>;
+
 export function LineGraphCard(props: ChartProps) {
   const gradientId = useId().replace(/:/g, "");
   const data = props.data ?? [];
@@ -258,3 +304,37 @@ export function LineGraphCard(props: ChartProps) {
     </Card>
   );
 }
+
+export const lineGraphCardMdxDocs = {
+  description: "Displays a changing series as a filled line chart in a card.",
+  flow: "block",
+  defaults: {},
+  guidance: [
+    "Use annotation to show a target or threshold in the same units as the data.",
+  ],
+  examples: [
+    {
+      title: "Basic line graph",
+      mdx: `<LineGraphCard
+  title="Weekly signups"
+  data={[
+    { label: "Mon", value: 18 },
+    { label: "Tue", value: 24 },
+    { label: "Wed", value: 21 },
+  ]}
+/>`,
+    },
+    {
+      title: "Line graph with target",
+      mdx: `<LineGraphCard
+  title="Weekly signups"
+  data={[
+    { label: "Mon", value: 18 },
+    { label: "Tue", value: 24 },
+    { label: "Wed", value: 21 },
+  ]}
+  annotation={{ value: 20, label: "Target" }}
+/>`,
+    },
+  ],
+} as const satisfies AgentMdxComponentDocs<ChartProps>;

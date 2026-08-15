@@ -71,14 +71,25 @@ function extractComponent({ name, expression, projectSourceRoot }) {
 
 function readCatalogEntry(property) {
   if (Node.isShorthandPropertyAssignment(property)) {
-    return { name: property.getName(), expression: property.getNameNode() };
+    const name = property.getName();
+    assertSafeComponentName(name);
+    return { name, expression: property.getNameNode() };
   }
 
   if (Node.isPropertyAssignment(property) && !Node.isComputedPropertyName(property.getNameNode())) {
-    return { name: property.getName(), expression: property.getInitializerOrThrow() };
+    const nameNode = property.getNameNode();
+    const name = Node.isStringLiteral(nameNode) ? nameNode.getLiteralText() : property.getName();
+    assertSafeComponentName(name);
+    return { name, expression: property.getInitializerOrThrow() };
   }
 
   throw new Error("agentMdxComponents must use static property assignments.");
+}
+
+function assertSafeComponentName(name) {
+  if (!/^[A-Z][A-Za-z0-9]*$/.test(name)) {
+    throw new Error(`Agent MDX component name ${JSON.stringify(name)} must match /^[A-Z][A-Za-z0-9]*$/.`);
+  }
 }
 
 function resolvePropsDeclaration(typeNode, projectSourceRoot, componentName) {
