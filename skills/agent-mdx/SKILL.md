@@ -77,6 +77,7 @@ Read `references/<component>.md` for every component you select when that file i
 
 - [Alert](references/Alert.md): Block. Displays a semantic message with a required description and optional title and action content.
 - [Badge](references/Badge.md): Inline. Displays a short inline status, category, or label.
+- [Button](references/Button.md): Inline. Displays an interactive action with a semantic visual treatment.
 - [BarGraphCard](references/BarGraphCard.md): Block. Displays categorical values as vertical bars in a card.
 - [CalendarCard](references/CalendarCard.md): Block. Displays calendar agenda events grouped by local day with time, duration, location, and source-calendar color context.
 - [Card](references/Card.md): Block. Provides a block surface for grouping related content.

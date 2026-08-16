@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
-import Link from "next/link";
+import NextLink from "next/link";
+import { isInternalHref, textLinkClasses } from "@/components/ui/link-utils";
 import { cn } from "@/lib/utils";
 import {
   Card,
@@ -18,6 +19,7 @@ import {
   AlertTitle,
 } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
@@ -48,6 +50,7 @@ export const agentMdxComponents = {
   AlertDescription,
   AlertTitle,
   Badge,
+  Button,
   BarGraphCard,
   CalendarCard,
   Card,
@@ -73,21 +76,15 @@ export const agentMdxComponents = {
 } satisfies MDXComponents;
 
 const elementOverrides = {
-  a: ({ href = "", children, className, ...props }) => {
-    const isInternal = href.startsWith("/");
-    const Component = isInternal ? Link : "a";
+  a: ({ href = "", className, ...props }) => {
+    const Component = isInternalHref(href) ? NextLink : "a";
 
     return (
       <Component
         href={href}
-        className={cn(
-          "text-primary underline-offset-4 hover:underline",
-          className,
-        )}
+        className={cn(textLinkClasses, className)}
         {...props}
-      >
-        {children}
-      </Component>
+      />
     );
   },
   img: ({ className = "", alt = "", ...props }) => (
