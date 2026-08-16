@@ -118,14 +118,6 @@ body {
   margin: 0;
 }
 
-.mdx-document {
-  @apply text-base;
-}
-
-.mdx-document > * {
-  @apply mb-4;
-}
-
 .mdx-document
   :is(h1, h2, h3):not(
     :where(
@@ -162,7 +154,7 @@ body {
 }
 
 .mdx-document p + :is(ul, ol) {
-  @apply -mt-2;
+  @apply -mt-4;
 }
 
 .mdx-document ul,

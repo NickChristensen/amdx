@@ -26,7 +26,7 @@ export default async function Page({
 
   return (
     <main className="mx-auto w-full max-w-3xl px-4 py-8">
-      <article className="mdx-document">
+      <article className="mdx-document text-base flex flex-col gap-6 w-full">
         <MdxRenderer source={source} />
       </article>
       {slug.includes("kitchen-sink") && <KnobsPanel />}

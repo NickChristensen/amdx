@@ -95,7 +95,7 @@ const elementOverrides = {
     // eslint-disable-next-line @next/next/no-img-element
     <img
       alt={alt}
-      className={`max-w-full rounded-md border ${className}`.trim()}
+      className={cn("max-w-full rounded-md border", className)}
       loading="lazy"
       {...props}
     />
