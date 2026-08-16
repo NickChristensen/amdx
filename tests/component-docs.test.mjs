@@ -56,6 +56,7 @@ test("extracts and renders the production agent MDX catalog", () => {
     "AlertDescription",
     "AlertTitle",
     "Badge",
+    "Button",
     "BarGraphCard",
     "CalendarCard",
     "Card",

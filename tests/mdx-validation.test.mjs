@@ -85,7 +85,9 @@ test("validates the compound Alert family and its semantic variant", async () =>
   <AlertDescription>
     Check the latest report before sharing it.
   </AlertDescription>
-  <AlertAction>Open report</AlertAction>
+  <AlertAction>
+    <Button size="sm">Open report</Button>
+  </AlertAction>
 </Alert>`,
   );
 

@@ -13,6 +13,9 @@ export type BadgeProps = React.ComponentPropsWithoutRef<"span"> & {
 
   /** Render the badge through its single child element. */
   asChild?: boolean
+
+  /** Destination route or URL that renders the badge as a link. */
+  href?: string
 }
 
 export type BadgeVariant =
@@ -36,7 +39,7 @@ export const badgeDefaults = {
 ## Guidance
 
 - Choose a variant that matches the status emphasis: use secondary or outline for quieter labels and destructive for errors or blocked states.
-- Use asChild when the badge should adopt the semantics and behavior of its single child element.
+- Use href with a site-relative route or absolute URL for a navigational badge. Use asChild only when another direct child must own the rendered semantics.
 
 ## Examples
 
@@ -46,8 +49,8 @@ export const badgeDefaults = {
 <Badge>Draft</Badge>
 ```
 
-### Destructive status
+### Linked status
 
 ```mdx
-<Badge variant="destructive">Blocked</Badge>
+<Badge href="/examples/kitchen-sink" variant="link">View report</Badge>
 ```

@@ -1,8 +1,10 @@
 import type * as React from "react"
 import { cva } from "class-variance-authority"
 import { Slot } from "radix-ui"
+import NextLink from "next/link"
 
 import type { AgentMdxComponentDocs } from "@/lib/agent-mdx-component-docs"
+import { isInternalHref, textLinkClasses } from "@/components/ui/link-utils"
 import { cn } from "@/lib/utils"
 
 export type BadgeVariant =
@@ -22,7 +24,7 @@ const badgeVariantClasses = {
   outline:
     "border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",
   ghost: "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
-  link: "text-primary underline-offset-4 hover:underline",
+  link: textLinkClasses,
 } satisfies Record<BadgeVariant, string>
 
 export type BadgeProps = React.ComponentPropsWithoutRef<"span"> & {
@@ -31,6 +33,9 @@ export type BadgeProps = React.ComponentPropsWithoutRef<"span"> & {
 
   /** Render the badge through its single child element. */
   asChild?: boolean
+
+  /** Destination route or URL that renders the badge as a link. */
+  href?: string
 }
 
 export const badgeMdxDocs = {
@@ -42,7 +47,7 @@ export const badgeMdxDocs = {
   },
   guidance: [
     "Choose a variant that matches the status emphasis: use secondary or outline for quieter labels and destructive for errors or blocked states.",
-    "Use asChild when the badge should adopt the semantics and behavior of its single child element.",
+    "Use href with a site-relative route or absolute URL for a navigational badge. Use asChild only when another direct child must own the rendered semantics.",
   ],
   examples: [
     {
@@ -50,8 +55,8 @@ export const badgeMdxDocs = {
       mdx: "<Badge>Draft</Badge>",
     },
     {
-      title: "Destructive status",
-      mdx: '<Badge variant="destructive">Blocked</Badge>',
+      title: "Linked status",
+      mdx: '<Badge href="/examples/kitchen-sink" variant="link">View report</Badge>',
     },
   ],
 } as const satisfies AgentMdxComponentDocs<BadgeProps>
@@ -72,15 +77,33 @@ function Badge({
   className,
   variant = badgeMdxDocs.defaults.variant,
   asChild = badgeMdxDocs.defaults.asChild,
+  href,
   ...props
 }: BadgeProps) {
+  const badgeClassName = cn(badgeVariants({ variant }), className)
+
+  if (href) {
+    const Component = isInternalHref(href) ? NextLink : "a"
+    const linkProps = props as React.ComponentPropsWithoutRef<"a">
+
+    return (
+      <Component
+        href={href}
+        data-slot="badge"
+        data-variant={variant}
+        className={badgeClassName}
+        {...linkProps}
+      />
+    )
+  }
+
   const Comp = asChild ? Slot.Root : "span"
 
   return (
     <Comp
       data-slot="badge"
       data-variant={variant}
-      className={cn(badgeVariants({ variant }), className)}
+      className={badgeClassName}
       {...props}
     />
   )
