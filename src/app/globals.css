@@ -191,7 +191,15 @@ body {
 }
 
 .mdx-document code {
-  @apply font-mono bg-muted px-1.5 py-0.5 rounded;
+  @apply font-mono text-sm bg-muted px-1.5 py-0.5 rounded;
+}
+
+.mdx-document kbd {
+  @apply pointer-events-none inline-flex h-5 w-fit min-w-5 items-center justify-center gap-1 rounded-sm bg-muted px-1 font-sans text-sm font-medium text-muted-foreground select-none;
+}
+
+.mdx-document kbd svg:not([class*="size-"]) {
+  @apply size-3;
 }
 
 .mdx-document pre {
@@ -199,7 +207,7 @@ body {
 }
 
 .mdx-document pre code {
-  @apply text-sm p-0 bg-transparent;
+  @apply p-0 bg-transparent;
 }
 
 .mdx-document code[data-theme*=" "],
