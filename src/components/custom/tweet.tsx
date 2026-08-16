@@ -51,11 +51,6 @@ const getTweetUserUrl = (tweet: RenderableTweet) =>
     ? tweet.user.url
     : `https://x.com/${tweet.user.screen_name}`;
 
-export const truncate = (str: string | null, length: number) => {
-  if (!str || str.length <= length) return str;
-  return `${str.slice(0, length - 3)}...`;
-};
-
 export const TweetSkeleton = ({
   className,
   ...props
@@ -98,10 +93,7 @@ export const TweetNotFound = ({
   className?: string;
   [key: string]: unknown;
 }) => (
-  <div
-    className={cn("flex size-full flex-col gap-1", className)}
-    {...props}
-  >
+  <div className={cn("flex size-full flex-col gap-1", className)} {...props}>
     <p className="text-sm font-medium">Tweet not found</p>
     <p className="text-sm text-muted-foreground">
       The tweet could not be loaded.
@@ -121,107 +113,30 @@ export const TweetErrorHeader = () => (
   </CardHeader>
 );
 
-export const TweetHeader = ({
-  tweet,
-  showShareLink = true,
-}: {
-  tweet: RenderableTweet;
-  showShareLink?: boolean;
-}) => (
-  <div className="flex flex-row items-start justify-between tracking-normal">
-    <div className="flex items-center space-x-3">
-      <a
-        href={getTweetUserUrl(tweet)}
-        target="_blank"
-        rel="noreferrer"
-        className="shrink-0"
-      >
-        <Avatar size="lg">
-          <AvatarImage
-            src={tweet.user.profile_image_url_https}
-            alt={tweet.user.screen_name}
-          />
-        </Avatar>
-      </a>
-      <div className="flex flex-col">
-        <a
-          href={getTweetUserUrl(tweet)}
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center whitespace-nowrap font-medium text-foreground transition-opacity hover:opacity-80"
-        >
-          {truncate(tweet.user.name, 20)}
-        </a>
-        <div className="flex items-center space-x-1">
-          <a
-            href={getTweetUserUrl(tweet)}
-            target="_blank"
-            rel="noreferrer"
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            @{truncate(tweet.user.screen_name, 16)}
-          </a>
-        </div>
-      </div>
-    </div>
-    {showShareLink && (
-      <a href={tweet.url} target="_blank" rel="noreferrer">
-        <span className="sr-only">Link to tweet</span>
-        <ExternalLink className="text-muted-foreground hover:text-foreground size-4 items-start transition-all ease-in-out hover:scale-105" />
-      </a>
-    )}
-  </div>
-);
-
-export const TweetCardHeader = ({ tweet }: { tweet: RenderableTweet }) => (
-  <CardHeader>
-    <div className="flex items-center gap-3 tracking-normal">
-      <a
-        href={getTweetUserUrl(tweet)}
-        target="_blank"
-        rel="noreferrer"
-        className="shrink-0"
-      >
-        <Avatar size="lg">
-          <AvatarImage
-            src={tweet.user.profile_image_url_https}
-            alt={tweet.user.screen_name}
-          />
-        </Avatar>
-      </a>
-      <div className="flex min-w-0 flex-col">
-        <a
-          href={getTweetUserUrl(tweet)}
-          target="_blank"
-          rel="noreferrer"
-          className="truncate font-medium text-foreground transition-opacity hover:opacity-80"
-        >
-          {truncate(tweet.user.name, 20)}
-        </a>
-        <a
-          href={getTweetUserUrl(tweet)}
-          target="_blank"
-          rel="noreferrer"
-          className="truncate text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          @{truncate(tweet.user.screen_name, 16)}
-        </a>
-      </div>
-    </div>
-    <CardAction>
-      <a
-        href={tweet.url}
-        target="_blank"
-        rel="noreferrer"
-      >
-        <span className="sr-only">Link to tweet</span>
-        <ExternalLink
-          aria-hidden="true"
-          className="size-4 text-muted-foreground transition-all ease-in-out hover:scale-105 hover:text-foreground"
+export const TweetHeader = ({ tweet }: { tweet: RenderableTweet }) => (
+  <div className="flex items-center gap-3 tracking-normal">
+    <a
+      href={getTweetUserUrl(tweet)}
+      target="_blank"
+      rel="noreferrer"
+      className="group flex min-w-0 items-center gap-3 text-sm transition-opacity hover:opacity-75 focus-visible:opacity-75"
+    >
+      <Avatar size="lg">
+        <AvatarImage
+          src={tweet.user.profile_image_url_https}
+          alt={tweet.user.screen_name}
         />
-      </a>
-    </CardAction>
-  </CardHeader>
+      </Avatar>
+      <div className="flex min-w-0 flex-col">
+        <span className="truncate font-medium text-foreground">
+          {tweet.user.name}
+        </span>
+        <span className="truncate text-muted-foreground">
+          @{tweet.user.screen_name}
+        </span>
+      </div>
+    </a>
+  </div>
 );
 
 export const TweetBody = ({ tweet }: { tweet: RenderableTweet }) => (
@@ -316,20 +231,21 @@ export const TweetCardContent = ({
   const enrichedTweet = enrichTweet(tweet);
   return (
     <CardContent
-      className={cn("relative flex w-full flex-col gap-4", className)}
+      className={cn("flex w-full flex-col gap-4", className)}
       {...props}
     >
       <TweetBody tweet={enrichedTweet} />
       <TweetMedia tweet={enrichedTweet} />
       {enrichedTweet.quoted_tweet && (
-        <div className="relative flex w-full flex-col gap-4 overflow-hidden rounded-xl border p-4">
-          <TweetHeader
-            tweet={enrichedTweet.quoted_tweet}
-            showShareLink={false}
-          />
-          <TweetBody tweet={enrichedTweet.quoted_tweet} />
-          <TweetMedia tweet={enrichedTweet.quoted_tweet} />
-        </div>
+        <Card size="sm" className="shadow-none">
+          <CardHeader>
+            <TweetHeader tweet={enrichedTweet.quoted_tweet} />
+          </CardHeader>
+          <CardContent>
+            <TweetBody tweet={enrichedTweet.quoted_tweet} />
+            <TweetMedia tweet={enrichedTweet.quoted_tweet} />
+          </CardContent>
+        </Card>
       )}
     </CardContent>
   );
@@ -401,9 +317,22 @@ export function TweetCard(props: TweetCardProps) {
     );
   }
 
+  const enrichedTweet = enrichTweet(result.tweet);
+
   return (
     <Card>
-      <TweetCardHeader tweet={enrichTweet(result.tweet)} />
+      <CardHeader>
+        <TweetHeader tweet={enrichedTweet} />
+        <CardAction>
+          <a href={enrichedTweet.url} target="_blank" rel="noreferrer">
+            <span className="sr-only">Link to tweet</span>
+            <ExternalLink
+              aria-hidden="true"
+              className="size-4 text-muted-foreground transition-transform transition-color hover:scale-105 hover:text-foreground"
+            />
+          </a>
+        </CardAction>
+      </CardHeader>
       <TweetCardContent tweet={result.tweet} />
     </Card>
   );
