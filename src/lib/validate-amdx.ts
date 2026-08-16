@@ -1,13 +1,12 @@
 import { readFile } from "node:fs/promises";
 import { compile } from "@mdx-js/mdx";
-import { VFile } from "vfile";
-import { matter } from "vfile-matter";
 import {
   resolveDocumentLocation,
   userFacingUrl,
 } from "./amdx-document-paths.ts";
 import { MdxAnalyzer } from "./mdx-analyzer.ts";
 import { mdxCompileOptions } from "./mdx-compile-options.ts";
+import { parseMdxSource } from "./mdx-source.ts";
 
 export type AmdxDiagnostic = {
   line: number;
@@ -44,9 +43,25 @@ function diagnostic(
 }
 
 function parseRequiredFrontMatter(source: string, filePath: string) {
-  const file = new VFile({ path: filePath, value: source });
   try {
-    matter(file);
+    const { frontMatter: metadata } = parseMdxSource(source, filePath);
+
+    const requiredKeys = ["title", "agent", "created"] as const;
+    const diagnostics = requiredKeys.flatMap((key) => {
+      const value = key in metadata ? metadata[key] : undefined;
+      if (typeof value === "string" && value.trim()) {
+        return [];
+      }
+
+      return [
+        diagnostic(
+          "frontmatter",
+          `Required front matter field \"${key}\" is missing or empty.`,
+        ),
+      ];
+    });
+
+    return { diagnostics };
   } catch (error) {
     const yamlError = error as {
       message?: string;
@@ -65,33 +80,6 @@ function parseRequiredFrontMatter(source: string, filePath: string) {
       ],
     };
   }
-
-  const values = file.data.matter;
-  const metadata: Record<string, unknown> =
-    values && typeof values === "object"
-      ? (values as Record<string, unknown>)
-      : {};
-
-  const requiredKeys = ["title", "agent", "created"] as const;
-  const diagnostics = requiredKeys.flatMap((key) => {
-    const value = key in metadata ? metadata[key] : undefined;
-    if (typeof value === "string" && value.trim()) {
-      return [];
-    }
-
-    return [
-      diagnostic(
-        "frontmatter",
-        `Required front matter field \"${key}\" is missing or empty.`,
-      ),
-    ];
-  });
-
-  if (diagnostics.length > 0) {
-    return { diagnostics };
-  }
-
-  return { diagnostics: [] };
 }
 
 function compilerDiagnostic(error: unknown) {

@@ -1,10 +1,11 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { cache } from "react";
 import {
   AMDX_DOCUMENTS_DIR,
   resolveDocumentLocation,
   routeToDocumentPath,
-} from "@/lib/amdx-document-paths";
+} from "./amdx-document-paths.ts";
 
 export const MDX_MEDIA_DIR = AMDX_DOCUMENTS_DIR;
 
@@ -18,8 +19,7 @@ export function slugToFilePath(slug: string[] = []) {
   return routeToDocumentPath(slug);
 }
 
-export async function readMdxFile(slug: string[] = []) {
-  const filePath = routeToDocumentPath(slug);
+const readMdxFileAtPath = cache(async (filePath: string) => {
   const location = await resolveDocumentLocation(filePath);
   const [source, stats] = await Promise.all([
     fs.readFile(location.path, "utf8"),
@@ -31,6 +31,10 @@ export async function readMdxFile(slug: string[] = []) {
     source,
     modifiedAt: stats.mtimeMs,
   };
+});
+
+export function readMdxFile(slug: string[] = []) {
+  return readMdxFileAtPath(routeToDocumentPath(slug));
 }
 
 export async function listMdxRoutes() {

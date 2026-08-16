@@ -4,7 +4,7 @@ import test from "node:test";
 import { compile } from "@mdx-js/mdx";
 import { isInternalHref } from "../src/components/ui/link-utils.ts";
 import { mdxCompileOptions } from "../src/lib/mdx-compile-options.ts";
-import { renderableMdxSource } from "../src/lib/mdx-source.ts";
+import { parseMdxSource } from "../src/lib/mdx-source.ts";
 
 test("strips YAML front matter before the renderer compiles the document body", async () => {
   const source = `---
@@ -18,7 +18,7 @@ created: 2099-12-31T12:34:56-06:00
 rendered-body-paragraph
 `;
 
-  const renderableSource = renderableMdxSource(source);
+  const renderableSource = parseMdxSource(source).source;
   const compiled = String(await compile(renderableSource, mdxCompileOptions));
 
   assert.doesNotMatch(renderableSource, /frontmatter-only-title|frontmatter-only-agent/);

@@ -3,15 +3,16 @@ import { compile } from "@mdx-js/mdx";
 import type React from "react";
 import { mdxComponents } from "@/components/mdx/mdx-components";
 import { mdxCompileOptions } from "@/lib/mdx-compile-options";
-import { renderableMdxSource } from "@/lib/mdx-source";
+import { parseMdxSource } from "@/lib/mdx-source";
 
 type MdxModule = {
   default: React.ComponentType<{ components?: typeof mdxComponents }>;
 };
 
 export async function MdxRenderer({ source }: { source: string }) {
+  const renderableSource = parseMdxSource(source).source;
   const code = String(
-    await compile(renderableMdxSource(source), mdxCompileOptions),
+    await compile(renderableSource, mdxCompileOptions),
   );
   const run = new Function(String.raw`${code}; return { default: MDXContent };`);
   const { default: Content } = run({
