@@ -29,9 +29,7 @@ export default async function Page({
       <article className="mdx-document">
         <MdxRenderer source={source} />
       </article>
-      {slug.length === 1 && slug[0] === "kitchen-sink" ? (
-        <KnobsPanel />
-      ) : null}
+      {slug.includes("kitchen-sink") && <KnobsPanel />}
     </main>
   );
 }
