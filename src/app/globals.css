@@ -142,42 +142,16 @@ body {
   @apply mt-0;
 }
 
-.mdx-document
-  h1:not(
-    [data-slot="card-header"] *,
-    [data-slot="card-footer"] *,
-    [data-slot="card-action"] *
-  ) {
+.mdx-document h1 {
   @apply text-4xl font-bold;
 }
 
-.mdx-document
-  h2:not(
-    [data-slot="card-header"] *,
-    [data-slot="card-footer"] *,
-    [data-slot="card-action"] *
-  ) {
+.mdx-document h2 {
   @apply text-2xl font-semibold;
 }
 
-.mdx-document
-  h3:not(
-    [data-slot="card-header"] *,
-    [data-slot="card-footer"] *,
-    [data-slot="card-action"] *
-  ) {
+.mdx-document h3 {
   @apply text-lg font-semibold;
-}
-
-.mdx-document
-  a:not(
-    [data-slot="card-header"] *,
-    [data-slot="card-footer"] *,
-    [data-slot="card-action"] *
-  ) {
-  color: var(--primary);
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
 }
 
 .mdx-document mark {
@@ -234,13 +208,6 @@ body {
 
 .mdx-document pre code {
   @apply text-sm p-0 bg-transparent;
-}
-
-/* top-level container-escaping components */
-.mdx-document > figure > pre,
-.mdx-document > [data-slot="alert"],
-.mdx-document > [data-slot="card"] {
-  @apply md:-mx-4;
 }
 
 .mdx-document code[data-theme*=" "],

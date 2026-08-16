@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import {
   Card,
   CardAction,
@@ -72,21 +73,21 @@ export const agentMdxComponents = {
 } satisfies MDXComponents;
 
 const elementOverrides = {
-  a: ({ href = "", children, ...props }) => {
+  a: ({ href = "", children, className, ...props }) => {
     const isInternal = href.startsWith("/");
-
-    if (isInternal) {
-      return (
-        <Link href={href} {...props}>
-          {children}
-        </Link>
-      );
-    }
+    const Component = isInternal ? Link : "a";
 
     return (
-      <a href={href} rel="noreferrer" target="_blank" {...props}>
+      <Component
+        href={href}
+        className={cn(
+          "text-primary underline-offset-4 hover:underline",
+          className,
+        )}
+        {...props}
+      >
         {children}
-      </a>
+      </Component>
     );
   },
   img: ({ className = "", alt = "", ...props }) => (
