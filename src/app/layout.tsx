@@ -16,10 +16,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AMDX",
+  title: {
+    default: "AMDX",
+    template: "%s | AMDX",
+  },
   description: "Lazy MDX rendering for agent-written reports.",
 };
-
 const themeScript = `
 (() => {
   const root = document.documentElement;
