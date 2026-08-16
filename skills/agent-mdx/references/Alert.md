@@ -54,7 +54,9 @@ export const alertDefaults = {
   <AlertDescription>
     Check the latest report before sharing it.
   </AlertDescription>
-  <AlertAction>Open report</AlertAction>
+  <AlertAction>
+    <Button href="/examples/kitchen-sink" size="sm">Open report</Button>
+  </AlertAction>
 </Alert>
 ```
 
@@ -161,6 +163,7 @@ export const alertActionDefaults = {} satisfies AgentMdxDefaults<AlertActionProp
 
 - Place AlertAction inside an Alert when the message has a compact action or status control.
 - Keep action content short so it fits beside the alert message.
+- Use Button with href for a navigational alert action.
 
 #### Examples
 
@@ -169,6 +172,8 @@ export const alertActionDefaults = {} satisfies AgentMdxDefaults<AlertActionProp
 ```mdx
 <Alert>
   <AlertDescription>New report data is available.</AlertDescription>
-  <AlertAction>View</AlertAction>
+  <AlertAction>
+    <Button href="/examples/kitchen-sink" size="sm">View report</Button>
+  </AlertAction>
 </Alert>
 ```
