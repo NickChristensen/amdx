@@ -526,7 +526,7 @@ function StockQuoteList({
 
   return (
     <Card className="py-0">
-      <CardContent className="divide-y p-0">
+      <CardContent className="divide-y p-0 gap-0">
         {symbols.map((symbol) => (
           <StockQuoteAccordionRow
             key={symbol}
