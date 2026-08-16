@@ -18,7 +18,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { Card } from "@/components/ui/card";
+import { Card, CardTitle, CardContent, CardHeader } from "@/components/ui/card";
 import type { AgentMdxComponentDocs } from "@/lib/agent-mdx-component-docs";
 
 export type ChartDataPoint = {
@@ -91,14 +91,6 @@ function getLineDomain({ data, annotation }: ChartProps) {
   const range = max - min || 1;
 
   return [min - range * 0.15, max + range * 0.1] satisfies [number, number];
-}
-
-function ChartTitle({ title }: { title?: string }) {
-  if (!title) {
-    return null;
-  }
-
-  return <div className="text-sm font-medium">{title}</div>;
 }
 
 function AnnotationLabel({
@@ -190,30 +182,42 @@ export function BarGraphCard(props: ChartProps) {
 
   return (
     <Card className="min-w-0 gap-3">
-      <ChartTitle title={props.title} />
-      <ChartContainer className="aspect-auto h-56 w-full" config={chartConfig}>
-        <BarChart
-          accessibilityLayer
-          data={data}
-          margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+      {props.title && (
+        <CardHeader>
+          <CardTitle>{props.title}</CardTitle>
+        </CardHeader>
+      )}
+      <CardContent>
+        <ChartContainer
+          className="aspect-auto h-56 w-full"
+          config={chartConfig}
         >
-          <CartesianGrid vertical={false} />
-          <XAxis
-            axisLine={false}
-            dataKey="label"
-            tickLine={false}
-            tickMargin={4}
-          />
-          <YAxis domain={getBarDomain(props)} hide />
-          <ChartTooltip content={<ChartValueTooltipContent />} cursor={false} />
-          <AnnotationReferenceLine annotation={props.annotation} />
-          <Bar
-            dataKey="value"
-            fill="var(--color-value)"
-            radius={[10, 10, 0, 0]}
-          />
-        </BarChart>
-      </ChartContainer>
+          <BarChart
+            accessibilityLayer
+            data={data}
+            margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+          >
+            <CartesianGrid vertical={false} />
+            <XAxis
+              axisLine={false}
+              dataKey="label"
+              tickLine={false}
+              tickMargin={4}
+            />
+            <YAxis domain={getBarDomain(props)} hide />
+            <ChartTooltip
+              content={<ChartValueTooltipContent />}
+              cursor={false}
+            />
+            <AnnotationReferenceLine annotation={props.annotation} />
+            <Bar
+              dataKey="value"
+              fill="var(--color-value)"
+              radius={[10, 10, 0, 0]}
+            />
+          </BarChart>
+        </ChartContainer>
+      </CardContent>
     </Card>
   );
 }
@@ -258,49 +262,58 @@ export function LineGraphCard(props: ChartProps) {
 
   return (
     <Card className="min-w-0 gap-3">
-      <ChartTitle title={props.title} />
-      <ChartContainer className="aspect-auto h-56 w-full" config={chartConfig}>
-        <AreaChart
-          accessibilityLayer
-          data={data}
-          margin={{ top: 0, right: 4, bottom: 0, left: 4 }}
+      {props.title && (
+        <CardHeader>
+          <CardTitle>{props.title}</CardTitle>
+        </CardHeader>
+      )}
+      <CardContent>
+        <ChartContainer
+          className="aspect-auto h-56 w-full"
+          config={chartConfig}
         >
-          <defs>
-            <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
-              <stop
-                offset="5%"
-                stopColor="var(--color-fill)"
-                stopOpacity={0.35}
-              />
-              <stop
-                offset="95%"
-                stopColor="var(--color-fill)"
-                stopOpacity={0}
-              />
-            </linearGradient>
-          </defs>
-          <CartesianGrid vertical={false} />
-          <XAxis
-            axisLine={false}
-            dataKey="label"
-            tickLine={false}
-            tickMargin={4}
-          />
-          <YAxis domain={getLineDomain(props)} hide />
-          <ChartTooltip content={<ChartValueTooltipContent />} />
-          <AnnotationReferenceLine annotation={props.annotation} />
-          <Area
-            activeDot={{ r: 4 }}
-            dataKey="value"
-            dot={{ fill: "var(--color-value)", r: 2 }}
-            fill={`url(#${gradientId})`}
-            fillOpacity={1}
-            stroke="var(--color-value)"
-            strokeWidth={2}
-            type="monotone"
-          />
-        </AreaChart>
-      </ChartContainer>
+          <AreaChart
+            accessibilityLayer
+            data={data}
+            margin={{ top: 0, right: 4, bottom: 0, left: 4 }}
+          >
+            <defs>
+              <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-fill)"
+                  stopOpacity={0.35}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-fill)"
+                  stopOpacity={0}
+                />
+              </linearGradient>
+            </defs>
+            <CartesianGrid vertical={false} />
+            <XAxis
+              axisLine={false}
+              dataKey="label"
+              tickLine={false}
+              tickMargin={4}
+            />
+            <YAxis domain={getLineDomain(props)} hide />
+            <ChartTooltip content={<ChartValueTooltipContent />} />
+            <AnnotationReferenceLine annotation={props.annotation} />
+            <Area
+              activeDot={{ r: 4 }}
+              dataKey="value"
+              dot={{ fill: "var(--color-value)", r: 2 }}
+              fill={`url(#${gradientId})`}
+              fillOpacity={1}
+              stroke="var(--color-value)"
+              strokeWidth={2}
+              type="monotone"
+            />
+          </AreaChart>
+        </ChartContainer>
+      </CardContent>
     </Card>
   );
 }
