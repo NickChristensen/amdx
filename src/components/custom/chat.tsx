@@ -210,9 +210,6 @@ export function ChatCard(props: ChatCardProps) {
   return (
     <Card>
       <CardHeader>
-        <CardIcon>
-          <MessageCircle aria-hidden="true" />
-        </CardIcon>
         <CardTitle>{displayThreadName}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
