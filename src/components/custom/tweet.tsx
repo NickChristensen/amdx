@@ -12,6 +12,7 @@ import {
   CardContent,
   CardHeader,
 } from "@/components/ui/card";
+import { textLinkClasses } from "@/components/ui/link-utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { AgentMdxComponentDocs } from "@/lib/agent-mdx-component-docs";
 import { enrichTweet, type EnrichedTweet } from "@/lib/tweet-enrich";
@@ -153,7 +154,7 @@ export const TweetBody = ({ tweet }: { tweet: RenderableTweet }) => (
               href={entity.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary underline-offset-4 hover:underline"
+              className={textLinkClasses}
             >
               {entity.text}
             </a>

@@ -11,7 +11,7 @@ const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../..",
 );
-const diagnosticDelayMilliseconds = 250;
+const diagnosticDelayMilliseconds = 500;
 const requestTimeoutMilliseconds = 15_000;
 
 type LspDiagnostic = {
