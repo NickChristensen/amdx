@@ -1,6 +1,15 @@
 import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardIcon,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Alert,
   AlertAction,
@@ -41,6 +50,13 @@ export const agentMdxComponents = {
   BarGraphCard,
   CalendarCard,
   Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardIcon,
+  CardTitle,
   ChatCard,
   Collapsible,
   CollapsibleContent,

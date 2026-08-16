@@ -52,8 +52,22 @@ export const stackMdxDocs = {
     {
       title: "Vertical equal-width stack",
       mdx: `<Stack direction="vertical" gap={4} flexItems>
-  <Card>Primary content</Card>
-  <Card>Secondary content</Card>
+  <Card>
+    <CardHeader>
+      <CardTitle>Primary content</CardTitle>
+    </CardHeader>
+    <CardContent>
+      The primary block shares the available width.
+    </CardContent>
+  </Card>
+  <Card>
+    <CardHeader>
+      <CardTitle>Secondary content</CardTitle>
+    </CardHeader>
+    <CardContent>
+      The secondary block shares the available width.
+    </CardContent>
+  </Card>
 </Stack>`,
     },
   ],

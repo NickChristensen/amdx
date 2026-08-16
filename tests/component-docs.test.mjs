@@ -59,6 +59,13 @@ test("extracts and renders the production agent MDX catalog", () => {
     "BarGraphCard",
     "CalendarCard",
     "Card",
+    "CardAction",
+    "CardContent",
+    "CardDescription",
+    "CardFooter",
+    "CardHeader",
+    "CardIcon",
+    "CardTitle",
     "ChatCard",
     "Collapsible",
     "CollapsibleContent",
@@ -85,6 +92,15 @@ test("extracts and renders the production agent MDX catalog", () => {
   assert.deepEqual(records.find((record) => record.name === "Collapsible").family, [
     { name: "CollapsibleTrigger", required: true },
     { name: "CollapsibleContent", required: true },
+  ]);
+  assert.deepEqual(records.find((record) => record.name === "Card").family, [
+    { name: "CardHeader", required: false },
+    { name: "CardIcon", required: false },
+    { name: "CardTitle", required: false },
+    { name: "CardDescription", required: false },
+    { name: "CardAction", required: false },
+    { name: "CardContent", required: true },
+    { name: "CardFooter", required: false },
   ]);
 });
 
