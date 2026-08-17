@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/collapsible";
 import { Icon } from "@/components/ui/icon";
 import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -97,6 +98,7 @@ const elementOverrides = {
       {...props}
     />
   ),
+  hr: Separator,
   table: Table,
   thead: TableHeader,
   tbody: TableBody,

@@ -37,6 +37,17 @@ test("renders alert marker syntax as an ordinary blockquote", async () => {
   assert.doesNotMatch(compiled, /markdown-alert/);
 });
 
+test("maps Markdown horizontal rules through the shadcn Separator", async () => {
+  const [mdxComponentsSource, compiled] = await Promise.all([
+    readFile(new URL("../src/components/mdx/mdx-components.tsx", import.meta.url), "utf8"),
+    compile("Before\n\n---\n\nAfter\n", mdxCompileOptions),
+  ]);
+
+  assert.match(mdxComponentsSource, /import \{ Separator \} from "@\/components\/ui\/separator";/);
+  assert.match(mdxComponentsSource, /hr: Separator/);
+  assert.match(String(compiled), /_jsx\(_components\.hr, \{\}\)/);
+});
+
 test("keeps the shared text-link class contract", async () => {
   const linkStylesSource = await readFile(
     new URL("../src/components/ui/link-utils.ts", import.meta.url),
