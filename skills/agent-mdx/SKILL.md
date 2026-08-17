@@ -28,6 +28,7 @@ Design for a narrow phone screen. Keep tables short, with few columns and compac
 ## Create, author, and validate
 
 1. From the current OpenClaw workspace, run `"{skillDir}/scripts/create-document.mjs" "<title>"`.
+   Do not add the document's creation date to the title or filename. The document tool supplies the creation date in the path and metadata. Examples: Morning Briefing, Monthly P&L Review, Executor Codebase Explainer.
 2. Continue only when it exits with status 0 and standard output is one absolute `.mdx` path. This is the new document. Save and use that exact path.
 3. Do not construct a document path, route, agent name, date, slug, or front matter yourself. Preserve the generated front matter.
 4. Write the complete document at the returned path.
@@ -83,7 +84,7 @@ Read `references/<component>.md` for every component you select when that file i
 - [Card](references/Card.md): Block. Provides a block surface for grouping related content.
 - [ChatCard](references/ChatCard.md): Block. Displays an iMessage-style conversation thread with chronologically sorted, direction-aware message bubbles and sender/time context.
 - [Collapsible](references/Collapsible.md): Block. Groups content behind a toggle that can start open or closed.
-- [Icon](references/Icon.md): Inline. Displays a named Lucide icon with an optional semantic color.
+- [Icon](references/Icon.md): Inline. Displays a named Lucide icon with an optional status or presentation color.
 - [LineGraphCard](references/LineGraphCard.md): Block. Displays a changing series as a filled line chart in a card.
 - [Metric](references/Metric.md): Block. Displays one important value with a label and optional change context.
 - [Progress](references/Progress.md): Block. Displays completion progress as a horizontal bar.

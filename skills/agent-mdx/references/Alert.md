@@ -7,7 +7,7 @@
 - Use Alert as the root and include one AlertDescription in every alert.
 - Add AlertTitle when the message needs a clear heading, and add AlertAction only when the alert has a compact action or status control.
 - A generic Icon is optional. Add it before AlertTitle when possible to give the alert stronger visual hierarchy.
-- Choose note, tip, important, warning, caution, or danger to match the message context.
+- Choose default for neutral context, secondary for quieter supporting context, success for completed states, warning for caution, or destructive for harmful outcomes.
 
 ## Component contracts
 
@@ -27,12 +27,10 @@ export type AlertProps = React.ComponentProps<"div"> & {
 
 export type AlertVariant =
   | "default"
-  | "note"
-  | "tip"
-  | "important"
+  | "success"
   | "warning"
-  | "caution"
-  | "danger";
+  | "destructive"
+  | "secondary";
 ```
 
 #### Defaults
@@ -60,10 +58,10 @@ export const alertDefaults = {
 </Alert>
 ```
 
-##### Simple note
+##### Secondary context
 
 ```mdx
-<Alert variant="note">
+<Alert variant="secondary">
   <AlertDescription>
     The report uses the latest synced data.
   </AlertDescription>

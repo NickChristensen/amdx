@@ -20,8 +20,10 @@ export type BadgeProps = React.ComponentPropsWithoutRef<"span"> & {
 
 export type BadgeVariant =
   | "default"
-  | "secondary"
+  | "success"
+  | "warning"
   | "destructive"
+  | "secondary"
   | "outline"
   | "ghost"
   | "link"
@@ -38,7 +40,7 @@ export const badgeDefaults = {
 
 ## Guidance
 
-- Choose a variant that matches the status emphasis: use secondary or outline for quieter labels and destructive for errors or blocked states.
+- Choose a variant that matches the status emphasis: use default for the neutral base, success for completed or approved states, warning for states that need caution, secondary or outline for quieter labels, and destructive for errors or blocked states.
 - Use href with a site-relative route or absolute URL for a navigational badge. Use asChild only when another direct child must own the rendered semantics.
 
 ## Examples

@@ -6,29 +6,21 @@ import { cn } from "@/lib/utils";
 
 export type AlertVariant =
   | "default"
-  | "note"
-  | "tip"
-  | "important"
+  | "success"
   | "warning"
-  | "caution"
-  | "danger";
+  | "destructive"
+  | "secondary";
 
 const alertVariantClasses = {
-  default: "bg-card text-card-foreground",
-  note: "border-blue-200 bg-blue-50 text-blue-600 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-400",
-  tip: "border-green-200 bg-green-50 text-green-600 dark:border-green-900 dark:bg-green-950 dark:text-green-400",
-  important:
-    "border-violet-200 bg-violet-50 text-violet-600 dark:border-violet-900 dark:bg-violet-950 dark:text-violet-400",
-  warning:
-    "border-yellow-200 bg-yellow-50 text-yellow-600 dark:border-yellow-900 dark:bg-yellow-950 dark:text-yellow-400",
-  caution:
-    "border-red-200 bg-red-50 text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400",
-  danger:
-    "border-red-200 bg-red-50 text-red-600 dark:border-red-900 dark:bg-red-950 dark:text-red-400",
+  default: "[--alert-color:var(--color-primary)]",
+  success: "[--alert-color:var(--color-green-500)]",
+  warning: "[--alert-color:var(--color-yellow-500)]",
+  destructive: "[--alert-color:var(--color-red-500)]",
+  secondary: "[--alert-color:var(--color-foreground)]",
 } satisfies Record<AlertVariant, string>;
 
 const alertVariants = cva(
-  "group/alert relative grid gap-0.5 rounded-lg border px-4 py-3 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4",
+  "group/alert relative grid gap-0.5 rounded-lg border border-[color-mix(in_oklch,var(--alert-color)_50%,var(--color-background))] bg-[color-mix(in_oklch,var(--alert-color)_10%,var(--color-background))] px-4 py-3 text-left text-sm text-[var(--alert-color)] has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: alertVariantClasses,
@@ -70,7 +62,7 @@ export const alertMdxDocs = {
     "Use Alert as the root and include one AlertDescription in every alert.",
     "Add AlertTitle when the message needs a clear heading, and add AlertAction only when the alert has a compact action or status control.",
     "A generic Icon is optional. Add it before AlertTitle when possible to give the alert stronger visual hierarchy.",
-    "Choose note, tip, important, warning, caution, or danger to match the message context.",
+    "Choose default for neutral context, secondary for quieter supporting context, success for completed states, warning for caution, or destructive for harmful outcomes.",
   ],
   examples: [
     {
@@ -87,8 +79,8 @@ export const alertMdxDocs = {
 </Alert>`,
     },
     {
-      title: "Simple note",
-      mdx: `<Alert variant="note">
+      title: "Secondary context",
+      mdx: `<Alert variant="secondary">
   <AlertDescription>
     The report uses the latest synced data.
   </AlertDescription>
@@ -188,15 +180,12 @@ function AlertTitle({ className, ...props }: AlertTitleProps) {
   );
 }
 
-function AlertDescription({
-  className,
-  ...props
-}: AlertDescriptionProps) {
+function AlertDescription({ className, ...props }: AlertDescriptionProps) {
   return (
     <div
       data-slot="alert-description"
       className={cn(
-        "text-sm text-balance text-muted-foreground md:text-pretty [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4",
+        "text-sm text-[color-mix(in_oklch,currentColor_60%,var(--color-foreground))] text-balance md:text-pretty [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4",
         className,
       )}
       {...props}

@@ -1,6 +1,6 @@
 # Icon
 
-Displays a named Lucide icon with an optional semantic color.
+Displays a named Lucide icon with an optional status or presentation color.
 
 **Layout:** Inline
 
@@ -11,7 +11,7 @@ export type IconProps = Omit<
   React.ComponentProps<typeof DynamicIcon>,
   "color" | "fallback" | "name"
 > & {
-  /** Semantic color used for the icon. */
+  /** Status or presentation color used for the icon. */
   color?: IconColor;
 
   /** Lucide icon name to render. Unknown names render nothing. */
@@ -20,11 +20,11 @@ export type IconProps = Omit<
 
 export type IconColor =
   | "default"
-  | "muted"
-  | "primary"
   | "success"
   | "warning"
-  | "danger";
+  | "destructive"
+  | "secondary"
+  | "primary";
 ```
 
 ## Defaults
@@ -39,7 +39,7 @@ export const iconDefaults = {
 ## Guidance
 
 - Use the kebab-case Lucide icon name, such as check, arrow-right, or circle-alert.
-- Use a semantic color only when it communicates status or emphasis.
+- Use a color when it communicates status or emphasis.
 
 ## Examples
 

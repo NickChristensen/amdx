@@ -23,10 +23,12 @@ export type ButtonProps = React.ComponentProps<"button"> & {
 
 export type ButtonVariant =
   | "default"
-  | "outline"
-  | "secondary"
-  | "ghost"
+  | "success"
+  | "warning"
   | "destructive"
+  | "secondary"
+  | "outline"
+  | "ghost"
   | "link"
 
 export type ButtonSize =
@@ -53,7 +55,7 @@ export const buttonDefaults = {
 ## Guidance
 
 - Use short, action-oriented text that tells the reader what the control does.
-- Choose default for the primary action, secondary or outline for supporting actions, and destructive for an irreversible action.
+- Choose default for the primary action, success for a completed or approved action, warning for an action that needs caution, secondary or outline for supporting actions, and destructive for an irreversible action.
 - Use sm or xs when the button appears inside an AlertAction or another compact area.
 - Use href with a site-relative route or absolute URL for a navigational button. Use asChild only when another direct child must own the rendered semantics.
 - Use icon, icon-xs, icon-sm, or icon-lg only when the child is an icon with an accessible label.

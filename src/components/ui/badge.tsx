@@ -9,18 +9,24 @@ import { cn } from "@/lib/utils"
 
 export type BadgeVariant =
   | "default"
-  | "secondary"
+  | "success"
+  | "warning"
   | "destructive"
+  | "secondary"
   | "outline"
   | "ghost"
   | "link"
 
 const badgeVariantClasses = {
   default: "bg-primary text-primary-foreground [a]:hover:bg-primary/80",
-  secondary:
-    "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
+  success:
+    "bg-green-600/10 text-green-700 focus-visible:border-green-600/40 focus-visible:ring-green-600/20 [a]:hover:bg-green-600/20 dark:bg-green-400/20 dark:text-green-300 dark:[a]:hover:bg-green-400/30 dark:focus-visible:ring-green-400/40",
+  warning:
+    "bg-yellow-600/10 text-yellow-800 focus-visible:border-yellow-600/40 focus-visible:ring-yellow-600/20 [a]:hover:bg-yellow-600/20 dark:bg-yellow-400/20 dark:text-yellow-300 dark:[a]:hover:bg-yellow-400/30 dark:focus-visible:ring-yellow-400/40",
   destructive:
     "bg-destructive/10 text-destructive focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:focus-visible:ring-destructive/40 [a]:hover:bg-destructive/20",
+  secondary:
+    "bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80",
   outline:
     "border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground",
   ghost: "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
@@ -46,7 +52,7 @@ export const badgeMdxDocs = {
     asChild: false,
   },
   guidance: [
-    "Choose a variant that matches the status emphasis: use secondary or outline for quieter labels and destructive for errors or blocked states.",
+    "Choose a variant that matches the status emphasis: use default for the neutral base, success for completed or approved states, warning for states that need caution, secondary or outline for quieter labels, and destructive for errors or blocked states.",
     "Use href with a site-relative route or absolute URL for a navigational badge. Use asChild only when another direct child must own the rendered semantics.",
   ],
   examples: [

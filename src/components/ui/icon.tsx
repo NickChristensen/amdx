@@ -9,26 +9,26 @@ import { cn } from "@/lib/utils";
 
 const iconColorClasses: Record<IconColor, string> = {
   default: "",
-  muted: "text-muted-foreground",
-  primary: "text-primary",
   success: "text-green-600 dark:text-green-400",
   warning: "text-yellow-600 dark:text-yellow-400",
-  danger: "text-red-600 dark:text-red-400",
+  destructive: "text-red-600 dark:text-red-400",
+  secondary: "text-muted-foreground",
+  primary: "text-primary",
 } as const;
 
 export type IconColor =
   | "default"
-  | "muted"
-  | "primary"
   | "success"
   | "warning"
-  | "danger";
+  | "destructive"
+  | "secondary"
+  | "primary";
 
 export type IconProps = Omit<
   React.ComponentProps<typeof DynamicIcon>,
   "color" | "fallback" | "name"
 > & {
-  /** Semantic color used for the icon. */
+  /** Status or presentation color used for the icon. */
   color?: IconColor;
 
   /** Lucide icon name to render. Unknown names render nothing. */
@@ -36,7 +36,8 @@ export type IconProps = Omit<
 };
 
 export const iconMdxDocs = {
-  description: "Displays a named Lucide icon with an optional semantic color.",
+  description:
+    "Displays a named Lucide icon with an optional status or presentation color.",
   flow: "inline",
   defaults: {
     color: "default",
@@ -44,7 +45,7 @@ export const iconMdxDocs = {
   },
   guidance: [
     "Use the kebab-case Lucide icon name, such as check, arrow-right, or circle-alert.",
-    "Use a semantic color only when it communicates status or emphasis.",
+    "Use a color when it communicates status or emphasis.",
   ],
   examples: [
     {

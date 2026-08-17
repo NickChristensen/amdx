@@ -9,10 +9,12 @@ import { cn } from "@/lib/utils"
 
 export type ButtonVariant =
   | "default"
-  | "outline"
-  | "secondary"
-  | "ghost"
+  | "success"
+  | "warning"
   | "destructive"
+  | "secondary"
+  | "outline"
+  | "ghost"
   | "link"
 
 export type ButtonSize =
@@ -27,14 +29,18 @@ export type ButtonSize =
 
 const buttonVariantClasses = {
   default: "bg-primary text-primary-foreground hover:bg-primary/80",
-  outline:
-    "border-border bg-background shadow-xs hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
-  secondary:
-    "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
-  ghost:
-    "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+  success:
+    "bg-green-600/10 text-green-700 hover:bg-green-600/20 focus-visible:border-green-600/40 focus-visible:ring-green-600/20 dark:bg-green-400/20 dark:text-green-300 dark:hover:bg-green-400/30 dark:focus-visible:ring-green-400/40",
+  warning:
+    "bg-yellow-600/10 text-yellow-800 hover:bg-yellow-600/20 focus-visible:border-yellow-600/40 focus-visible:ring-yellow-600/20 dark:bg-yellow-400/20 dark:text-yellow-300 dark:hover:bg-yellow-400/30 dark:focus-visible:ring-yellow-400/40",
   destructive:
     "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
+  secondary:
+    "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+  outline:
+    "border-border bg-background shadow-xs hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+  ghost:
+    "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
   link: textLinkClasses,
 } satisfies Record<ButtonVariant, string>
 
@@ -91,7 +97,7 @@ export const buttonMdxDocs = {
   },
   guidance: [
     "Use short, action-oriented text that tells the reader what the control does.",
-    "Choose default for the primary action, secondary or outline for supporting actions, and destructive for an irreversible action.",
+    "Choose default for the primary action, success for a completed or approved action, warning for an action that needs caution, secondary or outline for supporting actions, and destructive for an irreversible action.",
     "Use sm or xs when the button appears inside an AlertAction or another compact area.",
     "Use href with a site-relative route or absolute URL for a navigational button. Use asChild only when another direct child must own the rendered semantics.",
     "Use icon, icon-xs, icon-sm, or icon-lg only when the child is an icon with an accessible label.",
