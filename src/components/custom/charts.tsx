@@ -1,353 +1,210 @@
-"use client";
-
-import { useId, type ComponentProps } from "react";
-import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ReferenceLine,
-  XAxis,
-  YAxis,
-} from "recharts";
+import type { ReactNode } from "react";
 
 import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  type ChartConfig,
-} from "@/components/ui/chart";
+  BarChartVisualization,
+  LineChartVisualization,
+  PieChartVisualization,
+} from "@/components/custom/charts-client";
+import { composeChartModel } from "@/components/custom/chart-model";
 import { Card, CardTitle, CardContent, CardHeader } from "@/components/ui/card";
 import type { AgentMdxComponentDocs } from "@/lib/agent-mdx-component-docs";
 
-export type ChartDataPoint = {
-  /** Category label shown on the horizontal axis. */
-  label: string;
-  /** Numeric value plotted for the category. */
-  value: number;
-};
+export {
+  ChartAnnotation,
+  ChartItem,
+  ChartSeries,
+  chartAnnotationMdxDocs,
+  chartItemMdxDocs,
+  chartSeriesMdxDocs,
+} from "@/components/custom/chart-model";
+export type {
+  ChartAnnotationProps,
+  ChartDataPoint,
+  ChartItemProps,
+  ChartSeriesProps,
+  ChartSeriesModel,
+  ComposableChartModel,
+} from "@/components/custom/chart-model";
 
-export type ChartAnnotation = {
-  /** Numeric reference value shown as a horizontal line. */
-  value: number;
-  /** Optional label shown beside the reference line. */
-  label?: string;
-};
-
-export type ChartProps = {
+export type ChartCardProps = {
   /** Optional heading shown above the chart. */
   title?: string;
-  /** Data points rendered in the chart. */
-  data: ChartDataPoint[];
-  /** Optional reference line drawn across the chart. */
-  annotation?: ChartAnnotation;
+  /** Chart items, series, and annotations rendered in the chart card. */
+  children: ReactNode;
 };
 
-const chartConfig = {
-  value: {
-    label: "Value",
-    theme: {
-      light: "var(--chart-3)",
-      dark: "var(--chart-3)",
-    },
-  },
-  fill: {
-    label: "Fill",
-    theme: {
-      light: "var(--chart-2)",
-      dark: "var(--chart-2)",
-    },
-  },
-  annotation: {
-    label: "Reference",
-    theme: {
-      light: "var(--color-muted-foreground)",
-      dark: "var(--color-muted-foreground)",
-    },
-  },
-} satisfies ChartConfig;
+export type BarChartCardProps = ChartCardProps & {
+  /** Stack multiple series at each category instead of grouping them. */
+  stacked?: boolean;
+};
 
-function getBarDomain({ data, annotation }: ChartProps) {
-  return [
-    0,
-    Math.max(
-      ...data.map((datum) => datum.value),
-      annotation?.value ?? Number.NEGATIVE_INFINITY,
-      1,
-    ),
-  ] satisfies [number, number];
-}
+export type LineChartCardProps = ChartCardProps;
 
-function getLineDomain({ data, annotation }: ChartProps) {
-  const values = data.map((datum) => datum.value);
+export type PieChartCardProps = ChartCardProps;
 
-  if (annotation) {
-    values.push(annotation.value);
-  }
-
-  const min = values.length > 0 ? Math.min(...values) : 0;
-  const max = values.length > 0 ? Math.max(...values) : 1;
-  const range = max - min || 1;
-
-  return [min - range * 0.15, max + range * 0.1] satisfies [number, number];
-}
-
-function AnnotationLabel({
-  text,
-  viewBox,
-}: {
-  text: string;
-  viewBox?: {
-    x?: number;
-    y?: number;
-  };
-}) {
-  const x = viewBox?.x ?? 0;
-  const y = (viewBox?.y ?? 0) - 8;
-  const width = text.length * 6 + 8;
-
-  return (
-    <g>
-      <rect
-        fill="color-mix(in oklab, var(--card) 50%, transparent)"
-        height={16}
-        rx={4}
-        width={width}
-        x={x - 4}
-        y={y - 11}
-      />
-      <text
-        dominantBaseline="middle"
-        fill="var(--color-muted-foreground)"
-        fontSize={11}
-        x={x}
-        y={y - 2}
-      >
-        {text}
-      </text>
-    </g>
-  );
-}
-
-function AnnotationReferenceLine({
-  annotation,
-}: {
-  annotation?: ChartProps["annotation"];
-}) {
-  if (!annotation) {
-    return null;
-  }
-
-  const annotationText = annotation.label
-    ? `${annotation.label}: ${annotation.value}`
-    : String(annotation.value);
-
-  return (
-    <ReferenceLine
-      ifOverflow="extendDomain"
-      stroke="var(--color-annotation)"
-      strokeDasharray="4 4"
-      y={annotation.value}
-      label={(labelProps) => (
-        <AnnotationLabel text={annotationText} viewBox={labelProps.viewBox} />
-      )}
-    ></ReferenceLine>
-  );
-}
-
-function ChartValueTooltipContent(
-  props: ComponentProps<typeof ChartTooltipContent>,
-) {
-  return (
-    <ChartTooltipContent
-      {...props}
-      hideLabel
-      formatter={(value, _name, item) => (
-        <>
-          <span className="text-muted-foreground">
-            {String(item.payload?.label ?? "Value")}
-          </span>
-          <span className="ml-auto font-mono font-medium text-foreground tabular-nums">
-            {typeof value === "number" ? value.toLocaleString() : String(value)}
-          </span>
-        </>
-      )}
-    />
-  );
-}
-
-export function BarGraphCard(props: ChartProps) {
-  const data = props.data ?? [];
-
+function ChartCardFrame({ title, children }: { title?: string; children: ReactNode }) {
   return (
     <Card className="min-w-0 gap-3">
-      {props.title && (
+      {title && (
         <CardHeader>
-          <CardTitle>{props.title}</CardTitle>
+          <CardTitle>{title}</CardTitle>
         </CardHeader>
       )}
-      <CardContent>
-        <ChartContainer
-          className="aspect-auto h-56 w-full"
-          config={chartConfig}
-        >
-          <BarChart
-            accessibilityLayer
-            data={data}
-            margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              axisLine={false}
-              dataKey="label"
-              tickLine={false}
-              tickMargin={4}
-            />
-            <YAxis domain={getBarDomain(props)} hide />
-            <ChartTooltip
-              content={<ChartValueTooltipContent />}
-              cursor={false}
-            />
-            <AnnotationReferenceLine annotation={props.annotation} />
-            <Bar
-              dataKey="value"
-              fill="var(--color-value)"
-              radius={[10, 10, 0, 0]}
-            />
-          </BarChart>
-        </ChartContainer>
-      </CardContent>
+      <CardContent>{children}</CardContent>
     </Card>
   );
 }
 
-export const barGraphCardMdxDocs = {
-  description: "Displays categorical values as vertical bars in a card.",
-  flow: "block",
-  defaults: {},
-  guidance: [
-    "Use annotation to show a target or threshold in the same units as the data.",
-  ],
-  examples: [
-    {
-      title: "Basic bar graph",
-      mdx: `<BarGraphCard
-  title="Weekly signups"
-  data={[
-    { label: "Mon", value: 18 },
-    { label: "Tue", value: 24 },
-    { label: "Wed", value: 21 },
-  ]}
-/>`,
-    },
-    {
-      title: "Bar graph with target",
-      mdx: `<BarGraphCard
-  title="Weekly signups"
-  data={[
-    { label: "Mon", value: 18 },
-    { label: "Tue", value: 24 },
-    { label: "Wed", value: 21 },
-  ]}
-  annotation={{ value: 20, label: "Target" }}
-/>`,
-    },
-  ],
-} as const satisfies AgentMdxComponentDocs<ChartProps>;
-
-export function LineGraphCard(props: ChartProps) {
-  const gradientId = useId().replace(/:/g, "");
-  const data = props.data ?? [];
+export function BarChartCard(props: BarChartCardProps) {
+  const model = composeChartModel("BarChartCard", props.children);
 
   return (
-    <Card className="min-w-0 gap-3">
-      {props.title && (
-        <CardHeader>
-          <CardTitle>{props.title}</CardTitle>
-        </CardHeader>
-      )}
-      <CardContent>
-        <ChartContainer
-          className="aspect-auto h-56 w-full"
-          config={chartConfig}
-        >
-          <AreaChart
-            accessibilityLayer
-            data={data}
-            margin={{ top: 0, right: 4, bottom: 0, left: 4 }}
-          >
-            <defs>
-              <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-fill)"
-                  stopOpacity={0.35}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-fill)"
-                  stopOpacity={0}
-                />
-              </linearGradient>
-            </defs>
-            <CartesianGrid vertical={false} />
-            <XAxis
-              axisLine={false}
-              dataKey="label"
-              tickLine={false}
-              tickMargin={4}
-            />
-            <YAxis domain={getLineDomain(props)} hide />
-            <ChartTooltip content={<ChartValueTooltipContent />} />
-            <AnnotationReferenceLine annotation={props.annotation} />
-            <Area
-              activeDot={{ r: 4 }}
-              dataKey="value"
-              dot={{ fill: "var(--color-value)", r: 2 }}
-              fill={`url(#${gradientId})`}
-              fillOpacity={1}
-              stroke="var(--color-value)"
-              strokeWidth={2}
-              type="monotone"
-            />
-          </AreaChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
+    <ChartCardFrame title={props.title}>
+      <BarChartVisualization model={model} stacked={Boolean(props.stacked)} />
+    </ChartCardFrame>
   );
 }
 
-export const lineGraphCardMdxDocs = {
-  description: "Displays a changing series as a filled line chart in a card.",
+export const barChartCardMdxDocs = {
+  description: "Displays composed categorical values as grouped or stacked bars in a card.",
   flow: "block",
   defaults: {},
+  family: [
+    { name: "ChartItem", required: true },
+    { name: "ChartSeries", required: false },
+    { name: "ChartAnnotation", required: false },
+  ],
   guidance: [
-    "Use annotation to show a target or threshold in the same units as the data.",
+    "Use direct ChartItem children for one series.",
+    "Use ChartSeries children for grouped bars, or add stacked to combine series at each category.",
+    "Use ChartAnnotation to show a target or threshold.",
   ],
   examples: [
     {
-      title: "Basic line graph",
-      mdx: `<LineGraphCard
-  title="Weekly signups"
-  data={[
-    { label: "Mon", value: 18 },
-    { label: "Tue", value: 24 },
-    { label: "Wed", value: 21 },
-  ]}
-/>`,
+      title: "Annotated grouped bars",
+      mdx: `<BarChartCard title="Weekly activity">
+  <ChartSeries name="Organic">
+    <ChartItem label="Mon" value={18} />
+    <ChartItem label="Tue" value={24} />
+  </ChartSeries>
+  <ChartSeries name="Paid">
+    <ChartItem label="Mon" value={12} />
+    <ChartItem label="Tue" value={15} />
+  </ChartSeries>
+  <ChartAnnotation value={20} label="Target" />
+</BarChartCard>`,
     },
     {
-      title: "Line graph with target",
-      mdx: `<LineGraphCard
-  title="Weekly signups"
-  data={[
-    { label: "Mon", value: 18 },
-    { label: "Tue", value: 24 },
-    { label: "Wed", value: 21 },
-  ]}
-  annotation={{ value: 20, label: "Target" }}
-/>`,
+      title: "Grouped and stacked bars",
+      mdx: `<BarChartCard title="Weekly activity">
+  <ChartSeries name="Organic">
+    <ChartItem label="Mon" value={18} />
+    <ChartItem label="Tue" value={24} />
+  </ChartSeries>
+  <ChartSeries name="Paid">
+    <ChartItem label="Mon" value={12} />
+    <ChartItem label="Tue" value={15} />
+  </ChartSeries>
+</BarChartCard>
+
+<BarChartCard title="Weekly activity" stacked>
+  <ChartSeries name="Organic">
+    <ChartItem label="Mon" value={18} />
+    <ChartItem label="Tue" value={24} />
+  </ChartSeries>
+  <ChartSeries name="Paid">
+    <ChartItem label="Mon" value={12} />
+    <ChartItem label="Tue" value={15} />
+  </ChartSeries>
+</BarChartCard>`,
     },
   ],
-} as const satisfies AgentMdxComponentDocs<ChartProps>;
+} as const satisfies AgentMdxComponentDocs<BarChartCardProps>;
+
+export function LineChartCard(props: LineChartCardProps) {
+  const model = composeChartModel("LineChartCard", props.children);
+
+  return (
+    <ChartCardFrame title={props.title}>
+      <LineChartVisualization model={model} />
+    </ChartCardFrame>
+  );
+}
+
+export const lineChartCardMdxDocs = {
+  description: "Displays composed changing series as filled line charts in a card.",
+  flow: "block",
+  defaults: {},
+  family: [
+    { name: "ChartItem", required: true },
+    { name: "ChartSeries", required: false },
+    { name: "ChartAnnotation", required: false },
+  ],
+  guidance: [
+    "Use direct ChartItem children for one filled line series.",
+    "Use ChartSeries children for multiple filled line series and ChartAnnotation for a target or threshold.",
+  ],
+  examples: [
+    {
+      title: "Annotated multi-series line chart",
+      mdx: `<LineChartCard title="Weekly activity">
+  <ChartSeries name="Signups">
+    <ChartItem label="Mon" value={18} />
+    <ChartItem label="Tue" value={24} />
+    <ChartItem label="Wed" value={21} />
+  </ChartSeries>
+  <ChartSeries name="Cancellations">
+    <ChartItem label="Mon" value={4} />
+    <ChartItem label="Tue" value={6} />
+    <ChartItem label="Wed" value={3} />
+  </ChartSeries>
+  <ChartAnnotation value={20} label="Target" />
+</LineChartCard>`,
+    },
+    {
+      title: "Multi-series line chart",
+      mdx: `<LineChartCard title="Weekly activity">
+  <ChartSeries name="Signups">
+    <ChartItem label="Mon" value={18} />
+    <ChartItem label="Tue" value={24} />
+    <ChartItem label="Wed" value={21} />
+  </ChartSeries>
+  <ChartSeries name="Cancellations">
+    <ChartItem label="Mon" value={4} />
+    <ChartItem label="Tue" value={6} />
+    <ChartItem label="Wed" value={3} />
+  </ChartSeries>
+</LineChartCard>`,
+    },
+  ],
+} as const satisfies AgentMdxComponentDocs<LineChartCardProps>;
+
+export function PieChartCard(props: PieChartCardProps) {
+  const model = composeChartModel("PieChartCard", props.children);
+
+  return (
+    <ChartCardFrame title={props.title}>
+      <PieChartVisualization model={model} />
+    </ChartCardFrame>
+  );
+}
+
+export const pieChartCardMdxDocs = {
+  description: "Displays direct chart items as proportional slices in a card.",
+  flow: "block",
+  defaults: {},
+  family: [{ name: "ChartItem", required: true }],
+  guidance: [
+    "Use direct ChartItem children for pie slices. Multi-series pie charts are not supported.",
+  ],
+  examples: [
+    {
+      title: "Traffic sources",
+      mdx: `<PieChartCard title="Traffic sources">
+  <ChartItem label="Organic" value={42} />
+  <ChartItem label="Paid" value={28} />
+  <ChartItem label="Referral" value={18} />
+</PieChartCard>`,
+    },
+  ],
+} as const satisfies AgentMdxComponentDocs<PieChartCardProps>;

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
-import type { TooltipValueType } from "recharts"
+import type { TooltipPayloadEntry, TooltipValueType } from "recharts"
 
 import { cn } from "@/lib/utils"
 
@@ -11,6 +11,11 @@ const THEMES = { light: "", dark: ".dark" } as const
 
 const INITIAL_DIMENSION = { width: 320, height: 200 } as const
 type TooltipNameType = number | string
+
+type TooltipNameFormatter = (
+  name: React.ReactNode,
+  item: TooltipPayloadEntry<TooltipValueType, TooltipNameType>
+) => React.ReactNode
 
 export type ChartConfig = Record<
   string,
@@ -129,6 +134,7 @@ function ChartTooltipContent({
   formatter,
   color,
   nameKey,
+  nameFormatter,
   labelKey,
 }: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
   React.ComponentProps<"div"> & {
@@ -136,6 +142,7 @@ function ChartTooltipContent({
     hideIndicator?: boolean
     indicator?: "line" | "dot" | "dashed"
     nameKey?: string
+    nameFormatter?: TooltipNameFormatter
     labelKey?: string
   } & Omit<
     RechartsPrimitive.DefaultTooltipContentProps<
@@ -203,6 +210,7 @@ function ChartTooltipContent({
             const key = `${nameKey ?? item.name ?? item.dataKey ?? "value"}`
             const itemConfig = getPayloadConfigFromPayload(config, item, key)
             const indicatorColor = color ?? item.payload?.fill ?? item.color
+            const itemName = itemConfig?.label ?? item.name
 
             return (
               <div
@@ -249,7 +257,9 @@ function ChartTooltipContent({
                       <div className="grid gap-1.5">
                         {nestLabel ? tooltipLabel : null}
                         <span className="text-muted-foreground">
-                          {itemConfig?.label ?? item.name}
+                          {nameFormatter
+                            ? nameFormatter(itemName, item)
+                            : itemName}
                         </span>
                       </div>
                       {item.value != null && (

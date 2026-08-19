@@ -37,7 +37,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Stack } from "@/components/ui/stack";
-import { BarGraphCard, LineGraphCard } from "@/components/custom/charts";
+import {
+  BarChartCard,
+  ChartAnnotation,
+  ChartItem,
+  ChartSeries,
+  LineChartCard,
+  PieChartCard,
+} from "@/components/custom/charts";
 import { CalendarCard } from "@/components/custom/calendar";
 import { ChatCard } from "@/components/custom/chat";
 import { Metric } from "@/components/custom/metric";
@@ -52,7 +59,7 @@ export const agentMdxComponents = {
   AlertTitle,
   Badge,
   Button,
-  BarGraphCard,
+  BarChartCard,
   CalendarCard,
   Card,
   CardAction,
@@ -63,13 +70,17 @@ export const agentMdxComponents = {
   CardIcon,
   CardTitle,
   ChatCard,
+  ChartAnnotation,
+  ChartItem,
+  ChartSeries,
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
   Icon,
-  LineGraphCard,
+  LineChartCard,
   Metric,
   Progress,
+  PieChartCard,
   Stack,
   StockQuoteCard,
   TodoListCard,

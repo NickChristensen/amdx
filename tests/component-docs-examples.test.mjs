@@ -18,6 +18,7 @@ const virtualPath = path.join(repoRoot, "documents", ".component-docs-examples.m
 test("all production component examples compile and pass the MDX Analyzer together", async () => {
   const { records } = buildComponentDocs({ repoRoot });
   const fixture = buildCombinedExampleMdx(records);
+  assertComposableChartContract(records);
   assertNoLowercaseJsxTags(fixture, virtualPath);
 
   try {
@@ -34,6 +35,21 @@ test("all production component examples compile and pass the MDX Analyzer togeth
     await analyzer.close();
   }
 });
+
+function assertComposableChartContract(records) {
+  const examples = new Map(records.map((record) => [
+    record.name,
+    record.examples.map((example) => example.mdx).join("\n"),
+  ]));
+
+  assert.match(examples.get("BarChartCard"), /<BarChartCard[\s\S]*<ChartItem/);
+  assert.match(examples.get("BarChartCard"), /<ChartSeries[\s\S]*<\/ChartSeries>/);
+  assert.match(examples.get("BarChartCard"), /<BarChartCard[^>]*stacked/);
+  assert.match(examples.get("LineChartCard"), /<LineChartCard[\s\S]*<ChartItem/);
+  assert.match(examples.get("LineChartCard"), /<ChartSeries[\s\S]*<\/ChartSeries>/);
+  assert.match(examples.get("LineChartCard"), /<ChartAnnotation value=\{20\} label="Target" \/>/);
+  assert.match(examples.get("PieChartCard"), /<PieChartCard[\s\S]*<ChartItem/);
+}
 
 function formatAnalyzerDiagnostics(diagnostics, fixture, filePath) {
   return diagnostics

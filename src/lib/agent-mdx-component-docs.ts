@@ -20,5 +20,8 @@ export type AgentMdxComponentDocs<Props> = {
   defaults: AgentMdxDefaults<Props>;
   family?: readonly [AgentMdxFamilyMember, ...AgentMdxFamilyMember[]];
   guidance?: readonly string[];
-  examples: readonly [AgentMdxExample] | readonly [AgentMdxExample, AgentMdxExample];
+  examples:
+    | readonly []
+    | readonly [AgentMdxExample]
+    | readonly [AgentMdxExample, AgentMdxExample];
 };

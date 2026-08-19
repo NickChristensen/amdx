@@ -49,6 +49,10 @@ export function resolveComponentFamilies(records) {
       continue;
     }
 
+    if (root.examples.length === 0) {
+      throw new Error(`${root.name}.examples must contain one or two examples unless the component is a family member.`);
+    }
+
     if (root.family.length === 0) {
       throw new Error(`${root.name}.family must contain at least one member.`);
     }
@@ -82,18 +86,20 @@ export function resolveComponentFamilies(records) {
         throw new Error(`${root.name}.family member ${memberName} cannot declare its own family.`);
       }
 
-      const previousRoot = familyMembership.get(memberName);
-
-      if (previousRoot) {
-        throw new Error(`${memberName} belongs to multiple families: ${previousRoot} and ${root.name}.`);
-      }
-
-      familyMembership.set(memberName, root.name);
+      const memberRoots = familyMembership.get(memberName) ?? new Set();
+      memberRoots.add(root.name);
+      familyMembership.set(memberName, memberRoots);
       memberRecords.push(member);
     }
 
     assertCompleteFamilyExample(root, root.family.map(({ name }) => name));
     familiesByRoot.set(root.name, memberRecords);
+  }
+
+  for (const record of records) {
+    if (record.examples.length === 0 && !familyMembership.has(record.name)) {
+      throw new Error(`${record.name}.examples must contain one or two examples unless the component is a family member.`);
+    }
   }
 
   return records

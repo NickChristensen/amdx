@@ -25,20 +25,22 @@ export function renderComponentReference(record, members = []) {
     sections.push(["## Guidance", "", record.guidance.map((item) => `- ${item}`).join("\n")].join("\n"));
   }
 
-  sections.push(
-    [
-      "## Examples",
-      record.examples
-        .map((example) => [
-          `### ${example.title}`,
-          "",
-          "```mdx",
-          example.mdx,
-          "```",
-        ].join("\n"))
-        .join("\n\n"),
-    ].join("\n\n"),
-  );
+  if (record.examples.length > 0) {
+    sections.push(
+      [
+        "## Examples",
+        record.examples
+          .map((example) => [
+            `### ${example.title}`,
+            "",
+            "```mdx",
+            example.mdx,
+            "```",
+          ].join("\n"))
+          .join("\n\n"),
+      ].join("\n\n"),
+    );
+  }
 
   return `${sections.join("\n\n")}\n`;
 }
@@ -97,20 +99,22 @@ function renderFamilyContract(record, includeGuidance) {
     sections.push(["#### Guidance", "", record.guidance.map((item) => `- ${item}`).join("\n")].join("\n"));
   }
 
-  sections.push(
-    [
-      "#### Examples",
-      record.examples
-        .map((example) => [
-          `##### ${example.title}`,
-          "",
-          "```mdx",
-          example.mdx,
-          "```",
-        ].join("\n"))
-        .join("\n\n"),
-    ].join("\n\n"),
-  );
+  if (record.examples.length > 0) {
+    sections.push(
+      [
+        "#### Examples",
+        record.examples
+          .map((example) => [
+            `##### ${example.title}`,
+            "",
+            "```mdx",
+            example.mdx,
+            "```",
+          ].join("\n"))
+          .join("\n\n"),
+      ].join("\n\n"),
+    );
+  }
 
   return sections.join("\n\n");
 }

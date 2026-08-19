@@ -261,7 +261,6 @@ export const noExamplesMdxDocs = {
   description: "A no-examples fixture.",
   flow: "inline",
   defaults: {},
-  // @ts-expect-error This fixture must have no examples.
   examples: [],
 } as const satisfies AgentMdxComponentDocs<SharedProps>;
 

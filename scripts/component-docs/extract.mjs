@@ -351,8 +351,8 @@ function readStaticBoolean(expression, label) {
 function readExamples(expression, metadataName) {
   const value = unwrapExpression(expression);
 
-  if (!Node.isArrayLiteralExpression(value) || value.getElements().length < 1 || value.getElements().length > 2) {
-    throw new Error(`${metadataName}.examples must contain one or two examples.`);
+  if (!Node.isArrayLiteralExpression(value) || value.getElements().length > 2) {
+    throw new Error(`${metadataName}.examples must contain zero, one, or two examples.`);
   }
 
   const examples = value.getElements().map((element) => {

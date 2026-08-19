@@ -13,6 +13,7 @@
     "lint": "eslint",
     "prepare": "husky",
     "generate:component-docs": "node scripts/generate-component-docs.mjs",
+    "test:charts": "node --test tests/charts.test.mjs",
     "test:component-docs": "node --test tests/component-docs.test.mjs tests/component-docs-examples.test.mjs tests/component-docs-drift.test.mjs tests/component-docs-generation.test.mjs",
     "test:create-document": "node --test tests/create-document.test.mjs",
     "test:mdx-document": "node --test tests/mdx-document.test.mjs",

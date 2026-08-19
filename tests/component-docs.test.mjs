@@ -57,7 +57,7 @@ test("extracts and renders the production agent MDX catalog", () => {
     "AlertTitle",
     "Badge",
     "Button",
-    "BarGraphCard",
+    "BarChartCard",
     "CalendarCard",
     "Card",
     "CardAction",
@@ -68,13 +68,17 @@ test("extracts and renders the production agent MDX catalog", () => {
     "CardIcon",
     "CardTitle",
     "ChatCard",
+    "ChartAnnotation",
+    "ChartItem",
+    "ChartSeries",
     "Collapsible",
     "CollapsibleContent",
     "CollapsibleTrigger",
     "Icon",
-    "LineGraphCard",
+    "LineChartCard",
     "Metric",
     "Progress",
+    "PieChartCard",
     "Stack",
     "StockQuoteCard",
     "TodoListCard",
@@ -103,6 +107,34 @@ test("extracts and renders the production agent MDX catalog", () => {
     { name: "CardContent", required: true },
     { name: "CardFooter", required: false },
   ]);
+  assert.deepEqual(records.find((record) => record.name === "BarChartCard").family, [
+    { name: "ChartItem", required: true },
+    { name: "ChartSeries", required: false },
+    { name: "ChartAnnotation", required: false },
+  ]);
+  assert.deepEqual(records.find((record) => record.name === "LineChartCard").family, [
+    { name: "ChartItem", required: true },
+    { name: "ChartSeries", required: false },
+    { name: "ChartAnnotation", required: false },
+  ]);
+  assert.deepEqual(records.find((record) => record.name === "PieChartCard").family, [
+    { name: "ChartItem", required: true },
+  ]);
+
+  const productionEntries = resolveComponentFamilies(records);
+  assert.deepEqual(
+    productionEntries.find(({ root }) => root.name === "BarChartCard").members.map(({ name }) => name),
+    ["ChartItem", "ChartSeries", "ChartAnnotation"],
+  );
+  assert.deepEqual(
+    productionEntries.find(({ root }) => root.name === "LineChartCard").members.map(({ name }) => name),
+    ["ChartItem", "ChartSeries", "ChartAnnotation"],
+  );
+  assert.deepEqual(
+    productionEntries.find(({ root }) => root.name === "PieChartCard").members.map(({ name }) => name),
+    ["ChartItem"],
+  );
+  assert.equal(productionEntries.some(({ root }) => ["ChartAnnotation", "ChartItem", "ChartSeries"].includes(root.name)), false);
 });
 
 test("preserves root and referenced type source, raw defaults source, and propsTypeName", () => {
@@ -210,8 +242,8 @@ test("accepts plus and minus numeric defaults only", () => {
 
 test("validates flow and example count and titles", () => {
   assert.throws(() => extractCase("catalogInvalidFlow"), /invalidFlowMdxDocs.flow must be inline or block\./);
-  assert.throws(() => extractCase("catalogNoExamples"), /noExamplesMdxDocs.examples must contain one or two examples\./);
-  assert.throws(() => extractCase("catalogManyExamples"), /manyExamplesMdxDocs.examples must contain one or two examples\./);
+  assert.deepEqual(extractCase("catalogNoExamples")[0].examples, []);
+  assert.throws(() => extractCase("catalogManyExamples"), /manyExamplesMdxDocs.examples must contain zero, one, or two examples\./);
   assert.throws(() => extractCase("catalogDuplicateExamples"), /duplicateExamplesMdxDocs.examples titles must be unique: Repeated\./);
 });
 
@@ -226,6 +258,8 @@ test("extracts and renders a root-owned family", () => {
   assert.match(rendered, /### FamilyPart/);
   assert.match(rendered, /A family member fixture\./);
   assert.equal(rendered.match(/Place FamilyPart directly inside FamilyRoot\./g)?.length, 1);
+  const emptyMemberRendered = renderComponentReference(root, [{ ...member, examples: [] }]);
+  assert.doesNotMatch(emptyMemberRendered.slice(emptyMemberRendered.indexOf("### FamilyPart")), /#### Examples/);
 });
 
 test("validates family relationships and complete root examples", () => {
@@ -252,14 +286,14 @@ test("validates family relationships and complete root examples", () => {
     ]),
     /Root\.family members must be unique: Part\./,
   );
-  assert.throws(
-    () => resolveComponentFamilies([
-      record("Root", ["Part"], "<Root><Part /></Root>"),
-      record("OtherRoot", ["Part"], "<OtherRoot><Part /></OtherRoot>"),
-      record("Part"),
-    ]),
-    /Part belongs to multiple families: Root and OtherRoot\./,
-  );
+  const sharedRoot = record("Root", ["Part"], "<Root><Part /></Root>");
+  const otherSharedRoot = record("OtherRoot", ["Part"], "<OtherRoot><Part /></OtherRoot>");
+  const sharedPart = record("Part");
+  const sharedEntries = resolveComponentFamilies([sharedRoot, otherSharedRoot, sharedPart]);
+  assert.deepEqual(sharedEntries, [
+    { root: sharedRoot, members: [sharedPart] },
+    { root: otherSharedRoot, members: [sharedPart] },
+  ]);
   assert.throws(
     () => resolveComponentFamilies([
       record("Root", ["Part"], "<Root><Part /></Root>"),
@@ -281,6 +315,17 @@ test("validates family relationships and complete root examples", () => {
       record("Part"),
     ]),
     /Root\.family requires root guidance describing its hierarchy\./,
+  );
+  assert.throws(
+    () => resolveComponentFamilies([{ ...record("Standalone"), examples: [] }]),
+    /Standalone\.examples must contain one or two examples unless the component is a family member\./,
+  );
+  assert.throws(
+    () => resolveComponentFamilies([
+      { ...record("Root", ["Part"]), examples: [] },
+      { ...record("Part"), examples: [] },
+    ]),
+    /Root\.examples must contain one or two examples unless the component is a family member\./,
   );
 });
 
