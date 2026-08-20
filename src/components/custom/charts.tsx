@@ -69,11 +69,6 @@ export const barChartCardMdxDocs = {
   description: "Displays composed categorical values as grouped or stacked bars in a card.",
   flow: "block",
   defaults: {},
-  family: [
-    { name: "ChartItem", required: true },
-    { name: "ChartSeries", required: false },
-    { name: "ChartAnnotation", required: false },
-  ],
   guidance: [
     "Use direct ChartItem children for one series.",
     "Use ChartSeries children for grouped bars, or add stacked to combine series at each category.",
@@ -135,11 +130,6 @@ export const lineChartCardMdxDocs = {
   description: "Displays composed changing series as filled line charts in a card.",
   flow: "block",
   defaults: {},
-  family: [
-    { name: "ChartItem", required: true },
-    { name: "ChartSeries", required: false },
-    { name: "ChartAnnotation", required: false },
-  ],
   guidance: [
     "Use direct ChartItem children for one filled line series.",
     "Use ChartSeries children for multiple filled line series and ChartAnnotation for a target or threshold.",
@@ -193,7 +183,6 @@ export const pieChartCardMdxDocs = {
   description: "Displays direct chart items as proportional slices in a card.",
   flow: "block",
   defaults: {},
-  family: [{ name: "ChartItem", required: true }],
   guidance: [
     "Use direct ChartItem children for pie slices. Multi-series pie charts are not supported.",
   ],

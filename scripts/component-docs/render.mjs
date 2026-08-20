@@ -1,8 +1,8 @@
 /**
- * Renders the source-backed record from extract.mjs. It formats only the
+ * Renders the source-backed capability from extract.mjs. It formats only the
  * display copy of defaultsInitializer and preserves the extracted source.
  */
-export function renderComponentReference(record, members = []) {
+export function renderComponentReference({ root: record, members }) {
   if (members.length > 0) {
     return renderFamilyReference(record, members);
   }
@@ -51,11 +51,11 @@ export function renderComponentReference(record, members = []) {
  * so the generated reference remains useful as a standalone authoring guide.
  */
 export function renderFamilyReference(root, members) {
-  const components = [root, ...members];
+  const components = [root, ...members.map(({ record }) => record)];
   const sections = [
     `# ${root.name}`,
     `**Components:** ${root.name} (root), ${members
-      .map((record) => `${record.name} (${familyMemberStatus(root, record.name)})`)
+      .map(({ record, required }) => `${record.name} (${required ? "Required" : "Optional"})`)
       .join(", ")}`,
     [
       "## Composition",
@@ -68,16 +68,6 @@ export function renderFamilyReference(root, members) {
   ];
 
   return `${sections.join("\n\n")}\n`;
-}
-
-function familyMemberStatus(root, memberName) {
-  const member = root.family?.find(({ name }) => name === memberName);
-
-  if (!member) {
-    throw new Error(`${root.name}.family is missing ${memberName}.`);
-  }
-
-  return member.required ? "Required" : "Optional";
 }
 
 function renderFamilyContract(record, includeGuidance) {

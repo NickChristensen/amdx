@@ -10,7 +10,7 @@ export function createComponentDocsExtractor({ tsConfigFilePath, projectSourceRo
   const sourceRoot = requiredPath(projectSourceRoot, "projectSourceRoot");
   const project = new Project({ tsConfigFilePath: configPath });
 
-  return ({ catalogPath, catalogName = "agentMdxComponents" }) =>
+  return ({ catalogPath, catalogName = "agentMdxComponentManifest" }) =>
     extractFromCatalog(project, {
       catalogPath: requiredPath(catalogPath, "catalogPath"),
       catalogName,
@@ -26,22 +26,265 @@ function extractFromCatalog(project, { catalogPath, catalogName, projectSourceRo
     throw new Error(`${catalogPath} must declare ${catalogName}.`);
   }
 
-  const catalogObject = unwrapExpression(catalog.getInitializerOrThrow());
+  const manifest = readComponentManifest(catalog, catalogName);
+  const recordsByName = new Map();
+  const componentIdentities = new Map();
+  const rootNames = new Set();
+  const memberNames = new Set();
 
-  if (!Node.isObjectLiteralExpression(catalogObject)) {
-    throw new Error(`${catalogName} must be an object literal.`);
+  const getRecord = (entry) => {
+    const identity = componentIdentity(entry.expression);
+    const previousIdentity = componentIdentities.get(entry.name);
+
+    if (previousIdentity && previousIdentity !== identity) {
+      throw new Error(`${entry.name} must resolve to the same component symbol in every capability.`);
+    }
+
+    if (previousIdentity) {
+      return recordsByName.get(entry.name);
+    }
+
+    const record = extractComponent({
+      name: entry.name,
+      expression: entry.expression,
+      projectSourceRoot,
+    });
+    recordsByName.set(entry.name, record);
+    componentIdentities.set(entry.name, identity);
+    return record;
+  };
+
+  const groups = manifest.map(({ title, capabilities }) => ({
+    title,
+    capabilities: capabilities.map((capability) => {
+      if (rootNames.has(capability.root.name)) {
+        throw new Error(`${capability.root.name} must be the root of only one capability.`);
+      }
+
+      rootNames.add(capability.root.name);
+      const root = getRecord(capability.root);
+      const members = capability.members.map((entry) => {
+        memberNames.add(entry.name);
+        return {
+          record: getRecord(entry),
+          required: capability.required.includes(entry.name),
+        };
+      });
+
+      if (members.length > 0) {
+        if (root.examples.length === 0) {
+          throw new Error(`${root.name}.examples must contain one or two examples unless the component is a family member.`);
+        }
+
+        if (root.guidance.length === 0) {
+          throw new Error(`${root.name} family capability requires root guidance describing its hierarchy.`);
+        }
+
+        assertCompleteFamilyExample(root, members.map(({ record }) => record.name));
+      } else if (root.examples.length === 0) {
+        throw new Error(`${root.name}.examples must contain one or two examples unless the component is a family member.`);
+      }
+
+      return { root, members };
+    }),
+  }));
+
+  for (const rootName of rootNames) {
+    if (memberNames.has(rootName)) {
+      throw new Error(`${rootName} cannot be both a capability root and a family member.`);
+    }
   }
 
-  const entries = catalogObject.getProperties().map(readCatalogEntry);
-  assertUniqueNames(entries.map(({ name }) => name), `${catalogName} component names`);
+  return {
+    records: [...recordsByName.values()],
+    groups,
+  };
+}
 
-  return entries.map(({ name, expression }) =>
-    extractComponent({
-      name,
-      expression,
-      projectSourceRoot,
-    }),
+function readComponentManifest(catalog, catalogName) {
+  const statement = catalog.getFirstAncestorByKindOrThrow(SyntaxKind.VariableStatement);
+
+  if (!statement.isExported()) {
+    throw new Error(`${catalogName} must be exported.`);
+  }
+
+  const value = unwrapExpression(catalog.getInitializerOrThrow());
+
+  if (!Node.isArrayLiteralExpression(value)) {
+    throw new Error(`${catalogName} must be an array literal.`);
+  }
+
+  if (value.getElements().length === 0) {
+    throw new Error(`${catalogName} must contain at least one section.`);
+  }
+
+  const groups = value.getElements().map((element, index) => {
+    const groupLabel = `${catalogName}[${index}]`;
+    const group = unwrapExpression(element);
+    assertObjectShape(group, groupLabel, ["title", "capabilities"]);
+
+    const title = requireText(
+      readStaticString(propertyInitializer(group, "title", groupLabel), `${groupLabel}.title`),
+      `${groupLabel}.title`,
+    );
+    const capabilitiesValue = unwrapExpression(propertyInitializer(group, "capabilities", groupLabel));
+
+    if (!Node.isArrayLiteralExpression(capabilitiesValue) || capabilitiesValue.getElements().length === 0) {
+      throw new Error(`${groupLabel}.capabilities must be a non-empty array.`);
+    }
+
+    return {
+      title,
+      capabilities: capabilitiesValue.getElements().map((capability, capabilityIndex) =>
+        readCapability(capability, `${groupLabel}.capabilities[${capabilityIndex}]`),
+      ),
+    };
+  });
+
+  assertUniqueNames(groups.map(({ title }) => title), `${catalogName} section titles`);
+  return groups;
+}
+
+function readCapability(expression, label) {
+  const capability = unwrapExpression(expression);
+
+  if (!Node.isObjectLiteralExpression(capability)) {
+    throw new Error(`${label} must be an object literal.`);
+  }
+
+  assertObjectShape(capability, label, ["root", "components"], ["required"]);
+
+  const rootName = requireText(
+    readStaticString(propertyInitializer(capability, "root", label), `${label}.root`),
+    `${label}.root`,
   );
+  const entries = readComponentMap(propertyInitializer(capability, "components", label), `${label}.components`);
+  const rootEntry = entries.find(({ name }) => name === rootName);
+
+  if (!rootEntry) {
+    throw new Error(`${label}.root ${rootName} must name a component in ${label}.components.`);
+  }
+
+  if (entries[0] !== rootEntry) {
+    throw new Error(`${label}.components must place the root component first.`);
+  }
+
+  const members = entries.filter(({ name }) => name !== rootName);
+  const required = capability.getProperty("required")
+    ? readStaticStringArray(
+      propertyInitializer(capability, "required", label),
+      `${label}.required`,
+    )
+    : [];
+  assertUniqueNames(required, `${label}.required`);
+
+  const memberNames = new Set(members.map(({ name }) => name));
+  const unknownRequired = required.filter((name) => !memberNames.has(name));
+
+  if (unknownRequired.length > 0) {
+    throw new Error(`${label}.required references unknown member(s): ${unknownRequired.join(", ")}.`);
+  }
+
+  return { root: rootEntry, members, required };
+}
+
+function readComponentMap(expression, label) {
+  const object = resolveObjectInitializer(expression);
+
+  if (!object) {
+    throw new Error(`${label} must reference a static named component map.`);
+  }
+
+  const entries = readCatalogEntries(object);
+  assertUniqueNames(entries.map(({ name }) => name), `${label} component names`);
+
+  return entries;
+}
+
+function assertObjectShape(value, label, requiredProperties, optionalProperties = []) {
+  if (!Node.isObjectLiteralExpression(value)) {
+    throw new Error(`${label} must be an object literal.`);
+  }
+
+  const properties = value.getProperties();
+
+  for (const property of properties) {
+    if (!Node.isPropertyAssignment(property) || Node.isComputedPropertyName(property.getNameNode())) {
+      throw new Error(`${label} must use static property assignments.`);
+    }
+  }
+
+  const propertyNames = properties.map((property) => property.getName());
+  const duplicate = propertyNames.find((name, index) => propertyNames.indexOf(name) !== index);
+
+  if (duplicate) {
+    throw new Error(`${label} must define each property exactly once; duplicate ${duplicate}.`);
+  }
+
+  const missing = requiredProperties.filter((name) => !propertyNames.includes(name));
+
+  if (missing.length > 0) {
+    throw new Error(`${label} is missing required field(s): ${missing.join(", ")}.`);
+  }
+
+  const allowedProperties = [...requiredProperties, ...optionalProperties];
+  const extra = propertyNames.filter((name) => !allowedProperties.includes(name));
+
+  if (extra.length > 0) {
+    throw new Error(`${label} has unsupported field(s): ${extra.join(", ")}. Expected only ${allowedProperties.join(" and ")}.`);
+  }
+}
+
+function readCatalogEntries(object, seenObjects = new Set()) {
+  const objectKey = `${object.getSourceFile().getFilePath()}:${object.getStart()}`;
+
+  if (seenObjects.has(objectKey)) {
+    throw new Error("Agent MDX component maps cannot contain recursive spreads.");
+  }
+
+  const nextSeenObjects = new Set(seenObjects).add(objectKey);
+
+  return object.getProperties().flatMap((property) => {
+    if (Node.isSpreadAssignment(property)) {
+      const spreadObject = resolveObjectInitializer(property.getExpression());
+
+      if (!spreadObject) {
+        throw new Error("Agent MDX component maps must use static object spreads.");
+      }
+
+      return readCatalogEntries(spreadObject, nextSeenObjects);
+    }
+
+    return [readCatalogEntry(property)];
+  });
+}
+
+function resolveObjectInitializer(expression) {
+  const value = unwrapExpression(expression);
+
+  if (Node.isObjectLiteralExpression(value)) {
+    return value;
+  }
+
+  if (!Node.isIdentifier(value)) {
+    return undefined;
+  }
+
+  const declaration = resolveAlias(value.getSymbol())
+    ?.getDeclarations()
+    .find((candidate) => Node.isVariableDeclaration(candidate));
+
+  if (!declaration) {
+    return undefined;
+  }
+
+  const initializer = declaration.getInitializer();
+  if (!initializer) {
+    return undefined;
+  }
+
+  const object = unwrapExpression(initializer);
+  return Node.isObjectLiteralExpression(object) ? object : undefined;
 }
 
 function extractComponent({ name, expression, projectSourceRoot }) {
@@ -69,6 +312,27 @@ function extractComponent({ name, expression, projectSourceRoot }) {
   };
 }
 
+function componentIdentity(expression) {
+  const declarations = expression
+    .getType()
+    .getCallSignatures()
+    .map((signature) => signature.getDeclaration())
+    .filter(Boolean)
+    .map((declaration) => `${declaration.getSourceFile().getFilePath()}:${declaration.getStart()}`);
+
+  return declarations.join("|");
+}
+
+function assertCompleteFamilyExample(root, members) {
+  const example = root.examples[0];
+  const tags = new Set([...example.mdx.matchAll(/<\/?([A-Z][A-Za-z0-9]*)\b/g)].map((match) => match[1]));
+  const missing = [root.name, ...members].filter((name) => !tags.has(name));
+
+  if (missing.length > 0) {
+    throw new Error(`${root.name}.examples[0] must contain the root and every family member. Missing: ${missing.join(", ")}.`);
+  }
+}
+
 function readCatalogEntry(property) {
   if (Node.isShorthandPropertyAssignment(property)) {
     const name = property.getName();
@@ -83,7 +347,7 @@ function readCatalogEntry(property) {
     return { name, expression: property.getInitializerOrThrow() };
   }
 
-  throw new Error("agentMdxComponents must use static property assignments.");
+  throw new Error("Agent MDX component maps must use static property assignments.");
 }
 
 function assertSafeComponentName(name) {
@@ -202,7 +466,7 @@ function readMetadata(componentFile, componentName, propsDeclaration) {
     throw new Error(`${componentName}: ${metadataName} must be a static object literal.`);
   }
 
-  assertStaticObject(object, metadataName, new Set(["family"]));
+  assertStaticObject(object, metadataName);
   const description = readStaticString(propertyInitializer(object, "description", metadataName), `${metadataName}.description`);
   const flow = readStaticString(propertyInitializer(object, "flow", metadataName), `${metadataName}.flow`);
   const defaults = propertyInitializer(object, "defaults", metadataName);
@@ -219,9 +483,6 @@ function readMetadata(componentFile, componentName, propsDeclaration) {
     description: requireText(description, `${metadataName}.description`),
     flow,
     defaultsInitializer: defaults.getText(),
-    ...(object.getProperty("family")
-      ? { family: readStaticFamily(propertyInitializer(object, "family", metadataName), `${metadataName}.family`) }
-      : {}),
     guidance: object.getProperty("guidance")
       ? readStaticStringArray(propertyInitializer(object, "guidance", metadataName), `${metadataName}.guidance`)
       : [],
@@ -273,79 +534,6 @@ function readStaticStringArray(expression, label) {
   }
 
   return value.getElements().map((element) => requireText(readStaticString(element, label), label));
-}
-
-function readStaticFamily(expression, label) {
-  const value = unwrapExpression(expression);
-
-  if (!Node.isArrayLiteralExpression(value)) {
-    throw new Error(`${label} must be a non-empty array of member objects.`);
-  }
-
-  if (value.getElements().length === 0) {
-    throw new Error(`${label} must contain at least one member.`);
-  }
-
-  return value.getElements().map((element, index) => {
-    const memberLabel = `${label}[${index}]`;
-    const member = unwrapExpression(element);
-
-    if (!Node.isObjectLiteralExpression(member)) {
-      throw new Error(`${memberLabel} must be an object literal with name and required fields.`);
-    }
-
-    const properties = member.getProperties();
-
-    for (const property of properties) {
-      if (!Node.isPropertyAssignment(property) || Node.isComputedPropertyName(property.getNameNode())) {
-        throw new Error(`${memberLabel} must use exactly static name and required property assignments.`);
-      }
-    }
-
-    const propertyNames = properties.map((property) => property.getName());
-    const duplicate = propertyNames.find((name, propertyIndex) => propertyNames.indexOf(name) !== propertyIndex);
-
-    if (duplicate) {
-      throw new Error(`${memberLabel} must define name and required exactly once; duplicate ${duplicate}.`);
-    }
-
-    const missing = ["name", "required"].filter((name) => !propertyNames.includes(name));
-
-    if (missing.length > 0) {
-      throw new Error(`${memberLabel} is missing required field(s): ${missing.join(", ")}.`);
-    }
-
-    const extra = propertyNames.filter((name) => !["name", "required"].includes(name));
-
-    if (extra.length > 0) {
-      throw new Error(`${memberLabel} has unsupported field(s): ${extra.join(", ")}. Expected only name and required.`);
-    }
-
-    const name = requireText(
-      readStaticString(propertyInitializer(member, "name", memberLabel), `${memberLabel}.name`),
-      `${memberLabel}.name`,
-    );
-    const required = readStaticBoolean(
-      propertyInitializer(member, "required", memberLabel),
-      `${memberLabel}.required`,
-    );
-
-    return { name, required };
-  });
-}
-
-function readStaticBoolean(expression, label) {
-  const value = unwrapExpression(expression);
-
-  if (value.getKind() === SyntaxKind.TrueKeyword) {
-    return true;
-  }
-
-  if (value.getKind() === SyntaxKind.FalseKeyword) {
-    return false;
-  }
-
-  throw new Error(`${label} must be a boolean literal.`);
 }
 
 function readExamples(expression, metadataName) {

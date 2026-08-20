@@ -76,20 +76,31 @@ Read `references/<component>.md` for every component you select when that file i
 <!-- BEGIN GENERATED COMPONENT INDEX -->
 ## Components
 
-- [Alert](references/Alert.md): Block. Displays a semantic message with a required description and optional title and action content.
+### UI elements
+
 - [Badge](references/Badge.md): Inline. Displays a short inline status, category, or label.
 - [Button](references/Button.md): Inline. Displays an interactive action with a semantic visual treatment.
-- [BarChartCard](references/BarChartCard.md): Block. Displays composed categorical values as grouped or stacked bars in a card.
-- [CalendarCard](references/CalendarCard.md): Block. Displays calendar agenda events grouped by local day with time, duration, location, and source-calendar color context.
-- [Card](references/Card.md): Block. Provides a block surface for grouping related content.
-- [ChatCard](references/ChatCard.md): Block. Displays an iMessage-style conversation thread with chronologically sorted, direction-aware message bubbles and sender/time context.
-- [Collapsible](references/Collapsible.md): Block. Groups content behind a toggle that can start open or closed.
 - [Icon](references/Icon.md): Inline. Displays a named Lucide icon with an optional status or presentation color.
-- [LineChartCard](references/LineChartCard.md): Block. Displays composed changing series as filled line charts in a card.
 - [Metric](references/Metric.md): Block. Displays one important value with a label and optional change context.
 - [Progress](references/Progress.md): Block. Displays completion progress as a horizontal bar.
-- [PieChartCard](references/PieChartCard.md): Block. Displays direct chart items as proportional slices in a card.
+
+### Composition
+
+- [Alert](references/Alert.md): Block. Displays a semantic message with a required description and optional title and action content.
+- [Card](references/Card.md): Block. Provides a block surface for grouping related content.
+- [Collapsible](references/Collapsible.md): Block. Groups content behind a toggle that can start open or closed.
 - [Stack](references/Stack.md): Block. Lays out content in a horizontal or vertical flex stack.
+
+### Charts
+
+- [BarChartCard](references/BarChartCard.md): Block. Displays composed categorical values as grouped or stacked bars in a card.
+- [LineChartCard](references/LineChartCard.md): Block. Displays composed changing series as filled line charts in a card.
+- [PieChartCard](references/PieChartCard.md): Block. Displays direct chart items as proportional slices in a card.
+
+### Domain components
+
+- [CalendarCard](references/CalendarCard.md): Block. Displays calendar agenda events grouped by local day with time, duration, location, and source-calendar color context.
+- [ChatCard](references/ChatCard.md): Block. Displays an iMessage-style conversation thread with chronologically sorted, direction-aware message bubbles and sender/time context.
 - [StockQuoteCard](references/StockQuoteCard.md): Block. Fetches and displays quote data for ticker symbols, including current price, period changes, and an expandable one-day price chart.
 - [TodoListCard](references/TodoListCard.md): Block. Displays Things todos as compact rows with their tags, project-or-area context, note presence, and optional agent highlighting.
 - [TweetCard](references/TweetCard.md): Block. Fetches and displays an X/Twitter post with its author, text, links, and available media in a card.

@@ -52,40 +52,137 @@ import { StockQuoteCard } from "@/components/custom/stock-quote-card";
 import { TodoListCard } from "@/components/custom/todo-list";
 import { TweetCard } from "@/components/custom/tweet";
 
-export const agentMdxComponents = {
-  Alert,
-  AlertAction,
-  AlertDescription,
-  AlertTitle,
-  Badge,
-  Button,
-  BarChartCard,
-  CalendarCard,
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardIcon,
-  CardTitle,
-  ChatCard,
-  ChartAnnotation,
-  ChartItem,
-  ChartSeries,
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-  Icon,
-  LineChartCard,
-  Metric,
-  Progress,
-  PieChartCard,
-  Stack,
-  StockQuoteCard,
-  TodoListCard,
-  TweetCard,
-} satisfies MDXComponents;
+type AgentMdxComponentMap = MDXComponents;
+
+type AgentMdxCapability = {
+  readonly root: string;
+  readonly components: AgentMdxComponentMap;
+  readonly required?: readonly string[];
+};
+
+type AgentMdxComponentSection = {
+  readonly title: string;
+  readonly capabilities: readonly AgentMdxCapability[];
+};
+
+export const agentMdxComponentManifest = [
+  {
+    title: "UI elements",
+    capabilities: [
+      { root: "Badge", components: { Badge } },
+      { root: "Button", components: { Button } },
+      { root: "Icon", components: { Icon } },
+      { root: "Metric", components: { Metric } },
+      { root: "Progress", components: { Progress } },
+    ],
+  },
+  {
+    title: "Composition",
+    capabilities: [
+      {
+        root: "Alert",
+        components: { Alert, AlertTitle, AlertDescription, AlertAction },
+        required: ["AlertDescription"],
+      },
+      {
+        root: "Card",
+        components: {
+          Card,
+          CardHeader,
+          CardIcon,
+          CardTitle,
+          CardDescription,
+          CardAction,
+          CardContent,
+          CardFooter,
+        },
+        required: ["CardContent"],
+      },
+      {
+        root: "Collapsible",
+        components: { Collapsible, CollapsibleTrigger, CollapsibleContent },
+        required: ["CollapsibleTrigger", "CollapsibleContent"],
+      },
+      { root: "Stack", components: { Stack } },
+    ],
+  },
+  {
+    title: "Charts",
+    capabilities: [
+      {
+        root: "BarChartCard",
+        components: { BarChartCard, ChartItem, ChartSeries, ChartAnnotation },
+        required: ["ChartItem"],
+      },
+      {
+        root: "LineChartCard",
+        components: { LineChartCard, ChartItem, ChartSeries, ChartAnnotation },
+        required: ["ChartItem"],
+      },
+      {
+        root: "PieChartCard",
+        components: { PieChartCard, ChartItem },
+        required: ["ChartItem"],
+      },
+    ],
+  },
+  {
+    title: "Domain components",
+    capabilities: [
+      { root: "CalendarCard", components: { CalendarCard } },
+      { root: "ChatCard", components: { ChatCard } },
+      { root: "StockQuoteCard", components: { StockQuoteCard } },
+      { root: "TodoListCard", components: { TodoListCard } },
+      { root: "TweetCard", components: { TweetCard } },
+    ],
+  },
+] as const satisfies readonly AgentMdxComponentSection[];
+
+type ManifestCapabilitiesHaveKnownNames<Manifest extends readonly AgentMdxComponentSection[]> =
+  Manifest[number]["capabilities"][number] extends infer Capability
+    ? Capability extends {
+        readonly root: infer Root;
+        readonly components: infer Components;
+      }
+      ? Root extends keyof Components
+        ? Capability extends { readonly required: readonly (infer RequiredName)[] }
+          ? Exclude<RequiredName, keyof Components> extends never
+            ? true
+            : false
+          : true
+        : false
+      : false
+    : false;
+
+type UnionToIntersection<Value> = (Value extends unknown ? (value: Value) => void : never) extends ((value: infer Intersection) => void)
+  ? Intersection
+  : never;
+
+type CapabilityComponents<Capability> = Capability extends { readonly components: infer Components }
+  ? Components
+  : never;
+
+type ManifestComponents<Manifest extends readonly AgentMdxComponentSection[]> = UnionToIntersection<
+  CapabilityComponents<Manifest[number]["capabilities"][number]>
+>;
+
+function createAgentMdxComponents<const Manifest extends readonly AgentMdxComponentSection[]>(
+  manifest: Manifest & (
+    ManifestCapabilitiesHaveKnownNames<Manifest> extends true ? unknown : never
+  ),
+): ManifestComponents<Manifest> {
+  const components: MDXComponents = {};
+
+  for (const section of manifest) {
+    for (const capability of section.capabilities) {
+      Object.assign(components, capability.components);
+    }
+  }
+
+  return components as ManifestComponents<Manifest>;
+}
+
+export const agentMdxComponents = createAgentMdxComponents(agentMdxComponentManifest) satisfies MDXComponents;
 
 const elementOverrides = {
   a: ({ href = "", className, ...props }) => {

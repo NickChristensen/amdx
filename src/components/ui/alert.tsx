@@ -53,11 +53,6 @@ export const alertMdxDocs = {
   defaults: {
     variant: "default",
   },
-  family: [
-    { name: "AlertTitle", required: false },
-    { name: "AlertDescription", required: true },
-    { name: "AlertAction", required: false },
-  ],
   guidance: [
     "Use Alert as the root and include one AlertDescription in every alert.",
     "Add AlertTitle when the message needs a clear heading, and add AlertAction only when the alert has a compact action or status control.",

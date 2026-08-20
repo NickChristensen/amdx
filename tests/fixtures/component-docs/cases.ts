@@ -392,7 +392,6 @@ export const familyRootMdxDocs = {
   description: "A family root fixture.",
   flow: "block",
   defaults: {},
-  family: [{ name: "FamilyPart", required: true }],
   guidance: ["Place FamilyPart directly inside FamilyRoot."],
   examples: [{ title: "Complete family", mdx: "<FamilyRoot><FamilyPart /></FamilyRoot>" }],
 } as const satisfies AgentMdxComponentDocs<FamilyRootProps>;
@@ -404,146 +403,41 @@ export const familyPartMdxDocs = {
   examples: [{ title: "Family part", mdx: "<FamilyRoot><FamilyPart /></FamilyRoot>" }],
 } as const satisfies AgentMdxComponentDocs<FamilyPartProps>;
 
-const familyMemberName = "FamilyPart";
-const familyMemberRequired = true;
-const familyMemberBase = { name: "FamilyPart", required: true };
-const familyMembers = [familyMemberBase] as const;
-
-export function FamilyMissingRequired(_props: SharedProps) {
-  void _props;
-  return null;
-}
-
-export const familyMissingRequiredMdxDocs = {
-  description: "A family fixture with missing required metadata.",
-  flow: "block",
-  defaults: {},
-  // @ts-expect-error This fixture omits the required field.
-  family: [{ name: "FamilyPart" }],
-  guidance: ["Use the root with its family members."],
-  examples: [{ title: "Missing required", mdx: "<FamilyMissingRequired><FamilyPart /></FamilyMissingRequired>" }],
-} as const satisfies AgentMdxComponentDocs<SharedProps>;
-
-export function FamilyExtraField(_props: SharedProps) {
-  void _props;
-  return null;
-}
-
-export const familyExtraFieldMdxDocs = {
-  description: "A family fixture with an extra metadata field.",
-  flow: "block",
-  defaults: {},
-  // @ts-expect-error This fixture adds an unsupported field.
-  family: [{ name: "FamilyPart", required: true, extra: "unsupported" }],
-  guidance: ["Use the root with its family members."],
-  examples: [{ title: "Extra field", mdx: "<FamilyExtraField><FamilyPart /></FamilyExtraField>" }],
-} as const satisfies AgentMdxComponentDocs<SharedProps>;
-
-export function FamilyComputedField(_props: SharedProps) {
-  void _props;
-  return null;
-}
-
-export const familyComputedFieldMdxDocs = {
-  description: "A family fixture with a computed metadata field.",
-  flow: "block",
-  defaults: {},
-  family: [{ name: "FamilyPart", ["required"]: true }],
-  guidance: ["Use the root with its family members."],
-  examples: [{ title: "Computed field", mdx: "<FamilyComputedField><FamilyPart /></FamilyComputedField>" }],
-} as const satisfies AgentMdxComponentDocs<SharedProps>;
-
-export function FamilySpread(_props: SharedProps) {
-  void _props;
-  return null;
-}
-
-export const familySpreadMdxDocs = {
-  description: "A family fixture with a spread metadata field.",
-  flow: "block",
-  defaults: {},
-  family: [{ ...familyMemberBase }],
-  guidance: ["Use the root with its family members."],
-  examples: [{ title: "Spread field", mdx: "<FamilySpread><FamilyPart /></FamilySpread>" }],
-} as const satisfies AgentMdxComponentDocs<SharedProps>;
-
-export function FamilyNonliteralName(_props: SharedProps) {
-  void _props;
-  return null;
-}
-
-export const familyNonliteralNameMdxDocs = {
-  description: "A family fixture with a nonliteral name.",
-  flow: "block",
-  defaults: {},
-  family: [{ name: familyMemberName, required: true }],
-  guidance: ["Use the root with its family members."],
-  examples: [{ title: "Nonliteral name", mdx: "<FamilyNonliteralName><FamilyPart /></FamilyNonliteralName>" }],
-} as const satisfies AgentMdxComponentDocs<SharedProps>;
-
-export function FamilyNonliteralRequired(_props: SharedProps) {
-  void _props;
-  return null;
-}
-
-export const familyNonliteralRequiredMdxDocs = {
-  description: "A family fixture with a nonliteral required value.",
-  flow: "block",
-  defaults: {},
-  family: [{ name: "FamilyPart", required: familyMemberRequired }],
-  guidance: ["Use the root with its family members."],
-  examples: [{ title: "Nonliteral required", mdx: "<FamilyNonliteralRequired><FamilyPart /></FamilyNonliteralRequired>" }],
-} as const satisfies AgentMdxComponentDocs<SharedProps>;
-
-export function FamilyNonliteralArray(_props: SharedProps) {
-  void _props;
-  return null;
-}
-
-export const familyNonliteralArrayMdxDocs = {
-  description: "A family fixture with a nonliteral family array.",
-  flow: "block",
-  defaults: {},
-  family: familyMembers,
-  guidance: ["Use the root with its family members."],
-  examples: [{ title: "Nonliteral array", mdx: "<FamilyNonliteralArray><FamilyPart /></FamilyNonliteralArray>" }],
-} as const satisfies AgentMdxComponentDocs<SharedProps>;
-
 export function MissingMetadata(_props: SharedProps) {
   void _props;
   return null;
 }
 
-export const catalogInlineProps = { InlineProps };
-export const catalogPrivateRoot = { PrivateRoot };
-export const catalogOverloaded = { Overloaded };
-export const catalogPrivateNested = { PrivateNestedComponent };
-export const catalogMissingDocs = { MissingDocs };
-export const catalogExtendedInterface = { ExtendedInterface };
-export const catalogMetadataSpread = { MetadataSpread };
-export const catalogComputedMetadata = { ComputedMetadata };
-export const catalogShorthandMetadata = { ShorthandMetadata };
-export const catalogCallableMetadata = { CallableMetadata };
-export const catalogPropertyReadMetadata = { PropertyReadMetadata };
-export const catalogExampleSpread = { ExampleSpread };
-export const catalogInvalidUnaryDefaults = { InvalidUnaryDefaults };
-export const catalogStaticUnaryDefaults = { StaticUnaryDefaults };
-export const catalogPrivateMetadata = { PrivateMetadata };
-export const catalogInvalidFlow = { InvalidFlow };
-export const catalogNoExamples = { NoExamples };
-export const catalogManyExamples = { ManyExamples };
-export const catalogDuplicateExamples = { DuplicateExamples };
-export const catalogUntypedMetadata = { UntypedMetadata };
-export const catalogWrongContract = { WrongContract };
-export const catalogWrongProps = { WrongProps };
-export const catalogTypeQuery = { TypeQuery };
-export const catalogFamily = { FamilyRoot, FamilyPart };
-export const catalogFamilyMissingRequired = { FamilyMissingRequired };
-export const catalogFamilyExtraField = { FamilyExtraField };
-export const catalogFamilyComputedField = { FamilyComputedField };
-export const catalogFamilySpread = { FamilySpread };
-export const catalogFamilyNonliteralName = { FamilyNonliteralName };
-export const catalogFamilyNonliteralRequired = { FamilyNonliteralRequired };
-export const catalogFamilyNonliteralArray = { FamilyNonliteralArray };
-export const catalogMissingMetadata = { MissingMetadata };
-export const catalogUnsafeName = { "../Reference": MissingMetadata };
+export const catalogInlineProps = [{ title: "Fixture", capabilities: [{ root: "InlineProps", components: { InlineProps } }] }];
+export const catalogPrivateRoot = [{ title: "Fixture", capabilities: [{ root: "PrivateRoot", components: { PrivateRoot } }] }];
+export const catalogOverloaded = [{ title: "Fixture", capabilities: [{ root: "Overloaded", components: { Overloaded } }] }];
+export const catalogPrivateNested = [{ title: "Fixture", capabilities: [{ root: "PrivateNestedComponent", components: { PrivateNestedComponent } }] }];
+export const catalogMissingDocs = [{ title: "Fixture", capabilities: [{ root: "MissingDocs", components: { MissingDocs } }] }];
+export const catalogExtendedInterface = [{ title: "Fixture", capabilities: [{ root: "ExtendedInterface", components: { ExtendedInterface } }] }];
+export const catalogMetadataSpread = [{ title: "Fixture", capabilities: [{ root: "MetadataSpread", components: { MetadataSpread } }] }];
+export const catalogComputedMetadata = [{ title: "Fixture", capabilities: [{ root: "ComputedMetadata", components: { ComputedMetadata } }] }];
+export const catalogShorthandMetadata = [{ title: "Fixture", capabilities: [{ root: "ShorthandMetadata", components: { ShorthandMetadata } }] }];
+export const catalogCallableMetadata = [{ title: "Fixture", capabilities: [{ root: "CallableMetadata", components: { CallableMetadata } }] }];
+export const catalogPropertyReadMetadata = [{ title: "Fixture", capabilities: [{ root: "PropertyReadMetadata", components: { PropertyReadMetadata } }] }];
+export const catalogExampleSpread = [{ title: "Fixture", capabilities: [{ root: "ExampleSpread", components: { ExampleSpread } }] }];
+export const catalogInvalidUnaryDefaults = [{ title: "Fixture", capabilities: [{ root: "InvalidUnaryDefaults", components: { InvalidUnaryDefaults } }] }];
+export const catalogStaticUnaryDefaults = [{ title: "Fixture", capabilities: [{ root: "StaticUnaryDefaults", components: { StaticUnaryDefaults } }] }];
+export const catalogPrivateMetadata = [{ title: "Fixture", capabilities: [{ root: "PrivateMetadata", components: { PrivateMetadata } }] }];
+export const catalogInvalidFlow = [{ title: "Fixture", capabilities: [{ root: "InvalidFlow", components: { InvalidFlow } }] }];
+export const catalogNoExamples = [{ title: "Fixture", capabilities: [{ root: "NoExamples", components: { NoExamples } }] }];
+export const catalogManyExamples = [{ title: "Fixture", capabilities: [{ root: "ManyExamples", components: { ManyExamples } }] }];
+export const catalogDuplicateExamples = [{ title: "Fixture", capabilities: [{ root: "DuplicateExamples", components: { DuplicateExamples } }] }];
+export const catalogUntypedMetadata = [{ title: "Fixture", capabilities: [{ root: "UntypedMetadata", components: { UntypedMetadata } }] }];
+export const catalogWrongContract = [{ title: "Fixture", capabilities: [{ root: "WrongContract", components: { WrongContract } }] }];
+export const catalogWrongProps = [{ title: "Fixture", capabilities: [{ root: "WrongProps", components: { WrongProps } }] }];
+export const catalogTypeQuery = [{ title: "Fixture", capabilities: [{ root: "TypeQuery", components: { TypeQuery } }] }];
+export const catalogFamily = [{ title: "Fixture", capabilities: [{ root: "FamilyRoot", components: { FamilyRoot, FamilyPart }, required: ["FamilyPart"] }] }];
+export const catalogRootMissingFromComponents = [{ title: "Fixture", capabilities: [{ root: "Missing", components: { FamilyRoot } }] }];
+export const catalogRootNotFirst = [{ title: "Fixture", capabilities: [{ root: "FamilyRoot", components: { FamilyPart, FamilyRoot } }] }];
+export const catalogUnknownRequiredMember = [{ title: "Fixture", capabilities: [{ root: "FamilyRoot", components: { FamilyRoot, FamilyPart }, required: ["Missing"] }] }];
+export const catalogDuplicateRoot = [{ title: "Fixture", capabilities: [{ root: "FamilyRoot", components: { FamilyRoot } }, { root: "FamilyRoot", components: { FamilyRoot } }] }];
+export const catalogMismatchedSharedMember = [{ title: "Fixture", capabilities: [{ root: "FamilyRoot", components: { FamilyRoot, FamilyPart }, required: ["FamilyPart"] }, { root: "StaticUnaryDefaults", components: { StaticUnaryDefaults, FamilyPart: StaticUnaryDefaults } }] }];
+export const catalogFamilyMissingGuidance = [{ title: "Fixture", capabilities: [{ root: "FamilyPart", components: { FamilyPart, FamilyRoot } }] }];
+export const catalogFamilyIncompleteExample = [{ title: "Fixture", capabilities: [{ root: "FamilyRoot", components: { FamilyRoot, StaticUnaryDefaults } }] }];
+export const catalogMissingMetadata = [{ title: "Fixture", capabilities: [{ root: "MissingMetadata", components: { MissingMetadata } }] }];
+export const catalogUnsafeName = [{ title: "Fixture", capabilities: [{ root: "../Reference", components: { "../Reference": MissingMetadata } }] }];

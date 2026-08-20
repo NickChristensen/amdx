@@ -5,7 +5,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { createComponentDocsExtractor } from "../scripts/component-docs/extract.mjs";
 import { renderComponentReference } from "../scripts/component-docs/render.mjs";
-import { resolveComponentFamilies } from "../scripts/component-docs/build.mjs";
+import { renderComponentIndex } from "../scripts/component-docs/build.mjs";
 
 const repoRoot = fileURLToPath(new URL("..", import.meta.url));
 const fixtureRoot = fileURLToPath(new URL("./fixtures/component-docs", import.meta.url));
@@ -14,7 +14,11 @@ const extract = createComponentDocsExtractor({
   projectSourceRoot: fixtureRoot,
 });
 
-function extractFixture(catalogFilename = "catalog.ts", catalogName = "agentMdxComponents") {
+function extractFixture(catalogFilename = "catalog.ts", catalogName = "agentMdxComponentManifest") {
+  return extractFixtureResult(catalogFilename, catalogName).records;
+}
+
+function extractFixtureResult(catalogFilename = "catalog.ts", catalogName = "agentMdxComponentManifest") {
   return extract({
     catalogPath: path.join(fixtureRoot, catalogFilename),
     catalogName,
@@ -32,6 +36,10 @@ const extractProduction = createComponentDocsExtractor({
 });
 
 function extractProductionCatalog() {
+  return extractProductionCatalogResult().records;
+}
+
+function extractProductionCatalogResult() {
   return extractProduction({
     catalogPath: path.join(repoRoot, "src/components/mdx/mdx-components.tsx"),
   });
@@ -43,98 +51,91 @@ test("extracts deterministic source-backed records and renders the final referen
 
   for (const record of extractedRecords) {
     const expected = await readFile(path.join(fixtureRoot, "expected", `${record.name}.md`), "utf8");
-    assert.equal(renderComponentReference(record), expected, record.name);
+    assert.equal(renderComponentReference({ root: record, members: [] }), expected, record.name);
   }
 });
 
-test("extracts and renders the production agent MDX catalog", () => {
-  const records = extractProductionCatalog();
+test("extracts the production manifest once into ordered grouped capabilities", () => {
+  const first = extractProductionCatalogResult();
+  const second = extractProductionCatalogResult();
 
-  assert.deepEqual(records.map((record) => record.name), [
-    "Alert",
-    "AlertAction",
-    "AlertDescription",
-    "AlertTitle",
+  assert.deepEqual(first, second);
+  assert.deepEqual(first.records.map((record) => record.name), [
     "Badge",
     "Button",
-    "BarChartCard",
-    "CalendarCard",
+    "Icon",
+    "Metric",
+    "Progress",
+    "Alert",
+    "AlertTitle",
+    "AlertDescription",
+    "AlertAction",
     "Card",
-    "CardAction",
-    "CardContent",
-    "CardDescription",
-    "CardFooter",
     "CardHeader",
     "CardIcon",
     "CardTitle",
-    "ChatCard",
-    "ChartAnnotation",
+    "CardDescription",
+    "CardAction",
+    "CardContent",
+    "CardFooter",
+    "Collapsible",
+    "CollapsibleTrigger",
+    "CollapsibleContent",
+    "Stack",
+    "BarChartCard",
     "ChartItem",
     "ChartSeries",
-    "Collapsible",
-    "CollapsibleContent",
-    "CollapsibleTrigger",
-    "Icon",
+    "ChartAnnotation",
     "LineChartCard",
-    "Metric",
-    "Progress",
     "PieChartCard",
-    "Stack",
+    "CalendarCard",
+    "ChatCard",
     "StockQuoteCard",
     "TodoListCard",
     "TweetCard",
   ]);
+  assert.deepEqual(first.groups.map(({ title }) => title), [
+    "UI elements",
+    "Composition",
+    "Charts",
+    "Domain components",
+  ]);
+  assert.deepEqual(first.groups.map(({ capabilities }) => capabilities.map(({ root }) => root.name)), [
+    ["Badge", "Button", "Icon", "Metric", "Progress"],
+    ["Alert", "Card", "Collapsible", "Stack"],
+    ["BarChartCard", "LineChartCard", "PieChartCard"],
+    ["CalendarCard", "ChatCard", "StockQuoteCard", "TodoListCard", "TweetCard"],
+  ]);
 
-  for (const record of records) {
-    assert.doesNotThrow(() => renderComponentReference(record), record.name);
+  const charts = first.groups[2].capabilities;
+  assert.deepEqual(charts[0].members.map(({ record, required }) => [record.name, required]), [
+    ["ChartItem", true],
+    ["ChartSeries", false],
+    ["ChartAnnotation", false],
+  ]);
+  assert.deepEqual(charts[1].members.map(({ record, required }) => [record.name, required]), [
+    ["ChartItem", true],
+    ["ChartSeries", false],
+    ["ChartAnnotation", false],
+  ]);
+  assert.deepEqual(charts[2].members.map(({ record, required }) => [record.name, required]), [["ChartItem", true]]);
+  assert.equal(charts[0].members[0].record, charts[1].members[0].record);
+  assert.equal(charts[0].members[0].record, charts[2].members[0].record);
+
+  for (const record of extractProductionCatalog()) {
+    assert.doesNotThrow(() => renderComponentReference({ root: record, members: [] }), record.name);
   }
+});
 
-  assert.deepEqual(records.find((record) => record.name === "Alert").family, [
-    { name: "AlertTitle", required: false },
-    { name: "AlertDescription", required: true },
-    { name: "AlertAction", required: false },
-  ]);
-  assert.deepEqual(records.find((record) => record.name === "Collapsible").family, [
-    { name: "CollapsibleTrigger", required: true },
-    { name: "CollapsibleContent", required: true },
-  ]);
-  assert.deepEqual(records.find((record) => record.name === "Card").family, [
-    { name: "CardHeader", required: false },
-    { name: "CardIcon", required: false },
-    { name: "CardTitle", required: false },
-    { name: "CardDescription", required: false },
-    { name: "CardAction", required: false },
-    { name: "CardContent", required: true },
-    { name: "CardFooter", required: false },
-  ]);
-  assert.deepEqual(records.find((record) => record.name === "BarChartCard").family, [
-    { name: "ChartItem", required: true },
-    { name: "ChartSeries", required: false },
-    { name: "ChartAnnotation", required: false },
-  ]);
-  assert.deepEqual(records.find((record) => record.name === "LineChartCard").family, [
-    { name: "ChartItem", required: true },
-    { name: "ChartSeries", required: false },
-    { name: "ChartAnnotation", required: false },
-  ]);
-  assert.deepEqual(records.find((record) => record.name === "PieChartCard").family, [
-    { name: "ChartItem", required: true },
-  ]);
+test("renders only roots in the ordered section index", () => {
+  const { groups } = extractProductionCatalogResult();
+  const rendered = renderComponentIndex(groups);
 
-  const productionEntries = resolveComponentFamilies(records);
-  assert.deepEqual(
-    productionEntries.find(({ root }) => root.name === "BarChartCard").members.map(({ name }) => name),
-    ["ChartItem", "ChartSeries", "ChartAnnotation"],
-  );
-  assert.deepEqual(
-    productionEntries.find(({ root }) => root.name === "LineChartCard").members.map(({ name }) => name),
-    ["ChartItem", "ChartSeries", "ChartAnnotation"],
-  );
-  assert.deepEqual(
-    productionEntries.find(({ root }) => root.name === "PieChartCard").members.map(({ name }) => name),
-    ["ChartItem"],
-  );
-  assert.equal(productionEntries.some(({ root }) => ["ChartAnnotation", "ChartItem", "ChartSeries"].includes(root.name)), false);
+  assert.match(rendered, /### UI elements\n\n- \[Badge\]/);
+  assert.match(rendered, /### Composition\n\n- \[Alert\][\s\S]*- \[Card\][\s\S]*- \[Collapsible\][\s\S]*- \[Stack\]/);
+  assert.match(rendered, /### Charts\n\n- \[BarChartCard\][\s\S]*- \[LineChartCard\][\s\S]*- \[PieChartCard\]/);
+  assert.match(rendered, /### Domain components\n\n- \[CalendarCard\]/);
+  assert.doesNotMatch(rendered, /\[AlertTitle\]|\[ChartItem\]|\[CardContent\]/);
 });
 
 test("preserves root and referenced type source, raw defaults source, and propsTypeName", () => {
@@ -147,7 +148,7 @@ test("preserves root and referenced type source, raw defaults source, and propsT
   assert.match(metric.typeDeclarations[1], /^export type MetricTrend =/);
   assert.equal(metric.defaultsInitializer, '{\n    changeType: "neutral",\n  }');
   assert.equal(metric.examples.length, 2);
-  renderComponentReference(metric);
+  renderComponentReference({ root: metric, members: [] });
   assert.equal(metric.defaultsInitializer, defaultsSource);
 });
 
@@ -242,102 +243,42 @@ test("accepts plus and minus numeric defaults only", () => {
 
 test("validates flow and example count and titles", () => {
   assert.throws(() => extractCase("catalogInvalidFlow"), /invalidFlowMdxDocs.flow must be inline or block\./);
-  assert.deepEqual(extractCase("catalogNoExamples")[0].examples, []);
+  assert.throws(
+    () => extractCase("catalogNoExamples"),
+    /NoExamples\.examples must contain one or two examples unless the component is a family member\./,
+  );
   assert.throws(() => extractCase("catalogManyExamples"), /manyExamplesMdxDocs.examples must contain zero, one, or two examples\./);
   assert.throws(() => extractCase("catalogDuplicateExamples"), /duplicateExamplesMdxDocs.examples titles must be unique: Repeated\./);
 });
 
-test("extracts and renders a root-owned family", () => {
-  const records = extractCase("catalogFamily");
-  const [root, member] = records;
+test("extracts and renders an ordered family capability", () => {
+  const result = extractFixtureResult("cases.ts", "catalogFamily");
+  const [root, member] = result.records;
+  const [capability] = result.groups[0].capabilities;
 
-  assert.deepEqual(root.family, [{ name: "FamilyPart", required: true }]);
-  assert.deepEqual(resolveComponentFamilies(records), [{ root, members: [member] }]);
-  const rendered = renderComponentReference(root, [member]);
+  assert.equal(capability.root, root);
+  assert.deepEqual(capability.members, [{ record: member, required: true }]);
+  const rendered = renderComponentReference(capability);
   assert.match(rendered, /FamilyPart \(Required\)/);
   assert.match(rendered, /### FamilyPart/);
   assert.match(rendered, /A family member fixture\./);
   assert.equal(rendered.match(/Place FamilyPart directly inside FamilyRoot\./g)?.length, 1);
-  const emptyMemberRendered = renderComponentReference(root, [{ ...member, examples: [] }]);
+  const emptyMemberRendered = renderComponentReference({
+    ...capability,
+    members: [{ ...capability.members[0], record: { ...member, examples: [] } }],
+  });
   assert.doesNotMatch(emptyMemberRendered.slice(emptyMemberRendered.indexOf("### FamilyPart")), /#### Examples/);
 });
 
-test("validates family relationships and complete root examples", () => {
-  const record = (name, family, mdx = `<${name} />`, guidance = ["Use the root with its family members."]) => ({
-    name,
-    family: family?.map((member) => (typeof member === "string" ? { name: member, required: true } : member)),
-    description: `${name} description`,
-    flow: "block",
-    defaultsInitializer: "{}",
-    propsTypeName: `${name}Props`,
-    typeDeclarations: [`export type ${name}Props = {};`],
-    guidance,
-    examples: [{ title: "Example", mdx }],
-  });
-
-  assert.throws(
-    () => resolveComponentFamilies([record("Root", ["Missing"], "<Root />")]),
-    /Root\.family references unknown component Missing\./,
-  );
-  assert.throws(
-    () => resolveComponentFamilies([
-      record("Root", ["Part", "Part"], "<Root><Part /></Root>"),
-      record("Part"),
-    ]),
-    /Root\.family members must be unique: Part\./,
-  );
-  const sharedRoot = record("Root", ["Part"], "<Root><Part /></Root>");
-  const otherSharedRoot = record("OtherRoot", ["Part"], "<OtherRoot><Part /></OtherRoot>");
-  const sharedPart = record("Part");
-  const sharedEntries = resolveComponentFamilies([sharedRoot, otherSharedRoot, sharedPart]);
-  assert.deepEqual(sharedEntries, [
-    { root: sharedRoot, members: [sharedPart] },
-    { root: otherSharedRoot, members: [sharedPart] },
-  ]);
-  assert.throws(
-    () => resolveComponentFamilies([
-      record("Root", ["Part"], "<Root><Part /></Root>"),
-      record("Part", ["Nested"], "<Part><Nested /></Part>"),
-      record("Nested"),
-    ]),
-    /Root\.family member Part cannot declare its own family\./,
-  );
-  assert.throws(
-    () => resolveComponentFamilies([
-      record("Root", ["Part"], "<Root />"),
-      record("Part"),
-    ]),
-    /Root\.examples\[0\] must contain the root and every family member\. Missing: Part\./,
-  );
-  assert.throws(
-    () => resolveComponentFamilies([
-      record("Root", ["Part"], "<Root><Part /></Root>", []),
-      record("Part"),
-    ]),
-    /Root\.family requires root guidance describing its hierarchy\./,
-  );
-  assert.throws(
-    () => resolveComponentFamilies([{ ...record("Standalone"), examples: [] }]),
-    /Standalone\.examples must contain one or two examples unless the component is a family member\./,
-  );
-  assert.throws(
-    () => resolveComponentFamilies([
-      { ...record("Root", ["Part"]), examples: [] },
-      { ...record("Part"), examples: [] },
-    ]),
-    /Root\.examples must contain one or two examples unless the component is a family member\./,
-  );
-});
-
-test("rejects malformed static family member metadata", () => {
+test("validates capability topology and family authoring contracts", () => {
   const invalidCases = [
-    ["catalogFamilyMissingRequired", /familyMissingRequiredMdxDocs\.family\[0\] is missing required field\(s\): required\./],
-    ["catalogFamilyExtraField", /familyExtraFieldMdxDocs\.family\[0\] has unsupported field\(s\): extra\./],
-    ["catalogFamilyComputedField", /familyComputedFieldMdxDocs\.family\[0\] must use exactly static name and required property assignments\./],
-    ["catalogFamilySpread", /familySpreadMdxDocs\.family\[0\] must use exactly static name and required property assignments\./],
-    ["catalogFamilyNonliteralName", /familyNonliteralNameMdxDocs\.family\[0\]\.name must be a string literal\./],
-    ["catalogFamilyNonliteralRequired", /familyNonliteralRequiredMdxDocs\.family\[0\]\.required must be a boolean literal\./],
-    ["catalogFamilyNonliteralArray", /familyNonliteralArrayMdxDocs\.family must be a non-empty array of member objects\./],
+    ["catalogRootMissingFromComponents", /root Missing must name a component/],
+    ["catalogRootNotFirst", /must place the root component first/],
+    ["catalogUnknownRequiredMember", /required references unknown member\(s\): Missing/],
+    ["catalogDuplicateRoot", /FamilyRoot must be the root of only one capability/],
+    ["catalogMismatchedSharedMember", /FamilyPart must resolve to the same component symbol/],
+    ["catalogFamilyMissingGuidance", /requires root guidance describing its hierarchy/],
+    ["catalogFamilyIncompleteExample", /must contain the root and every family member\. Missing: StaticUnaryDefaults/],
   ];
 
   for (const [catalogName, error] of invalidCases) {

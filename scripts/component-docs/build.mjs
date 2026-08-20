@@ -19,110 +19,34 @@ export function buildComponentDocs({ repoRoot = defaultRepoRoot } = {}) {
     tsConfigFilePath: path.join(resolvedRepoRoot, "tsconfig.json"),
     projectSourceRoot: path.join(resolvedRepoRoot, "src"),
   });
-  const records = extract({
+  const { records, groups } = extract({
     catalogPath: path.join(resolvedRepoRoot, "src/components/mdx/mdx-components.tsx"),
   });
-  const entries = resolveComponentFamilies(records);
+  const entries = groups.flatMap(({ capabilities }) => capabilities);
 
   return {
     records,
-    componentIndex: renderComponentIndex(entries),
-    references: new Map(entries.map(({ root, members }) => [
-      `${root.name}.md`,
-      renderComponentReference(root, members),
+    componentIndex: renderComponentIndex(groups),
+    references: new Map(entries.map((capability) => [
+      `${capability.root.name}.md`,
+      renderComponentReference(capability),
     ])),
   };
 }
 
-/**
- * Resolves root-owned family metadata into the generated documentation entries.
- * The returned entries own the public index and reference files. `records`
- * remains the complete catalog so the example compiler can validate members.
- */
-export function resolveComponentFamilies(records) {
-  const recordsByName = new Map(records.map((record) => [record.name, record]));
-  const familyMembership = new Map();
-  const familiesByRoot = new Map();
-
-  for (const root of records) {
-    if (!root.family) {
-      continue;
-    }
-
-    if (root.examples.length === 0) {
-      throw new Error(`${root.name}.examples must contain one or two examples unless the component is a family member.`);
-    }
-
-    if (root.family.length === 0) {
-      throw new Error(`${root.name}.family must contain at least one member.`);
-    }
-
-    if (!root.guidance || root.guidance.length === 0) {
-      throw new Error(`${root.name}.family requires root guidance describing its hierarchy.`);
-    }
-
-    const memberRecords = [];
-    const seenMembers = new Set();
-
-    for (const familyMember of root.family) {
-      const memberName = familyMember.name;
-
-      if (seenMembers.has(memberName)) {
-        throw new Error(`${root.name}.family members must be unique: ${memberName}.`);
-      }
-
-      seenMembers.add(memberName);
-      const member = recordsByName.get(memberName);
-
-      if (!member) {
-        throw new Error(`${root.name}.family references unknown component ${memberName}.`);
-      }
-
-      if (memberName === root.name) {
-        throw new Error(`${root.name}.family cannot include its root component.`);
-      }
-
-      if (member.family) {
-        throw new Error(`${root.name}.family member ${memberName} cannot declare its own family.`);
-      }
-
-      const memberRoots = familyMembership.get(memberName) ?? new Set();
-      memberRoots.add(root.name);
-      familyMembership.set(memberName, memberRoots);
-      memberRecords.push(member);
-    }
-
-    assertCompleteFamilyExample(root, root.family.map(({ name }) => name));
-    familiesByRoot.set(root.name, memberRecords);
-  }
-
-  for (const record of records) {
-    if (record.examples.length === 0 && !familyMembership.has(record.name)) {
-      throw new Error(`${record.name}.examples must contain one or two examples unless the component is a family member.`);
-    }
-  }
-
-  return records
-    .filter((record) => !familyMembership.has(record.name) || familiesByRoot.has(record.name))
-    .map((root) => ({ root, members: familiesByRoot.get(root.name) ?? [] }));
-}
-
-export function renderComponentIndex(entries) {
+export function renderComponentIndex(groups) {
   return [
     "## Components",
-    "",
-    ...entries.map(({ root }) => `- [${root.name}](references/${root.name}.md): ${capitalize(root.flow)}. ${root.description}`),
-  ].join("\n");
+    ...groups.map(({ title, capabilities }) => [
+      `### ${title}`,
+      "",
+      ...capabilities.map(renderComponentIndexEntry),
+    ].join("\n")),
+  ].join("\n\n");
 }
 
-function assertCompleteFamilyExample(root, members) {
-  const example = root.examples[0];
-  const tags = new Set([...example.mdx.matchAll(/<\/?([A-Z][A-Za-z0-9]*)\b/g)].map((match) => match[1]));
-  const missing = [root.name, ...members].filter((name) => !tags.has(name));
-
-  if (missing.length > 0) {
-    throw new Error(`${root.name}.examples[0] must contain the root and every family member. Missing: ${missing.join(", ")}.`);
-  }
+function renderComponentIndexEntry({ root }) {
+  return `- [${root.name}](references/${root.name}.md): ${capitalize(root.flow)}. ${root.description}`;
 }
 
 export function replaceGeneratedComponentIndex(skillSource, componentIndex) {

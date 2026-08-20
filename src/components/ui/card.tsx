@@ -14,15 +14,6 @@ export const cardMdxDocs = {
   defaults: {
     size: "default",
   },
-  family: [
-    { name: "CardHeader", required: false },
-    { name: "CardIcon", required: false },
-    { name: "CardTitle", required: false },
-    { name: "CardDescription", required: false },
-    { name: "CardAction", required: false },
-    { name: "CardContent", required: true },
-    { name: "CardFooter", required: false },
-  ],
   guidance: [
     "Use Card as the outer surface for one complete report block.",
     "Use CardContent for the card's primary body content, with CardHeader and CardFooter when the block has distinct sections.",

@@ -9,16 +9,10 @@ export type AgentMdxExample = {
   mdx: string;
 };
 
-export type AgentMdxFamilyMember = {
-  name: string;
-  required: boolean;
-};
-
 export type AgentMdxComponentDocs<Props> = {
   description: string;
   flow: "inline" | "block";
   defaults: AgentMdxDefaults<Props>;
-  family?: readonly [AgentMdxFamilyMember, ...AgentMdxFamilyMember[]];
   guidance?: readonly string[];
   examples:
     | readonly []
