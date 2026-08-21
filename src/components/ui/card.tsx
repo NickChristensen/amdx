@@ -9,7 +9,8 @@ export type CardProps = React.ComponentProps<"div"> & {
 };
 
 export const cardMdxDocs = {
-  description: "Provides a block surface for grouping related content.",
+  description:
+    "Renders a structured block surface with optional header, content, and footer sections. Use to group one self-contained topic that needs stronger separation than headings alone.",
   flow: "block",
   defaults: {
     size: "default",
@@ -54,7 +55,8 @@ export const cardMdxDocs = {
 export type CardHeaderProps = React.ComponentProps<"div">;
 
 export const cardHeaderMdxDocs = {
-  description: "Groups the title, description, icon, and action area at the top of a Card.",
+  description:
+    "Renders the heading area for a Card. Use when the card needs a title, description, icon, or compact action.",
   flow: "block",
   defaults: {},
   guidance: [
@@ -81,7 +83,8 @@ export const cardHeaderMdxDocs = {
 export type CardIconProps = React.ComponentProps<"div">;
 
 export const cardIconMdxDocs = {
-  description: "Adds a compact visual marker to a CardHeader.",
+  description:
+    "Renders a compact visual marker in a CardHeader. Use when an icon helps readers identify the card's subject or status.",
   flow: "block",
   defaults: {},
   guidance: [
@@ -109,7 +112,8 @@ export const cardIconMdxDocs = {
 export type CardTitleProps = React.ComponentProps<"div">;
 
 export const cardTitleMdxDocs = {
-  description: "Renders the main heading for a Card.",
+  description:
+    "Renders the main heading for a Card. Use to name the card's subject in a short, scannable phrase.",
   flow: "block",
   defaults: {},
   guidance: [
@@ -135,7 +139,8 @@ export const cardTitleMdxDocs = {
 export type CardDescriptionProps = React.ComponentProps<"div">;
 
 export const cardDescriptionMdxDocs = {
-  description: "Renders supporting context below a CardTitle.",
+  description:
+    "Renders supporting context below a CardTitle. Use when the title needs a short explanation of the card's scope.",
   flow: "block",
   defaults: {},
   guidance: [
@@ -162,7 +167,8 @@ export const cardDescriptionMdxDocs = {
 export type CardActionProps = React.ComponentProps<"div">;
 
 export const cardActionMdxDocs = {
-  description: "Places compact action or status content at the end of a CardHeader.",
+  description:
+    "Renders compact action or status content at the end of a CardHeader. Use for a short link, badge, or state tied to the card.",
   flow: "block",
   defaults: {},
   guidance: [
@@ -189,7 +195,8 @@ export const cardActionMdxDocs = {
 export type CardContentProps = React.ComponentProps<"div">;
 
 export const cardContentMdxDocs = {
-  description: "Provides the main content area inside a Card.",
+  description:
+    "Renders the main body area inside a Card. Use for the card's primary Markdown or component content.",
   flow: "block",
   defaults: {},
   guidance: [
@@ -212,7 +219,8 @@ export const cardContentMdxDocs = {
 export type CardFooterProps = React.ComponentProps<"div">;
 
 export const cardFooterMdxDocs = {
-  description: "Provides a supporting footer area at the bottom of a Card.",
+  description:
+    "Renders a supporting area at the bottom of a Card. Use for secondary source text, timestamps, or related links.",
   flow: "block",
   defaults: {},
   guidance: [

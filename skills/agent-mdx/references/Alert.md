@@ -13,7 +13,7 @@
 
 ### Alert
 
-Displays a semantic message with a required description and optional title and action content.
+Renders an emphasized semantic message with optional title and action content. Use for important context, status, caution, or next steps that readers should not miss.
 
 **Layout:** Block
 
@@ -70,7 +70,7 @@ export const alertDefaults = {
 
 ### AlertTitle
 
-Renders the concise heading for an Alert.
+Renders the concise heading for an Alert. Use when the alert needs a label that readers can scan quickly.
 
 **Layout:** Block
 
@@ -106,7 +106,7 @@ export const alertTitleDefaults = {} satisfies AgentMdxDefaults<AlertTitleProps>
 
 ### AlertDescription
 
-Renders supporting content for an Alert.
+Renders the main explanatory content in an Alert. Use once in every Alert to state its context, consequence, or next step.
 
 **Layout:** Block
 
@@ -141,7 +141,7 @@ export const alertDescriptionDefaults = {} satisfies AgentMdxDefaults<AlertDescr
 
 ### AlertAction
 
-Positions action content in the upper-right area of an Alert.
+Renders compact action or status content in the upper-right area of an Alert. Use when the message has a short related action or state.
 
 **Layout:** Block
 

@@ -1,6 +1,6 @@
 # Progress
 
-Displays completion progress as a horizontal bar.
+Renders a horizontal progress bar. Use to show completion toward a known percentage or that a process has started.
 
 **Layout:** Block
 

@@ -1,6 +1,6 @@
 # StockQuoteCard
 
-Fetches and displays quote data for ticker symbols, including current price, period changes, and an expandable one-day price chart.
+Fetches current quotes, intraday, 7-day, 30-day, and year-to-date changes, for ticker symbols. Use when readers need a market snapshot for specific securities.
 
 **Layout:** Block
 

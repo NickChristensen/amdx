@@ -38,7 +38,7 @@ export type TodoListProps = {
 
 export const todoListCardMdxDocs = {
   description:
-    "Displays Things todos as compact rows with their tags, project-or-area context, note presence, and optional agent highlighting.",
+    "Renders Things todos as compact rows with tags and project or area context. Use to show an actionable task list from Things.",
   flow: "block",
   defaults: {},
   guidance: [

@@ -48,7 +48,7 @@ export type AlertActionProps = React.ComponentProps<"div">;
 
 export const alertMdxDocs = {
   description:
-    "Displays a semantic message with a required description and optional title and action content.",
+    "Renders an emphasized semantic message with optional title and action content. Use for important context, status, caution, or next steps that readers should not miss.",
   flow: "block",
   defaults: {
     variant: "default",
@@ -85,7 +85,8 @@ export const alertMdxDocs = {
 } as const satisfies AgentMdxComponentDocs<AlertProps>;
 
 export const alertTitleMdxDocs = {
-  description: "Renders the concise heading for an Alert.",
+  description:
+    "Renders the concise heading for an Alert. Use when the alert needs a label that readers can scan quickly.",
   flow: "block",
   defaults: {},
   guidance: [
@@ -106,7 +107,8 @@ export const alertTitleMdxDocs = {
 } as const satisfies AgentMdxComponentDocs<AlertTitleProps>;
 
 export const alertDescriptionMdxDocs = {
-  description: "Renders supporting content for an Alert.",
+  description:
+    "Renders the main explanatory content in an Alert. Use once in every Alert to state its context, consequence, or next step.",
   flow: "block",
   defaults: {},
   guidance: [
@@ -126,7 +128,8 @@ export const alertDescriptionMdxDocs = {
 } as const satisfies AgentMdxComponentDocs<AlertDescriptionProps>;
 
 export const alertActionMdxDocs = {
-  description: "Positions action content in the upper-right area of an Alert.",
+  description:
+    "Renders compact action or status content in the upper-right area of an Alert. Use when the message has a short related action or state.",
   flow: "block",
   defaults: {},
   guidance: [

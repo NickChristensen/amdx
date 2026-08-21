@@ -45,7 +45,8 @@ export type BadgeProps = React.ComponentPropsWithoutRef<"span"> & {
 }
 
 export const badgeMdxDocs = {
-  description: "Displays a short inline status, category, or label.",
+  description:
+    "Renders a short inline label. Use for a status, category, or compact piece of metadata that should stand out from nearby text.",
   flow: "inline",
   defaults: {
     variant: "default",

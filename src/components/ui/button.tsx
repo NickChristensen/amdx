@@ -88,7 +88,8 @@ export type ButtonProps = React.ComponentProps<"button"> & {
 }
 
 export const buttonMdxDocs = {
-  description: "Displays an interactive action with a semantic visual treatment.",
+  description:
+    "Renders a button or button-styled link. Use for a clear action or destination that the reader can select.",
   flow: "inline",
   defaults: {
     variant: "default",

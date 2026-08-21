@@ -19,7 +19,8 @@ export type CollapsibleContentProps = React.ComponentProps<
 >
 
 export const collapsibleMdxDocs = {
-  description: "Groups content behind a toggle that can start open or closed.",
+  description:
+    "Renders a section that readers can expand or collapse. Use to keep secondary details available without making the main report harder to scan.",
   flow: "block",
   defaults: {
     defaultOpen: false,
@@ -51,7 +52,8 @@ export const collapsibleMdxDocs = {
 } as const satisfies AgentMdxComponentDocs<CollapsibleProps>
 
 export const collapsibleTriggerMdxDocs = {
-  description: "Renders the interactive control that opens or closes a Collapsible.",
+  description:
+    "Renders the control that opens or closes a Collapsible. Use clear action text that tells readers what detail it reveals.",
   flow: "block",
   defaults: {},
   guidance: [
@@ -70,7 +72,8 @@ export const collapsibleTriggerMdxDocs = {
 } as const satisfies AgentMdxComponentDocs<CollapsibleTriggerProps>
 
 export const collapsibleContentMdxDocs = {
-  description: "Renders the content region controlled by a CollapsibleTrigger.",
+  description:
+    "Renders the content controlled by a CollapsibleTrigger. Use for secondary detail that readers may choose to reveal.",
   flow: "block",
   defaults: {},
   guidance: [

@@ -28,7 +28,8 @@ export type StackProps = React.ComponentProps<"div"> & {
 };
 
 export const stackMdxDocs = {
-  description: "Lays out content in a horizontal or vertical flex stack.",
+  description:
+    "Renders children in a horizontal or vertical flex layout. Use to arrange peer components in a row or a consistently spaced column.",
   flow: "block",
   defaults: {
     gap: 2,

@@ -13,7 +13,7 @@
 
 ### Card
 
-Provides a block surface for grouping related content.
+Renders a structured block surface with optional header, content, and footer sections. Use to group one self-contained topic that needs stronger separation than headings alone.
 
 **Layout:** Block
 
@@ -68,7 +68,7 @@ export const cardDefaults = {
 
 ### CardHeader
 
-Groups the title, description, icon, and action area at the top of a Card.
+Renders the heading area for a Card. Use when the card needs a title, description, icon, or compact action.
 
 **Layout:** Block
 
@@ -107,7 +107,7 @@ export const cardHeaderDefaults = {} satisfies AgentMdxDefaults<CardHeaderProps>
 
 ### CardIcon
 
-Adds a compact visual marker to a CardHeader.
+Renders a compact visual marker in a CardHeader. Use when an icon helps readers identify the card's subject or status.
 
 **Layout:** Block
 
@@ -147,7 +147,7 @@ export const cardIconDefaults = {} satisfies AgentMdxDefaults<CardIconProps>;
 
 ### CardTitle
 
-Renders the main heading for a Card.
+Renders the main heading for a Card. Use to name the card's subject in a short, scannable phrase.
 
 **Layout:** Block
 
@@ -185,7 +185,7 @@ export const cardTitleDefaults = {} satisfies AgentMdxDefaults<CardTitleProps>;
 
 ### CardDescription
 
-Renders supporting context below a CardTitle.
+Renders supporting context below a CardTitle. Use when the title needs a short explanation of the card's scope.
 
 **Layout:** Block
 
@@ -224,7 +224,7 @@ export const cardDescriptionDefaults = {} satisfies AgentMdxDefaults<CardDescrip
 
 ### CardAction
 
-Places compact action or status content at the end of a CardHeader.
+Renders compact action or status content at the end of a CardHeader. Use for a short link, badge, or state tied to the card.
 
 **Layout:** Block
 
@@ -263,7 +263,7 @@ export const cardActionDefaults = {} satisfies AgentMdxDefaults<CardActionProps>
 
 ### CardContent
 
-Provides the main content area inside a Card.
+Renders the main body area inside a Card. Use for the card's primary Markdown or component content.
 
 **Layout:** Block
 
@@ -298,7 +298,7 @@ export const cardContentDefaults = {} satisfies AgentMdxDefaults<CardContentProp
 
 ### CardFooter
 
-Provides a supporting footer area at the bottom of a Card.
+Renders a supporting area at the bottom of a Card. Use for secondary source text, timestamps, or related links.
 
 **Layout:** Block
 

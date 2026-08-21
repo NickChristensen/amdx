@@ -78,38 +78,36 @@ Read `references/<component>.md` for every component you select when that file i
 
 ### UI elements
 
-- [Badge](references/Badge.md): Inline. Displays a short inline status, category, or label.
-- [Button](references/Button.md): Inline. Displays an interactive action with a semantic visual treatment.
-- [Icon](references/Icon.md): Inline. Displays a named Lucide icon with an optional status or presentation color.
-- [Metric](references/Metric.md): Block. Displays one important value with a label and optional change context.
-- [Progress](references/Progress.md): Block. Displays completion progress as a horizontal bar.
-- [Term](references/Term.md): Inline. Use to provide a definition of jargon, acronyms, technical concepts, or domain-specific terms that readers may not know. Renders in a tooltip. Define only the first occurrence in plain language.
+- [Badge](references/Badge.md): Inline. Renders a short inline label. Use for a status, category, or compact piece of metadata that should stand out from nearby text.
+- [Button](references/Button.md): Inline. Renders a button or button-styled link. Use for a clear action or destination that the reader can select.
+- [Icon](references/Icon.md): Inline. Renders a Lucide icon inline with optional semantic color. Use to reinforce a nearby label or status when the symbol improves scanning.
+- [Metric](references/Metric.md): Block. Renders one prominent labeled value with optional change context. Use to highlight a key number that readers should understand at a glance.
+- [Progress](references/Progress.md): Block. Renders a horizontal progress bar. Use to show completion toward a known percentage or that a process has started.
+- [Term](references/Term.md): Inline. Adds a short definition to the first occurrence of jargon or another unfamiliar term. Use when a reader may need help understanding the term without interrupting the report.
 
 ### Composition
 
-- [Alert](references/Alert.md): Block. Displays a semantic message with a required description and optional title and action content.
-- [Card](references/Card.md): Block. Provides a block surface for grouping related content.
-- [Collapsible](references/Collapsible.md): Block. Groups content behind a toggle that can start open or closed.
-- [Stack](references/Stack.md): Block. Lays out content in a horizontal or vertical flex stack.
+- [Alert](references/Alert.md): Block. Renders an emphasized semantic message with optional title and action content. Use for important context, status, caution, or next steps that readers should not miss.
+- [Card](references/Card.md): Block. Renders a structured block surface with optional header, content, and footer sections. Use to group one self-contained topic that needs stronger separation than headings alone.
+- [Collapsible](references/Collapsible.md): Block. Renders a section that readers can expand or collapse. Use to keep secondary details available without making the main report harder to scan.
+- [Stack](references/Stack.md): Block. Renders children in a horizontal or vertical flex layout. Use to arrange peer components in a row or a consistently spaced column.
 
 ### Charts
 
-- [BarChartCard](references/BarChartCard.md): Block. Displays composed categorical values as grouped or stacked bars in a card.
-- [LineChartCard](references/LineChartCard.md): Block. Displays composed changing series as filled line charts in a card.
-- [PieChartCard](references/PieChartCard.md): Block. Displays direct chart items as proportional slices in a card.
+- [BarChartCard](references/BarChartCard.md): Block. Renders categorical values as grouped or stacked bars in a card. Use to compare discrete categories or show composition within each category.
+- [LineChartCard](references/LineChartCard.md): Block. Renders one or more filled line series in a card. Use to show change across an ordered sequence, usually time, or to compare trends.
+- [PieChartCard](references/PieChartCard.md): Block. Renders labeled values as proportional slices in a card. Use to show how a small number of categories contribute to one meaningful whole.
 
 ### Domain components
 
-- [CalendarCard](references/CalendarCard.md): Block. Displays calendar agenda events grouped by local day with time, duration, location, and source-calendar color context.
-- [ChatCard](references/ChatCard.md): Block. Displays an iMessage-style conversation thread with chronologically sorted, direction-aware message bubbles and sender/time context.
-- [StockQuoteCard](references/StockQuoteCard.md): Block. Fetches and displays quote data for ticker symbols, including current price, period changes, and an expandable one-day price chart.
-- [TodoListCard](references/TodoListCard.md): Block. Displays Things todos as compact rows with their tags, project-or-area context, note presence, and optional agent highlighting.
-- [TweetCard](references/TweetCard.md): Block. Fetches and displays an X/Twitter post with its author, text, links, and available media in a card.
+- [CalendarCard](references/CalendarCard.md): Block. Renders calendar events as a local-day agenda with times, durations, locations, and source colors. Use to show a schedule or help readers understand upcoming commitments.
+- [ChatCard](references/ChatCard.md): Block. Renders one message thread as sorted, direction-aware chat bubbles with sender and time context. Use when the exact conversation or exchange supports the report.
+- [StockQuoteCard](references/StockQuoteCard.md): Block. Fetches current quotes, intraday, 7-day, 30-day, and year-to-date changes, for ticker symbols. Use when readers need a market snapshot for specific securities.
+- [TodoListCard](references/TodoListCard.md): Block. Renders Things todos as compact rows with tags and project or area context. Use to show an actionable task list from Things.
+- [TweetCard](references/TweetCard.md): Block. Fetches and renders an X post with its author, text, links, and available media. Use when the original post provides evidence or context that readers should inspect directly.
 <!-- END GENERATED COMPONENT INDEX -->
 
 Components whose names end in `Card` provide their own surface. Do not place a `Card` inside another `Card`, or place a `*Card` component inside `Card`. Use `Stack` or Markdown headings to arrange card-level content.
-
-Use charts for data with clear labels and a meaningful comparison or trend. Include units, dates, source context, and uncertainty in nearby Markdown when they affect interpretation.
 
 ## Static validation boundary
 

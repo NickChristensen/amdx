@@ -1,6 +1,6 @@
 # Button
 
-Displays an interactive action with a semantic visual treatment.
+Renders a button or button-styled link. Use for a clear action or destination that the reader can select.
 
 **Layout:** Inline
 

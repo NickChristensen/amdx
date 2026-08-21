@@ -11,7 +11,7 @@
 
 ### Collapsible
 
-Groups content behind a toggle that can start open or closed.
+Renders a section that readers can expand or collapse. Use to keep secondary details available without making the main report harder to scan.
 
 **Layout:** Block
 
@@ -55,7 +55,7 @@ export const collapsibleDefaults = {
 
 ### CollapsibleTrigger
 
-Renders the interactive control that opens or closes a Collapsible.
+Renders the control that opens or closes a Collapsible. Use clear action text that tells readers what detail it reveals.
 
 **Layout:** Block
 
@@ -91,7 +91,7 @@ export const collapsibleTriggerDefaults = {} satisfies AgentMdxDefaults<Collapsi
 
 ### CollapsibleContent
 
-Renders the content region controlled by a CollapsibleTrigger.
+Renders the content controlled by a CollapsibleTrigger. Use for secondary detail that readers may choose to reveal.
 
 **Layout:** Block
 

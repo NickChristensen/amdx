@@ -47,7 +47,7 @@ export type ChatCardProps = {
 
 export const chatCardMdxDocs = {
   description:
-    "Displays an iMessage-style conversation thread with chronologically sorted, direction-aware message bubbles and sender/time context.",
+    "Renders one message thread as sorted, direction-aware chat bubbles with sender and time context. Use when the exact conversation or exchange supports the report.",
   flow: "block",
   defaults: {},
   guidance: [

@@ -24,7 +24,7 @@ export type MetricProps = {
 
 export const metricMdxDocs = {
   description:
-    "Displays one important value with a label and optional change context.",
+    "Renders one prominent labeled value with optional change context. Use to highlight a key number that readers should understand at a glance.",
   flow: "block",
   defaults: {
     changeType: "neutral",

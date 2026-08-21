@@ -6,12 +6,14 @@
 
 - Use direct ChartItem children for one filled line series.
 - Use ChartSeries children for multiple filled line series and ChartAnnotation for a target or threshold.
+- Use a chart only when the data supports a meaningful comparison, composition, or trend.
+- Use clear labels. Include relevant units, dates, source context, and uncertainty in nearby Markdown.
 
 ## Component contracts
 
 ### LineChartCard
 
-Displays composed changing series as filled line charts in a card.
+Renders one or more filled line series in a card. Use to show change across an ordered sequence, usually time, or to compare trends.
 
 **Layout:** Block
 
@@ -73,7 +75,7 @@ export const lineChartCardDefaults = {} satisfies AgentMdxDefaults<LineChartCard
 
 ### ChartItem
 
-Represents one labeled numeric value inside a composable chart.
+Defines one labeled numeric value for a chart. Use directly for one series or inside ChartSeries for multi-series bar and line charts.
 
 **Layout:** Inline
 
@@ -96,7 +98,7 @@ export const chartItemDefaults = {} satisfies AgentMdxDefaults<ChartItemProps>;
 
 ### ChartSeries
 
-Groups chart items under a named series for multi-series charts.
+Groups ChartItem values under one named series. Use when a bar or line chart compares multiple measures.
 
 **Layout:** Block
 
@@ -119,7 +121,7 @@ export const chartSeriesDefaults = {} satisfies AgentMdxDefaults<ChartSeriesProp
 
 ### ChartAnnotation
 
-Adds a horizontal reference value to a composable chart.
+Renders a labeled horizontal reference line on a bar or line chart. Use for a meaningful target, threshold, or benchmark.
 
 **Layout:** Inline
 

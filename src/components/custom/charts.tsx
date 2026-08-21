@@ -66,13 +66,16 @@ export function BarChartCard(props: BarChartCardProps) {
 }
 
 export const barChartCardMdxDocs = {
-  description: "Displays composed categorical values as grouped or stacked bars in a card.",
+  description:
+    "Renders categorical values as grouped or stacked bars in a card. Use to compare discrete categories or show composition within each category.",
   flow: "block",
   defaults: {},
   guidance: [
     "Use direct ChartItem children for one series.",
     "Use ChartSeries children for grouped bars, or add stacked to combine series at each category.",
     "Use ChartAnnotation to show a target or threshold.",
+    "Use a chart only when the data supports a meaningful comparison, composition, or trend.",
+    "Use clear labels. Include relevant units, dates, source context, and uncertainty in nearby Markdown.",
   ],
   examples: [
     {
@@ -127,12 +130,15 @@ export function LineChartCard(props: LineChartCardProps) {
 }
 
 export const lineChartCardMdxDocs = {
-  description: "Displays composed changing series as filled line charts in a card.",
+  description:
+    "Renders one or more filled line series in a card. Use to show change across an ordered sequence, usually time, or to compare trends.",
   flow: "block",
   defaults: {},
   guidance: [
     "Use direct ChartItem children for one filled line series.",
     "Use ChartSeries children for multiple filled line series and ChartAnnotation for a target or threshold.",
+    "Use a chart only when the data supports a meaningful comparison, composition, or trend.",
+    "Use clear labels. Include relevant units, dates, source context, and uncertainty in nearby Markdown.",
   ],
   examples: [
     {
@@ -180,11 +186,14 @@ export function PieChartCard(props: PieChartCardProps) {
 }
 
 export const pieChartCardMdxDocs = {
-  description: "Displays direct chart items as proportional slices in a card.",
+  description:
+    "Renders labeled values as proportional slices in a card. Use to show how a small number of categories contribute to one meaningful whole.",
   flow: "block",
   defaults: {},
   guidance: [
     "Use direct ChartItem children for pie slices. Multi-series pie charts are not supported.",
+    "Use a chart only when the data supports a meaningful comparison, composition, or trend.",
+    "Use clear labels. Include relevant units, dates, source context, and uncertainty in nearby Markdown.",
   ],
   examples: [
     {

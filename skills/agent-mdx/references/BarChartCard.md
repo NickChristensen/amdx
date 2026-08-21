@@ -7,12 +7,14 @@
 - Use direct ChartItem children for one series.
 - Use ChartSeries children for grouped bars, or add stacked to combine series at each category.
 - Use ChartAnnotation to show a target or threshold.
+- Use a chart only when the data supports a meaningful comparison, composition, or trend.
+- Use clear labels. Include relevant units, dates, source context, and uncertainty in nearby Markdown.
 
 ## Component contracts
 
 ### BarChartCard
 
-Displays composed categorical values as grouped or stacked bars in a card.
+Renders categorical values as grouped or stacked bars in a card. Use to compare discrete categories or show composition within each category.
 
 **Layout:** Block
 
@@ -84,7 +86,7 @@ export const barChartCardDefaults = {} satisfies AgentMdxDefaults<BarChartCardPr
 
 ### ChartItem
 
-Represents one labeled numeric value inside a composable chart.
+Defines one labeled numeric value for a chart. Use directly for one series or inside ChartSeries for multi-series bar and line charts.
 
 **Layout:** Inline
 
@@ -107,7 +109,7 @@ export const chartItemDefaults = {} satisfies AgentMdxDefaults<ChartItemProps>;
 
 ### ChartSeries
 
-Groups chart items under a named series for multi-series charts.
+Groups ChartItem values under one named series. Use when a bar or line chart compares multiple measures.
 
 **Layout:** Block
 
@@ -130,7 +132,7 @@ export const chartSeriesDefaults = {} satisfies AgentMdxDefaults<ChartSeriesProp
 
 ### ChartAnnotation
 
-Adds a horizontal reference value to a composable chart.
+Renders a labeled horizontal reference line on a bar or line chart. Use for a meaningful target, threshold, or benchmark.
 
 **Layout:** Inline
 

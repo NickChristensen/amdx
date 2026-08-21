@@ -1,6 +1,6 @@
 # CalendarCard
 
-Displays calendar agenda events grouped by local day with time, duration, location, and source-calendar color context.
+Renders calendar events as a local-day agenda with times, durations, locations, and source colors. Use to show a schedule or help readers understand upcoming commitments.
 
 **Layout:** Block
 

@@ -37,7 +37,7 @@ export type IconProps = Omit<
 
 export const iconMdxDocs = {
   description:
-    "Displays a named Lucide icon with an optional status or presentation color.",
+    "Renders a Lucide icon inline with optional semantic color. Use to reinforce a nearby label or status when the symbol improves scanning.",
   flow: "inline",
   defaults: {
     color: "default",

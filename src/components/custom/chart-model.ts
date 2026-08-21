@@ -40,7 +40,8 @@ export function ChartItem(_props: ChartItemProps) {
 }
 
 export const chartItemMdxDocs = {
-  description: "Represents one labeled numeric value inside a composable chart.",
+  description:
+    "Defines one labeled numeric value for a chart. Use directly for one series or inside ChartSeries for multi-series bar and line charts.",
   flow: "inline",
   defaults: {},
   examples: [],
@@ -53,7 +54,8 @@ export function ChartSeries(_props: ChartSeriesProps) {
 }
 
 export const chartSeriesMdxDocs = {
-  description: "Groups chart items under a named series for multi-series charts.",
+  description:
+    "Groups ChartItem values under one named series. Use when a bar or line chart compares multiple measures.",
   flow: "block",
   defaults: {},
   examples: [],
@@ -66,7 +68,8 @@ export function ChartAnnotation(_props: ChartAnnotationProps) {
 }
 
 export const chartAnnotationMdxDocs = {
-  description: "Adds a horizontal reference value to a composable chart.",
+  description:
+    "Renders a labeled horizontal reference line on a bar or line chart. Use for a meaningful target, threshold, or benchmark.",
   flow: "inline",
   defaults: {},
   examples: [],

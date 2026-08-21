@@ -10,7 +10,8 @@ import { cn } from "@/lib/utils"
 export type ProgressProps = React.ComponentProps<typeof ProgressPrimitive.Root>
 
 export const progressMdxDocs = {
-  description: "Displays completion progress as a horizontal bar.",
+  description:
+    "Renders a horizontal progress bar. Use to show completion toward a known percentage or that a process has started.",
   flow: "block",
   defaults: {
     value: 0,

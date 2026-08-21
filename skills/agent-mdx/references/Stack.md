@@ -1,6 +1,6 @@
 # Stack
 
-Lays out content in a horizontal or vertical flex stack.
+Renders children in a horizontal or vertical flex layout. Use to arrange peer components in a row or a consistently spaced column.
 
 **Layout:** Block
 

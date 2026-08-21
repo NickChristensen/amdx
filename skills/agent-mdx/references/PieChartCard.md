@@ -5,12 +5,14 @@
 ## Composition
 
 - Use direct ChartItem children for pie slices. Multi-series pie charts are not supported.
+- Use a chart only when the data supports a meaningful comparison, composition, or trend.
+- Use clear labels. Include relevant units, dates, source context, and uncertainty in nearby Markdown.
 
 ## Component contracts
 
 ### PieChartCard
 
-Displays direct chart items as proportional slices in a card.
+Renders labeled values as proportional slices in a card. Use to show how a small number of categories contribute to one meaningful whole.
 
 **Layout:** Block
 
@@ -47,7 +49,7 @@ export const pieChartCardDefaults = {} satisfies AgentMdxDefaults<PieChartCardPr
 
 ### ChartItem
 
-Represents one labeled numeric value inside a composable chart.
+Defines one labeled numeric value for a chart. Use directly for one series or inside ChartSeries for multi-series bar and line charts.
 
 **Layout:** Inline
 

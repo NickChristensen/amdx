@@ -20,13 +20,13 @@ export type TermProps = {
 
 export const termMdxDocs = {
   description:
-    "Use to provide a definition of jargon, acronyms, technical concepts, or domain-specific terms that readers may not know. Renders in a tooltip. Define only the first occurrence in plain language.",
+    "Adds a short definition to the first occurrence of jargon or another unfamiliar term. Use when a reader may need help understanding the term without interrupting the report.",
   flow: "inline",
   defaults: {},
   guidance: [
     "Use Term for a specialized or unfamiliar term at its first occurrence in a report.",
     "Keep the definition short and useful. Write later occurrences as plain text.",
-    "Keep essential information in the surrounding prose because the definition is supplementary.",
+    "Write the surrounding sentence so it remains clear without opening the definition. Do not repeat the tooltip definition verbatim in that sentence.",
   ],
   examples: [
     {

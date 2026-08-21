@@ -1,6 +1,6 @@
 # TweetCard
 
-Fetches and displays an X/Twitter post with its author, text, links, and available media in a card.
+Fetches and renders an X post with its author, text, links, and available media. Use when the original post provides evidence or context that readers should inspect directly.
 
 **Layout:** Block
 
