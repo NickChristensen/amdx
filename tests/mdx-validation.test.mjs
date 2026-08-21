@@ -45,9 +45,13 @@ before(async () => {
     "unknown-component.mdx",
     "missing-required-prop.mdx",
     "wrong-prop-type.mdx",
+    "unsupported-prop.mdx",
     "invalid-syntax.mdx",
     "missing-front-matter.mdx",
     "command.mdx",
+    "term-valid.mdx",
+    "term-missing-definition.mdx",
+    "term-missing-children.mdx",
   ].map((name) => fs.writeFile(path.join(documentDirectory, name), documentSource("# Initial"), "utf8")));
   analyzer = new MdxAnalyzer();
 });
@@ -100,11 +104,42 @@ test("validates the compound Alert family and its semantic variant", async () =>
   });
 });
 
+test("validates Term definitions", async () => {
+  const termAnalyzer = new MdxAnalyzer();
+
+  const valid = await validateAmdx(
+    await writeDocument(
+      "term-valid.mdx",
+      '<Term definition="Search engine optimization">SEO</Term>',
+    ),
+    { analyzer: termAnalyzer },
+  );
+
+  assert.equal(valid.ok, true);
+
+  const cases = [
+    ["term-missing-definition.mdx", "<Term>SEO</Term>", /Property 'definition' is missing/],
+    ["term-missing-children.mdx", '<Term definition="Search engine optimization" />', /Property 'children' is missing/],
+  ];
+
+  try {
+    for (const [name, body, message] of cases) {
+      const invalid = await validateAmdx(await writeDocument(name, body), { analyzer: termAnalyzer });
+      assert.equal(invalid.ok, false);
+      assert.equal(invalid.diagnostics[0].source, "analyzer");
+      assert.match(invalid.diagnostics.map((entry) => entry.message).join("\n"), message);
+    }
+  } finally {
+    await termAnalyzer.close();
+  }
+});
+
 test("uses the MDX Analyzer for component availability and prop diagnostics", async () => {
   const cases = [
     ["unknown-component.mdx", "<QuoteCard />", /QuoteCard/],
     ["missing-required-prop.mdx", '<Metric label="Revenue" />', /Property 'value' is missing/],
     ["wrong-prop-type.mdx", '<Metric label="Revenue" value={42} />', /Type 'number' is not assignable to type 'string'/],
+    ["unsupported-prop.mdx", '<Metric label="Revenue" value="42" unsupported="true" />', /Property 'unsupported' does not exist/],
   ];
 
   for (const [name, body, message] of cases) {

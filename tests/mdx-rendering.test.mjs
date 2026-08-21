@@ -94,3 +94,21 @@ test("compiles Button and Badge href navigation without paragraph wrappers", asy
   assert.match(compiled, /_jsx\(Badge, \{[\s\S]*href: "\/"/);
   assert.doesNotMatch(compiled, /children: _jsx\(_components\.p/);
 });
+
+test("compiles Term with its required definition and inline children", async () => {
+  const [compiled, termSource, tooltipSource] = await Promise.all([
+    compile(
+      '<Term definition="Search engine optimization">SEO</Term>',
+      mdxCompileOptions,
+    ),
+    readFile(new URL("../src/components/ui/term.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../src/components/ui/tooltip.tsx", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(String(compiled), /_jsx\(Term, \{[\s\S]*definition: "Search engine optimization"[\s\S]*children: "SEO"/);
+  assert.match(termSource, /<TooltipTrigger asChild>/);
+  assert.match(termSource, /event\.pointerType === "touch"/);
+  assert.match(termSource, /event\.preventDefault\(\)/);
+  assert.match(tooltipSource, /data-\[state=instant-open\]:animate-in data-\[state=instant-open\]:fade-in-0 data-\[state=instant-open\]:zoom-in-95/);
+  assert.match(termSource, /<button[\s\S]*type="button"/);
+});
