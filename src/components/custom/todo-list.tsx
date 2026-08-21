@@ -3,10 +3,15 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { File, Square } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { AgentMdxComponentDocs } from "@/lib/agent-mdx-component-docs";
+
+function thingsTodoHref(uuid: string): string {
+  return `things:///show?id=${encodeURIComponent(uuid)}`;
+}
 
 export type TodoListItemProps = {
   /** Stable Things UUID used as the React key; do not substitute an array index or title. */
@@ -38,11 +43,11 @@ export type TodoListProps = {
 
 export const todoListCardMdxDocs = {
   description:
-    "Renders Things todos as compact rows with tags and project or area context. Use to show an actionable task list from Things.",
+    "Renders Things todos as compact clickable rows with tags and project or area context. Use to show an actionable task list from Things.",
   flow: "block",
   defaults: {},
   guidance: [
-    "Pass the real Things UUID in uuid for every item; it is used as the React key and should not be replaced with an index.",
+    "Pass the real Things UUID in uuid for every item; it is used as the React key and builds the row link to things:///show?id=<UUID>.",
     "Map Things tags, project, area, and note presence directly when adapting sitrep data; project is displayed instead of area when both exist.",
     "Set highlighted only for presentation emphasis; it does not change the Things todo.",
     "Use an empty items array when an empty todo state is useful in the report.",
@@ -72,38 +77,43 @@ export function TodoListCard(props: TodoListProps) {
       <CardContent>
         <div className="-mx-(--todo-item-px) -my-(--todo-item-py) flex flex-col gap-1 [--todo-item-px:--spacing(2)] [--todo-item-py:--spacing(1)]">
           {props.items.map((item) => (
-            <div
+            <Button
+              asChild
+              variant="ghost"
               key={item.uuid}
               className={cn(
-                "flex gap-2 items-center rounded-md px-(--todo-item-px) py-(--todo-item-py)",
-                item.highlighted && "bg-primary/10 dark:bg-primary/30",
+                "h-auto w-full justify-start gap-2 rounded-md px-(--todo-item-px) py-(--todo-item-py) font-normal",
+                item.highlighted &&
+                  "bg-primary/10 dark:bg-primary/30 hover:bg-primary/10 dark:hover:bg-primary/30",
               )}
             >
-              <Square size={14} className={dimmedIconClasses} />
-              <div className="shrink overflow-hidden">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm truncate">{item.title}</p>
-                  {item.hasNotes && (
-                    <File size={12} className={dimmedIconClasses} />
-                  )}
-                  {item.tags &&
-                    item.tags.map((tag) => (
-                      <Badge
-                        key={tag}
-                        variant="outline"
-                        className="text-muted-foreground shrink-0"
-                      >
-                        {tag}
-                      </Badge>
-                    ))}
+              <a href={thingsTodoHref(item.uuid)}>
+                <Square size={14} className={dimmedIconClasses} />
+                <div className="shrink overflow-hidden">
+                  <div className="flex items-center gap-2">
+                    <span className="block text-sm truncate">{item.title}</span>
+                    {item.hasNotes && (
+                      <File size={12} className={dimmedIconClasses} />
+                    )}
+                    {item.tags &&
+                      item.tags.map((tag) => (
+                        <Badge
+                          key={tag}
+                          variant="outline"
+                          className="text-muted-foreground shrink-0"
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                  </div>
+                  {item.project || item.area ? (
+                    <p className="text-xs text-muted-foreground">
+                      {item.project || item.area}
+                    </p>
+                  ) : null}
                 </div>
-                {item.project || item.area ? (
-                  <p className="text-xs text-muted-foreground">
-                    {item.project || item.area}
-                  </p>
-                ) : null}
-              </div>
-            </div>
+              </a>
+            </Button>
           ))}
         </div>
       </CardContent>

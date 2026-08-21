@@ -18,6 +18,7 @@
     "test:create-document": "node --test tests/create-document.test.mjs",
     "test:mdx-document": "node --test tests/mdx-document.test.mjs",
     "test:mdx-rendering": "node --test tests/mdx-rendering.test.mjs",
+    "test:todo-list": "node --test tests/todo-list.test.mjs",
     "test:mdx-validation": "node --test tests/mdx-validation.test.mjs tests/validation-telemetry.test.mjs",
     "validate:mdx": "node scripts/validate-amdx.mjs"
   },

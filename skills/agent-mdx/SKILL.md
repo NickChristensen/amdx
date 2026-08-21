@@ -103,7 +103,7 @@ Read `references/<component>.md` for every component you select when that file i
 - [CalendarCard](references/CalendarCard.md): Block. Renders calendar events as a local-day agenda with times, durations, locations, and source colors. Use to show a schedule or help readers understand upcoming commitments.
 - [ChatCard](references/ChatCard.md): Block. Renders one message thread as sorted, direction-aware chat bubbles with sender and time context. Use when the exact conversation or exchange supports the report.
 - [StockQuoteCard](references/StockQuoteCard.md): Block. Fetches current quotes, intraday, 7-day, 30-day, and year-to-date changes, for ticker symbols. Use when readers need a market snapshot for specific securities.
-- [TodoListCard](references/TodoListCard.md): Block. Renders Things todos as compact rows with tags and project or area context. Use to show an actionable task list from Things.
+- [TodoListCard](references/TodoListCard.md): Block. Renders Things todos as compact clickable rows with tags and project or area context. Use to show an actionable task list from Things.
 - [TweetCard](references/TweetCard.md): Block. Fetches and renders an X post with its author, text, links, and available media. Use when the original post provides evidence or context that readers should inspect directly.
 <!-- END GENERATED COMPONENT INDEX -->
 

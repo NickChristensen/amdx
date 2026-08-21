@@ -1,6 +1,6 @@
 # TodoListCard
 
-Renders Things todos as compact rows with tags and project or area context. Use to show an actionable task list from Things.
+Renders Things todos as compact clickable rows with tags and project or area context. Use to show an actionable task list from Things.
 
 **Layout:** Block
 
@@ -44,7 +44,7 @@ export const todoListCardDefaults = {} satisfies AgentMdxDefaults<TodoListProps>
 
 ## Guidance
 
-- Pass the real Things UUID in uuid for every item; it is used as the React key and should not be replaced with an index.
+- Pass the real Things UUID in uuid for every item; it is used as the React key and builds the row link to things:///show?id=<UUID>.
 - Map Things tags, project, area, and note presence directly when adapting sitrep data; project is displayed instead of area when both exist.
 - Set highlighted only for presentation emphasis; it does not change the Things todo.
 - Use an empty items array when an empty todo state is useful in the report.
