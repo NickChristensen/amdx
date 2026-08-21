@@ -1,12 +1,6 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardIcon,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Bubble, BubbleContent, BubbleGroup } from "@/components/ui/bubble";
 import type { AgentMdxComponentDocs } from "@/lib/agent-mdx-component-docs";
-import { MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type ChatMessage = {
@@ -19,7 +13,7 @@ export type ChatMessage = {
   /** Source sender or conversation address used to group adjacent messages with the same direction; with imsg it is not always the author. */
   sender?: string;
 
-  /** Contact display name for an incoming message, shown above the cluster when it differs from the thread name. */
+  /** Contact display name for an incoming message, shown with the final timestamp beneath the cluster when it differs from the thread name. */
   sender_name?: string;
 
   /** Authoritative direction flag: true means the current user sent it, false means it came from someone else. */
@@ -114,96 +108,80 @@ export const chatCardMdxDocs = {
   ],
 } as const satisfies AgentMdxComponentDocs<ChatCardProps>;
 
-function MessageBubble({ message }: { message: ChatMessage }) {
-  return (
-    <p
-      className={cn(
-        "max-w-8/10 px-3 py-2 text-sm leading-snug rounded-2xl",
-        message.is_from_me
-          ? "bg-primary text-primary-foreground rounded-br-xs"
-          : "bg-muted text-foreground rounded-bl-xs",
-      )}
-    >
-      {message.text}
-    </p>
-  );
-}
+type MessageGroup = [ChatMessage, ...ChatMessage[]];
 
 function MessageCluster({
   messages,
   threadName,
 }: {
-  messages: ChatMessage[];
+  messages: MessageGroup;
   threadName: string;
 }) {
-  const lastMessage = messages.at(-1);
-  const metaClasses = "text-xs text-muted-foreground";
-
-  if (!lastMessage) {
-    return null;
-  }
+  const lastMessage = messages[messages.length - 1];
+  const senderLabel =
+    !lastMessage.is_from_me &&
+    lastMessage.sender_name &&
+    lastMessage.sender_name !== threadName
+      ? `${lastMessage.sender_name} · `
+      : "";
 
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-1",
-        lastMessage.is_from_me ? "items-end" : "items-start",
-      )}
-    >
-      {!lastMessage.is_from_me && lastMessage.sender_name !== threadName && (
-        <p className={metaClasses}>{lastMessage.sender_name}</p>
-      )}
+    <BubbleGroup className="gap-1">
       {messages.map((message, index) => (
-        <MessageBubble
+        <Bubble
           key={`${message.created_at}-${index}`}
-          message={message}
-        />
+          align={message.is_from_me ? "end" : "start"}
+          variant={message.is_from_me ? "default" : "secondary"}
+        >
+          <BubbleContent>{message.text}</BubbleContent>
+        </Bubble>
       ))}
-      <p className={metaClasses}>
+      <p
+        className={cn(
+          "text-xs text-muted-foreground px-1",
+          lastMessage.is_from_me && "text-right",
+        )}
+      >
+        {senderLabel}
         {new Date(lastMessage.created_at).toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
         })}
       </p>
-    </div>
+    </BubbleGroup>
   );
 }
 
-export function ChatCard(props: ChatCardProps) {
-  const messages = [...props.thread.messages].sort(
+export function ChatCard({ thread }: ChatCardProps) {
+  const { messages: threadMessages, name: threadName } = thread;
+  const messages = threadMessages.toSorted(
     (a, b) =>
       new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
   );
 
-  const messagesGroupedByAdjacentSenderAndDirection = messages.reduce(
-    (acc: ChatMessage[][], message) => {
-      if (acc.length === 0) {
-        return [[message]];
-      }
+  const messageGroups = messages.reduce<MessageGroup[]>((groups, message) => {
+    const previousGroup = groups.at(-1);
+    const previousMessage = previousGroup?.at(-1);
 
-      const lastGroup = acc[acc.length - 1];
-      const lastMessage = lastGroup[lastGroup.length - 1];
+    if (
+      previousGroup &&
+      previousMessage &&
+      previousMessage.sender === message.sender &&
+      previousMessage.is_from_me === message.is_from_me
+    ) {
+      previousGroup.push(message);
+    } else {
+      groups.push([message]);
+    }
 
-      if (
-        lastMessage.sender === message.sender &&
-        lastMessage.is_from_me === message.is_from_me
-      ) {
-        lastGroup.push(message);
-        return acc;
-      }
-
-      return [...acc, [message]];
-    },
-    [],
-  );
+    return groups;
+  }, []);
 
   const displayThreadName =
-    props.thread.name ||
+    threadName ||
     Array.from(
       new Set(
-        props.thread.messages
-          .map((message) => message.sender_name)
-          .filter(Boolean),
+        threadMessages.map((message) => message.sender_name).filter(Boolean),
       ),
     ).join(", ");
 
@@ -213,11 +191,11 @@ export function ChatCard(props: ChatCardProps) {
         <CardTitle>{displayThreadName}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        {messagesGroupedByAdjacentSenderAndDirection.map((group) => (
+        {messageGroups.map((group, index) => (
           <MessageCluster
-            key={group[0].created_at}
+            key={`${group[0].created_at}-${index}`}
             messages={group}
-            threadName={props.thread.name}
+            threadName={threadName}
           />
         ))}
       </CardContent>
