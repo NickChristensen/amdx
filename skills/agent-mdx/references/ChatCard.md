@@ -36,7 +36,7 @@ export type ChatMessage = {
   /** Source sender or conversation address used to group adjacent messages with the same direction; with imsg it is not always the author. */
   sender?: string;
 
-  /** Contact display name for an incoming message, shown above the cluster when it differs from the thread name. */
+  /** Contact display name for an incoming message, shown with the final timestamp beneath the cluster when it differs from the thread name. */
   sender_name?: string;
 
   /** Authoritative direction flag: true means the current user sent it, false means it came from someone else. */
