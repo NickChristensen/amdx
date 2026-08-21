@@ -37,6 +37,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Stack } from "@/components/ui/stack";
+import { Term } from "@/components/ui/term";
 import {
   BarChartCard,
   ChartAnnotation,
@@ -74,6 +75,7 @@ export const agentMdxComponentManifest = [
       { root: "Icon", components: { Icon } },
       { root: "Metric", components: { Metric } },
       { root: "Progress", components: { Progress } },
+      { root: "Term", components: { Term } },
     ],
   },
   {

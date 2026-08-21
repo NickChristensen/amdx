@@ -18,7 +18,7 @@ const virtualPath = path.join(repoRoot, "documents", ".component-docs-examples.m
 test("all production component examples compile and pass the MDX Analyzer together", async () => {
   const { records } = buildComponentDocs({ repoRoot });
   const fixture = buildCombinedExampleMdx(records);
-  assertComposableChartContract(records);
+  assertProductionExampleContracts(records);
   assertNoLowercaseJsxTags(fixture, virtualPath);
 
   try {
@@ -36,7 +36,7 @@ test("all production component examples compile and pass the MDX Analyzer togeth
   }
 });
 
-function assertComposableChartContract(records) {
+function assertProductionExampleContracts(records) {
   const examples = new Map(records.map((record) => [
     record.name,
     record.examples.map((example) => example.mdx).join("\n"),
@@ -49,6 +49,8 @@ function assertComposableChartContract(records) {
   assert.match(examples.get("LineChartCard"), /<ChartSeries[\s\S]*<\/ChartSeries>/);
   assert.match(examples.get("LineChartCard"), /<ChartAnnotation value=\{20\} label="Target" \/>/);
   assert.match(examples.get("PieChartCard"), /<PieChartCard[\s\S]*<ChartItem/);
+  assert.match(examples.get("Term"), /<Term definition="[^"]+">[^<]+<\/Term>/);
+  assert.match(examples.get("Term"), /Later references to the contract stay plain text\./);
 }
 
 function formatAnalyzerDiagnostics(diagnostics, fixture, filePath) {

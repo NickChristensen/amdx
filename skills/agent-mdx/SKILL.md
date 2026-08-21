@@ -83,6 +83,7 @@ Read `references/<component>.md` for every component you select when that file i
 - [Icon](references/Icon.md): Inline. Displays a named Lucide icon with an optional status or presentation color.
 - [Metric](references/Metric.md): Block. Displays one important value with a label and optional change context.
 - [Progress](references/Progress.md): Block. Displays completion progress as a horizontal bar.
+- [Term](references/Term.md): Inline. Use to provide a definition of jargon, acronyms, technical concepts, or domain-specific terms that readers may not know. Renders in a tooltip. Define only the first occurrence in plain language.
 
 ### Composition
 
