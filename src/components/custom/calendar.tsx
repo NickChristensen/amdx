@@ -1,6 +1,7 @@
 import { Buffer } from "node:buffer";
 import { Clock, MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import type { AgentMdxComponentDocs } from "@/lib/agent-mdx-component-docs";
 import {
   compareCalendarStarts,
@@ -154,7 +155,7 @@ function CalendarEventCard({
   return (
     <a
       href={href}
-      className="flex overflow-hidden rounded-md border p-2 text-xs/snug"
+      className="flex overflow-hidden rounded-md border p-2 text-xs/snug active:not-aria-[haspopup]:translate-y-px hover:opacity-80"
       style={{
         borderColor: shades.border,
         backgroundColor: shades.background,
