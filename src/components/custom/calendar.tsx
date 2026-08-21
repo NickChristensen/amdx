@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import { Clock, MapPin } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import type { AgentMdxComponentDocs } from "@/lib/agent-mdx-component-docs";
@@ -29,6 +30,12 @@ export type CalendarEventProps = {
 
   /** Optional CSS color from the source calendar, used for the event accent. */
   backgroundColor?: string;
+
+  /** Optional Google Calendar event ID from the source event. Use with calendarId to make the event clickable. */
+  id?: string;
+
+  /** Optional Google Calendar ID from the source event. Use with id to make the event clickable. */
+  calendarId?: string;
 };
 
 export type CalendarCardProps = {
@@ -45,6 +52,8 @@ export const calendarCardMdxDocs = {
     "For timed events, pass start and end as ISO 8601 date-times with timezone offsets so sorting and displayed local times are correct.",
     "All-day events may use ISO 8601 date-only start and end values with allDay set to true; omit it or use false for timed events.",
     "Pass the source calendar color as backgroundColor when preserving calendar identity matters; otherwise omit it for the primary accent.",
+    "Calendar events are always clickable: Google events with both id and calendarId open the exact event, and other events open that date in Google Calendar.",
+    "Events from multiple dates may share one CalendarCard; it groups them by day and adds day headings.",
   ],
   examples: [
     {
@@ -55,6 +64,8 @@ export const calendarCardMdxDocs = {
       summary: "Team standup",
       start: "2026-08-14T09:00:00-05:00",
       end: "2026-08-14T09:30:00-05:00",
+      id: "event-id",
+      calendarId: "calendar-id",
     },
     {
       summary: "Design review",
@@ -66,7 +77,7 @@ export const calendarCardMdxDocs = {
 />`,
     },
     {
-      title: "Calendar with an all-day event",
+      title: "Calendar across multiple days",
       mdx: `<CalendarCard
   events={[
     {
@@ -109,6 +120,16 @@ function getShadeScale(color: string) {
   };
 }
 
+function googleCalendarEventHref(id: string, calendarId: string): string {
+  const eid = Buffer.from(`${id} ${calendarId}`, "utf8").toString("base64url");
+  return `https://www.google.com/calendar/event?eid=${eid}`;
+}
+
+function googleCalendarDayHref(start: string): string {
+  const [year, month, day] = getCalendarDayKey(start).split("-").map(Number);
+  return `https://calendar.google.com/calendar/r/day/${year}/${month}/${day}`;
+}
+
 function CalendarEventCard({
   summary,
   start,
@@ -116,6 +137,8 @@ function CalendarEventCard({
   allDay = false,
   location,
   backgroundColor = "var(--primary)",
+  id,
+  calendarId,
 }: CalendarEventProps) {
   const height = allDay
     ? ALL_DAY_HEIGHT
@@ -124,10 +147,14 @@ function CalendarEventCard({
   const iconWrapperClasses = "flex items-center gap-0.5";
   const iconClasses = "w-2.5 h-2.5 shrink-0";
   const layoutInline = allDay || height < 48;
-
+  const href =
+    id && calendarId
+      ? googleCalendarEventHref(id, calendarId)
+      : googleCalendarDayHref(start);
   return (
-    <div
-      className="flex overflow-hidden rounded-lg border p-2 text-xs/snug"
+    <a
+      href={href}
+      className="flex overflow-hidden rounded-md border p-2 text-xs/snug"
       style={{
         borderColor: shades.border,
         backgroundColor: shades.background,
@@ -168,13 +195,13 @@ function CalendarEventCard({
           <p className="truncate">{location.split("\n")[0]}</p>
         </div>
       ) : null}
-    </div>
+    </a>
   );
 }
 
 function GhostGap({ minutes }: { minutes: number }) {
   return (
-    <div className="flex items-center justify-center rounded-lg border-2 border-dashed border-muted-foreground/30 py-1">
+    <div className="flex items-center justify-center rounded-md border-2 border-dashed border-muted-foreground/30 py-1">
       <span className="text-sm text-muted-foreground">
         {formatCalendarDuration(minutes)}
       </span>
