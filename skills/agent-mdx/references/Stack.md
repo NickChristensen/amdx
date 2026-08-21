@@ -1,6 +1,6 @@
 # Stack
 
-Renders children in a horizontal or vertical flex layout. Use to arrange peer components in a row or a consistently spaced column.
+Arranges peer components in a wrapping row. Use for compact items such as buttons and badges, or enable flexItems to give cards and metrics equal widths. On small screens, flexItems falls back to a full-width column.
 
 **Layout:** Block
 
@@ -17,10 +17,11 @@ export type StackProps = React.ComponentProps<"div"> & {
   /** Main-axis distribution for child elements. */
   justify?: "start" | "center" | "end" | "between" | "around";
 
-  /** Direction in which child elements are laid out. */
-  direction?: "horizontal" | "vertical";
-
-  /** Give each direct child an equal flex share. */
+  /**
+   * Give each direct child an equal flex share in the wrapping row from the
+   * `sm` breakpoint upward. On small screens, each child falls back to a
+   * full-width column.
+   */
   flexItems?: boolean;
 };
 ```
@@ -32,46 +33,32 @@ export const stackDefaults = {
   gap: 2,
   align: "start",
   justify: "start",
-  direction: "horizontal",
   flexItems: false,
 } satisfies AgentMdxDefaults<StackProps>;
 ```
 
 ## Guidance
 
-- Use vertical direction for a readable group of blocks and horizontal direction for a compact row.
-- Use flexItems when direct children should share the available space equally.
+- Use without flexItems for compact peer items such as buttons, badges, or inline controls. Children wrap when the row runs out of space.
+- Use flexItems for peer cards or metrics that should share equal widths in a wrapping row from the sm breakpoint upward. On small screens, flexItems falls back to a full-width column.
+- Use ordinary MDX flow for vertical content.
 
 ## Examples
 
-### Basic stack
+### Compact wrapping row
 
 ```mdx
-<Stack>
+<Stack gap={2} align="center">
   <Badge>First item</Badge>
   <Badge>Second item</Badge>
 </Stack>
 ```
 
-### Vertical equal-width stack
+### Responsive equal-width metrics
 
 ```mdx
-<Stack direction="vertical" gap={4} flexItems>
-  <Card>
-    <CardHeader>
-      <CardTitle>Primary content</CardTitle>
-    </CardHeader>
-    <CardContent>
-      The primary block shares the available width.
-    </CardContent>
-  </Card>
-  <Card>
-    <CardHeader>
-      <CardTitle>Secondary content</CardTitle>
-    </CardHeader>
-    <CardContent>
-      The secondary block shares the available width.
-    </CardContent>
-  </Card>
+<Stack gap={4} flexItems>
+  <Metric label="Monthly revenue" value="$42,000" change="+8%" changeType="positive" />
+  <Metric label="Active users" value="18,420" change="+12%" changeType="positive" />
 </Stack>
 ```

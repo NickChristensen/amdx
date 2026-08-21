@@ -90,7 +90,7 @@ Read `references/<component>.md` for every component you select when that file i
 - [Alert](references/Alert.md): Block. Renders an emphasized semantic message with optional title and action content. Use for important context, status, caution, or next steps that readers should not miss.
 - [Card](references/Card.md): Block. Renders a structured block surface with optional header, content, and footer sections. Use to group one self-contained topic that needs stronger separation than headings alone.
 - [Collapsible](references/Collapsible.md): Block. Renders a section that readers can expand or collapse. Use to keep secondary details available without making the main report harder to scan.
-- [Stack](references/Stack.md): Block. Renders children in a horizontal or vertical flex layout. Use to arrange peer components in a row or a consistently spaced column.
+- [Stack](references/Stack.md): Block. Arranges peer components in a wrapping row. Use for compact items such as buttons and badges, or enable flexItems to give cards and metrics equal widths. On small screens, flexItems falls back to a full-width column.
 
 ### Charts
 
